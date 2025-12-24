@@ -10,14 +10,13 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary/90 to-primary/60 text-white py-20">
+      <section className="bg-gradient-to-br from-primary/90 to-primary/60 text-white py-14">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-5xl font-bold mb-6">
-            Build Claude Skills in Minutes, Not Hours
+          <h1 className="text-4xl font-bold mb-4">
+            Claude Skills: Find, Build and Bundle
           </h1>
-          <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            The fastest way to create custom Claude Skills for your business workflows.
-            No coding required.
+          <p className="text-lg mb-6 max-w-2xl mx-auto opacity-90">
+            Unlock the power of Claude Skills, without the trial and error. So you can get to flexing YOUR powers.
           </p>
           <div className="flex gap-4 justify-center">
             <Link href="/builder">
