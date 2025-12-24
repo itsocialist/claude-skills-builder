@@ -88,18 +88,15 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                         </button>
                     </div>
 
-                    {/* Status + Actions */}
-                    <div className="flex items-center gap-3">
-                        <span className={`text-sm flex items-center gap-1.5 ${saveStatus === 'saved' ? 'text-green-500' : 'text-muted-foreground'
-                            }`}>
-                            {saveStatus === 'saved' && <Check className="h-3.5 w-3.5" />}
-                            {saveStatus === 'saved' ? 'Saved' : 'Editing...'}
-                        </span>
-                        <div className="w-px h-5 bg-primary"></div>
-                        <button className="p-2 text-muted-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
-                            <Download className="h-4 w-4" />
-                        </button>
-                    </div>
+                    {/* Actions - only show when building */}
+                    {inspector && (
+                        <div className="flex items-center gap-3">
+                            <div className="w-px h-5 bg-border"></div>
+                            <button className="p-2 text-muted-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+                                <Download className="h-4 w-4" />
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Inspector Header */}
@@ -143,11 +140,27 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
 
             {/* Fixed Bottom Status Bar */}
             <footer className="fixed bottom-0 left-0 right-0 h-10 bg-card border-t border-border flex items-center px-6 z-20">
-                <div className="flex items-center gap-2 ml-64">
-                    <div className={`w-2 h-2 rounded-full ${statusColors[validation?.status || 'valid']}`}></div>
-                    <span className="text-sm text-muted-foreground">
-                        {validation?.message || statusMessages[validation?.status || 'valid']}
-                    </span>
+                <div className="flex items-center gap-4 ml-64">
+                    {/* Validation Status */}
+                    <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${statusColors[validation?.status || 'valid']}`}></div>
+                        <span className="text-sm text-muted-foreground">
+                            {validation?.message || statusMessages[validation?.status || 'valid']}
+                        </span>
+                    </div>
+
+                    {/* Save Status - only on builder */}
+                    {inspector && (
+                        <>
+                            <div className="w-px h-4 bg-border"></div>
+                            <div className="flex items-center gap-2">
+                                <div className={`w-2 h-2 rounded-full ${saveStatus === 'saved' ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
+                                <span className="text-sm text-muted-foreground">
+                                    {saveStatus === 'saved' ? 'Saved' : 'Editing...'}
+                                </span>
+                            </div>
+                        </>
+                    )}
                 </div>
             </footer>
         </div>
