@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useSkillStore } from '@/lib/store/skillStore';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
@@ -20,6 +20,14 @@ import { Shell } from '@/components/layout/Shell';
 import { validateSkill, getValidationStatus } from '@/lib/utils/validation';
 
 export default function BuilderPage() {
+    return (
+        <Suspense fallback={<div className="p-8 text-center text-muted-foreground">Loading...</div>}>
+            <BuilderContent />
+        </Suspense>
+    );
+}
+
+function BuilderContent() {
     const searchParams = useSearchParams();
     const { skill, updateField, setSkill, reset, addResource, removeResource } = useSkillStore();
     const [isGenerating, setIsGenerating] = useState(false);
