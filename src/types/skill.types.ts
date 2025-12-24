@@ -1,3 +1,12 @@
+export type ResourceFolder = 'resources' | 'templates' | 'examples' | 'scripts';
+
+export interface SkillResource {
+    id: string;
+    folder: ResourceFolder;
+    name: string;
+    content: string;
+}
+
 export interface Skill {
     name: string;
     description: string;
@@ -6,6 +15,7 @@ export interface Skill {
     triggers: string[];
     instructions: string;
     examples?: Example[];
+    resources?: SkillResource[];
 }
 
 export interface Example {

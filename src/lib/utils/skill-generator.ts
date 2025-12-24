@@ -36,16 +36,45 @@ export async function generateSkillZip(skill: Skill): Promise<Blob> {
     // 3. Create README
     const readme = generateReadme(skill, slugName);
 
-    // 4. Create zip file
+    // 4. Create config.yaml
+    const config = generateConfig(skill, slugName);
+
+    // 5. Create zip file
     const zip = new JSZip();
     zip.file('SKILL.md', skillMd);
     zip.file('README.md', readme);
+    zip.file('config.yaml', config);
 
-    // 5. Generate blob
+    // 6. Add resources to folders
+    if (skill.resources && skill.resources.length > 0) {
+        for (const resource of skill.resources) {
+            zip.file(`${resource.folder}/${resource.name}`, resource.content);
+        }
+    }
+
+    // 7. Generate blob
     return await zip.generateAsync({ type: 'blob' });
 }
 
+function generateConfig(skill: Skill, slugName: string): string {
+    return yaml.dump({
+        name: slugName,
+        version: '1.0.0',
+        description: skill.description,
+        category: skill.category,
+        triggers: skill.triggers,
+        compatibility: {
+            claude_web: true,
+            claude_code: true,
+        },
+    }, { indent: 2 });
+}
+
 function generateReadme(skill: Skill, slugName: string): string {
+    const resourceList = skill.resources && skill.resources.length > 0
+        ? `## Attached Files\n\n${skill.resources.map(r => `- \`${r.folder}/${r.name}\``).join('\n')}\n\n`
+        : '';
+
     return `# ${skill.name}
 
 ${skill.description}
@@ -67,8 +96,9 @@ ${skill.triggers.map((t) => `- \`${t}\``).join('\n')}
 
 ${skill.category}
 
----
+${resourceList}---
 
 Generated with [ClaudeSkillsFacet](https://claudeskillsfacet.com)
 `;
 }
+
