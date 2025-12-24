@@ -128,10 +128,10 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                 </div>
             </main>
 
-            {/* Inspector Panel - 320px */}
+            {/* Inspector Panel - 320px, fixed height viewport */}
             {inspector && (
-                <aside className="w-full md:w-80 bg-card border-l border-border flex-shrink-0 overflow-y-auto">
-                    <div className="p-6">
+                <aside className="w-full md:w-80 bg-card border-l border-border flex-shrink-0 h-[calc(100vh-56px)] sticky top-14">
+                    <div className="h-full">
                         {inspector}
                     </div>
                 </aside>
