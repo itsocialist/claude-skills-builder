@@ -48,7 +48,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
     };
 
     return (
-        <div className="flex min-h-screen bg-background flex-col md:flex-row">
+        <div className="flex min-h-screen bg-background flex-col md:flex-row pb-10">
             {/* Sidebar - 240px */}
             <aside className="w-full md:w-64 bg-card border-r border-border flex-shrink-0">
                 <div className="h-14 flex items-center px-6 border-b border-border">
@@ -63,17 +63,6 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                     <Link href="/templates" className="block px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
                         Templates
                     </Link>
-                    <div className="pt-4 mt-4 border-t border-border">
-                        <span className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                            Validation
-                        </span>
-                        <div className="mt-2 px-4 flex items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded">
-                            <div className={`w-2 h-2 rounded-full ${statusColors[validation?.status || 'valid']}`}></div>
-                            <span className="text-sm text-muted-foreground">
-                                {validation?.message || statusMessages[validation?.status || 'valid']}
-                            </span>
-                        </div>
-                    </div>
                 </nav>
             </aside>
 
@@ -130,14 +119,22 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
 
             {/* Inspector Panel - 320px, fixed height viewport */}
             {inspector && (
-                <aside className="w-full md:w-80 bg-card border-l border-border flex-shrink-0 h-[calc(100vh-56px)] sticky top-14">
+                <aside className="w-full md:w-80 bg-card border-l border-border flex-shrink-0 h-[calc(100vh-96px)] sticky top-14">
                     <div className="h-full">
                         {inspector}
                     </div>
                 </aside>
             )}
+
+            {/* Fixed Bottom Status Bar */}
+            <footer className="fixed bottom-0 left-0 right-0 h-10 bg-card border-t border-border flex items-center px-6 z-20">
+                <div className="flex items-center gap-2 ml-64">
+                    <div className={`w-2 h-2 rounded-full ${statusColors[validation?.status || 'valid']}`}></div>
+                    <span className="text-sm text-muted-foreground">
+                        {validation?.message || statusMessages[validation?.status || 'valid']}
+                    </span>
+                </div>
+            </footer>
         </div>
     );
 }
-
-
