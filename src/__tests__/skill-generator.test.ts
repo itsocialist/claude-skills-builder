@@ -14,7 +14,7 @@ describe('skill-generator', () => {
         instructions: '# Test Instructions',
     };
 
-    it('generates a valid zip file', async () => {
+    it('generates a valid zip file with Agent Skills spec compliant frontmatter', async () => {
         const blob = await generateSkillZip(mockSkill);
         expect(blob).toBeDefined();
         expect(blob.type).toBe('application/zip');
@@ -31,16 +31,16 @@ describe('skill-generator', () => {
 
         // Parse frontmatter
         const parsed = yaml.load(frontmatterMatch![1]) as any;
-        expect(parsed.name).toBe('Test Skill');
+
+        // Verify name is slugified (lowercase, hyphens)
+        expect(parsed.name).toBe('test-skill');
         expect(parsed.description).toBe('A test description');
 
-        // Verify metadata nesting
-        expect(parsed.metadata).toBeDefined();
-        expect(parsed.metadata.triggers).toContain('run test');
-        expect(parsed.metadata.category).toBe('Testing');
-        expect(parsed.metadata.tags).toContain('unit');
+        // Verify ONLY name and description are at root (per Agent Skills spec)
+        expect(Object.keys(parsed)).toEqual(['name', 'description']);
 
-        // Verify root does not contain unauthorized keys
+        // Verify no metadata or other unauthorized keys
+        expect(parsed.metadata).toBeUndefined();
         expect(parsed.triggers).toBeUndefined();
         expect(parsed.category).toBeUndefined();
         expect(parsed.tags).toBeUndefined();

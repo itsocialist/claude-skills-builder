@@ -1,6 +1,4 @@
 import { test, expect } from '@playwright/test';
-import path from 'path';
-import fs from 'fs';
 
 test('complete user flow', async ({ page }) => {
     // 1. Start at Home Page
@@ -8,20 +6,19 @@ test('complete user flow', async ({ page }) => {
     await expect(page).toHaveTitle(/ClaudeSkillsFacet/);
     await expect(page.getByText('Build Claude Skills in Minutes')).toBeVisible();
 
-    // 2. Select a Template
-    // Find the card with "Property Listing Generator" then click the "Use Template" link/button inside it
-    await page.locator('.p-6').filter({ hasText: 'Property Listing Generator' }).getByRole('link', { name: 'Use Template' }).click();
+    // 2. Navigate to Templates page
+    await page.goto('/templates');
+    await expect(page.getByText('Skill Templates')).toBeVisible();
 
-    await expect(page).toHaveURL(/\/templates\/property-listing/);
-    // Verify category badge
-    await expect(page.locator('.bg-primary-100').getByText('Real Estate')).toBeVisible();
+    // 3. Click "Use Template" for Property Listing Generator
+    await page.getByRole('link', { name: 'Use Template' }).first().click();
 
-    // 3. Use Template
-    await page.click('text=Use This Template');
-    await expect(page).toHaveURL(/\/builder/);
+    // Wait for navigation to builder with template param
+    await expect(page).toHaveURL(/\/builder\?template=property-listing/);
 
     // 4. Verify Builder Pre-filled
-    await expect(page.locator('input[placeholder="e.g., Property Listing Generator"]')).toHaveValue('Property Listing Generator');
+    await expect(page.locator('input[placeholder="Name your skill..."]')).toHaveValue('Property Listing Generator');
+    await expect(page.locator('textarea[placeholder="Describe what this skill does..."]')).not.toBeEmpty();
 
     // 5. Generate Skill
     // Setup download listener
@@ -29,7 +26,7 @@ test('complete user flow', async ({ page }) => {
     await page.click('text=Generate Skill');
     const download = await downloadPromise;
 
-    // 6. Verify Download
+    // 6. Verify Download - filename should be slugified
     const suggestedFilename = download.suggestedFilename();
     expect(suggestedFilename).toBe('property-listing-generator.zip');
 });

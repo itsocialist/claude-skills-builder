@@ -8,6 +8,7 @@ export default defineConfig({
         environment: 'happy-dom',
         globals: true,
         setupFiles: [],
+        exclude: ['**/node_modules/**', '**/e2e/**'],
         alias: {
             '@': path.resolve(__dirname, './src'),
         },
