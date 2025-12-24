@@ -146,6 +146,7 @@ export default function BuilderPage() {
     return (
         <Shell
             title={skill.name || 'New Skill'}
+            onTitleChange={(newTitle) => updateField('name', newTitle)}
             inspector={InspectorPanel}
             validation={{
                 status: validationStatus,
