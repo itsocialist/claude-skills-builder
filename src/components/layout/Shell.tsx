@@ -110,14 +110,19 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                     </div>
 
                     {/* Status + Actions */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
                         <span className={`text-sm flex items-center gap-1.5 ${saveStatus === 'saved' ? 'text-green-500' : 'text-muted-foreground'
                             }`}>
                             {saveStatus === 'saved' && <Check className="h-3.5 w-3.5" />}
                             {saveStatus === 'saved' ? 'Saved' : 'Editing...'}
                         </span>
-                        <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors">
+                        <button
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium 
+                                       bg-primary text-primary-foreground rounded-md 
+                                       hover:bg-primary/90 transition-colors"
+                        >
                             <Download className="h-4 w-4" />
+                            Export
                         </button>
                     </div>
                 </header>
