@@ -64,23 +64,23 @@ export default function HomePage() {
       </section>
 
       {/* Templates Showcase */}
-      <section className="py-16 bg-card">
+      <section className="py-10 bg-card">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 text-foreground">
+          <h2 className="text-2xl font-bold text-center mb-8 text-foreground">
             Start with a Template
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6">
             {templates.map((template) => (
-              <Card key={template.id} className="p-5 hover:shadow-md transition-shadow border-border">
-                <div className="mb-2">
-                  <span className="inline-block px-2 py-1 text-xs font-semibold text-primary bg-primary/10 rounded-full mb-1">
+              <Card key={template.id} className="p-4 hover:shadow-md transition-shadow border-border">
+                <div className="mb-1">
+                  <span className="inline-block px-2 py-0.5 text-xs font-semibold text-primary bg-primary/10 rounded-full mb-1">
                     {template.category}
                   </span>
-                  <h3 className="text-xl font-bold text-foreground">{template.name}</h3>
+                  <h3 className="text-lg font-bold text-foreground">{template.name}</h3>
                 </div>
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{template.description}</p>
+                <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{template.description}</p>
                 <Link href={`/templates/${template.id}`}>
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" size="sm" className="w-full">
                     Use Template
                   </Button>
                 </Link>
