@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { TriggerEditor } from '@/components/builder/TriggerEditor';
 import { InstructionsEditor } from '@/components/builder/InstructionsEditor';
+import { Shell } from '@/components/layout/Shell';
 
 export default function BuilderPage() {
     const { skill, updateField, reset } = useSkillStore();
@@ -32,84 +33,76 @@ export default function BuilderPage() {
         }
     };
 
-    return (
-        <div className="container max-w-4xl mx-auto py-8 px-4">
-            <h1 className="text-3xl font-bold mb-8 text-primary-500">Create New Skill</h1>
-
-            {/* Basic Information */}
-            <Card className="mb-6 p-6">
-                <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
-
-                <div className="space-y-4">
+    const InspectorPanel = (
+        <div className="space-y-6">
+            <div>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3 uppercase tracking-wider">Configuration</h3>
+                <Card className="p-4 bg-gray-50 border-gray-100 shadow-none space-y-4">
                     <div>
-                        <label className="block text-sm font-medium mb-2">
-                            Skill Name *
-                        </label>
-                        <Input
-                            value={skill.name}
-                            onChange={(e) => updateField('name', e.target.value)}
-                            placeholder="e.g., Property Listing Generator"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-2">
-                            Description
-                        </label>
-                        <Textarea
-                            value={skill.description}
-                            onChange={(e) => updateField('description', e.target.value)}
-                            placeholder="What does this skill do?"
-                            rows={3}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-2">
-                            Category
-                        </label>
+                        <label className="block text-sm font-medium mb-1 text-gray-700">Category</label>
                         <Input
                             value={skill.category}
                             onChange={(e) => updateField('category', e.target.value)}
-                            placeholder="e.g., Real Estate, Legal, Finance"
+                            placeholder="e.g. Finance"
+                            className="bg-white"
                         />
                     </div>
-                </div>
-            </Card>
+                </Card>
+            </div>
 
-            {/* Triggers */}
-            <Card className="mb-6 p-6">
-                <h2 className="text-xl font-semibold mb-4">Skill Triggers</h2>
-                <p className="text-sm text-gray-600 mb-4">
-                    When should this skill activate?
-                </p>
-                <TriggerEditor />
-            </Card>
+            <div>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3 uppercase tracking-wider">Triggers</h3>
+                <Card className="p-4 bg-gray-50 border-gray-100 shadow-none">
+                    <TriggerEditor />
+                </Card>
+            </div>
 
-            {/* Instructions */}
-            <Card className="mb-6 p-6">
-                <h2 className="text-xl font-semibold mb-4">Instructions</h2>
-                <InstructionsEditor />
-            </Card>
-
-            {/* Actions */}
-            <div className="flex justify-between">
-                <Button variant="outline" onClick={reset}>
-                    Reset
+            <div className="pt-6 border-t border-gray-100">
+                <Button
+                    onClick={handleGenerate}
+                    disabled={!skill.name || !skill.instructions || isGenerating}
+                    className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-6 text-lg shadow-lg shadow-primary/20"
+                >
+                    {isGenerating ? 'Generating...' : 'Generate Skill'}
                 </Button>
-                <div className="space-x-4">
-                    <Button variant="outline">
-                        Save Draft
-                    </Button>
-                    <Button
-                        onClick={handleGenerate}
-                        disabled={!skill.name || !skill.instructions || isGenerating}
-                        className="bg-primary-500 hover:bg-primary-600"
-                    >
-                        {isGenerating ? 'Generating...' : 'Generate Skill'}
-                    </Button>
-                </div>
+                <Button variant="ghost" onClick={reset} className="w-full mt-2 text-gray-500 hover:text-gray-700">
+                    Reset Form
+                </Button>
             </div>
         </div>
+    );
+
+    return (
+        <Shell inspector={InspectorPanel}>
+            <div className="max-w-3xl">
+                <div className="mb-6">
+                    <label className="block text-sm font-medium mb-2 text-gray-500 uppercase tracking-wide">Skill Name</label>
+                    <Input
+                        value={skill.name}
+                        onChange={(e) => updateField('name', e.target.value)}
+                        placeholder="Name your skill..."
+                        className="text-3xl font-bold border-none px-0 shadow-none focus-visible:ring-0 placeholder:text-gray-300 h-auto"
+                    />
+                </div>
+
+                <div className="mb-8">
+                    <label className="block text-sm font-medium mb-2 text-gray-500 uppercase tracking-wide">Description</label>
+                    <Textarea
+                        value={skill.description}
+                        onChange={(e) => updateField('description', e.target.value)}
+                        placeholder="Describe what this skill does..."
+                        className="resize-none border-gray-200 focus-visible:ring-primary/20 min-h-[100px] text-lg"
+                    />
+                </div>
+
+                <div>
+                    <div className="flex items-center justify-between mb-4">
+                        <label className="block text-sm font-medium text-gray-500 uppercase tracking-wide">Instructions</label>
+                        <div className="text-xs text-gray-400">Markdown Supported</div>
+                    </div>
+                    <InstructionsEditor />
+                </div>
+            </div>
+        </Shell>
     );
 }
