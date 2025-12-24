@@ -118,6 +118,9 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                         <Link href="/templates" className="block px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
                             Templates
                         </Link>
+                        <Link href="/packages" className="block px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
+                            Packages
+                        </Link>
                     </nav>
                 </aside>
 
