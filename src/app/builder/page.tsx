@@ -12,12 +12,13 @@ import { Card } from '@/components/ui/card';
 import { TriggerEditor } from '@/components/builder/TriggerEditor';
 import { InstructionsEditor } from '@/components/builder/InstructionsEditor';
 import { SkillPreview } from '@/components/builder/SkillPreview';
+import { ResourceManager } from '@/components/builder/ResourceManager';
 import { Shell } from '@/components/layout/Shell';
 import { validateSkill, getValidationStatus } from '@/lib/utils/validation';
 
 export default function BuilderPage() {
     const searchParams = useSearchParams();
-    const { skill, updateField, setSkill, reset } = useSkillStore();
+    const { skill, updateField, setSkill, reset, addResource, removeResource } = useSkillStore();
     const [isGenerating, setIsGenerating] = useState(false);
     const [activeTab, setActiveTab] = useState<'preview' | 'config'>('preview');
 
@@ -114,6 +115,14 @@ export default function BuilderPage() {
                         <div>
                             <label className="block text-xs font-medium mb-2 text-muted-foreground uppercase tracking-wider">Triggers</label>
                             <TriggerEditor />
+                        </div>
+
+                        <div className="border-t border-border pt-4">
+                            <ResourceManager
+                                resources={skill.resources || []}
+                                onAdd={addResource}
+                                onRemove={removeResource}
+                            />
                         </div>
                     </div>
                 )}
