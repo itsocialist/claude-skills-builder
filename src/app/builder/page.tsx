@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useSkillStore } from '@/lib/store/skillStore';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
@@ -13,6 +13,9 @@ import { TriggerEditor } from '@/components/builder/TriggerEditor';
 import { InstructionsEditor } from '@/components/builder/InstructionsEditor';
 import { SkillPreview } from '@/components/builder/SkillPreview';
 import { ResourceManager } from '@/components/builder/ResourceManager';
+import { ApiKeySettings } from '@/components/builder/ApiKeySettings';
+import { TriggerTester } from '@/components/builder/TriggerTester';
+import { OutputPreview } from '@/components/builder/OutputPreview';
 import { Shell } from '@/components/layout/Shell';
 import { validateSkill, getValidationStatus } from '@/lib/utils/validation';
 
@@ -20,7 +23,12 @@ export default function BuilderPage() {
     const searchParams = useSearchParams();
     const { skill, updateField, setSkill, reset, addResource, removeResource } = useSkillStore();
     const [isGenerating, setIsGenerating] = useState(false);
-    const [activeTab, setActiveTab] = useState<'preview' | 'config'>('preview');
+    const [activeTab, setActiveTab] = useState<'preview' | 'config' | 'test'>('preview');
+    const [apiKey, setApiKey] = useState<string | null>(null);
+
+    const handleApiKeyChange = useCallback((key: string | null) => {
+        setApiKey(key);
+    }, []);
 
     // Run validation whenever skill changes
     const validationResult = useMemo(() => validateSkill(skill), [skill]);
@@ -94,13 +102,23 @@ export default function BuilderPage() {
                 >
                     Config
                 </button>
+                <button
+                    onClick={() => setActiveTab('test')}
+                    className={`px-4 py-2 text-sm font-medium ${activeTab === 'test'
+                        ? 'text-primary border-b-2 border-primary'
+                        : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                >
+                    Test
+                </button>
             </div>
 
             {/* Tab Content - Flex grow to fill available space */}
             <div className="flex-1 overflow-auto">
-                {activeTab === 'preview' ? (
+                {activeTab === 'preview' && (
                     <SkillPreview skill={skill} />
-                ) : (
+                )}
+                {activeTab === 'config' && (
                     <div className="p-4 space-y-6">
                         <div>
                             <label className="block text-xs font-medium mb-2 text-muted-foreground uppercase tracking-wider">Category</label>
@@ -123,6 +141,19 @@ export default function BuilderPage() {
                                 onAdd={addResource}
                                 onRemove={removeResource}
                             />
+                        </div>
+                    </div>
+                )}
+                {activeTab === 'test' && (
+                    <div className="p-4 space-y-6">
+                        <ApiKeySettings onKeyChange={handleApiKeyChange} />
+
+                        <div className="border-t border-border pt-4">
+                            <TriggerTester skill={skill} apiKey={apiKey} />
+                        </div>
+
+                        <div className="border-t border-border pt-4">
+                            <OutputPreview skill={skill} apiKey={apiKey} />
                         </div>
                     </div>
                 )}
