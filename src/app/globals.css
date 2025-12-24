@@ -44,7 +44,7 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
-  
+
   /* Brand Constants */
   --color-primary-500: #FF6B35;
   --color-primary-600: #E55A2B;
@@ -60,24 +60,33 @@
 }
 
 :root {
-  --radius: 0.5rem; /* 8px default */
-  --background: #F9FAFB; /* gray-50 */
-  --foreground: #111827; /* gray-900 */
+  --radius: 0.5rem;
+  /* 8px default */
+  --background: #F9FAFB;
+  /* gray-50 */
+  --foreground: #111827;
+  /* gray-900 */
   --card: #FFFFFF;
   --card-foreground: #111827;
   --popover: #FFFFFF;
   --popover-foreground: #111827;
-  --primary: #FF6B35;
-  --primary-foreground: #FFFFFF;
-  --secondary: #5B4CFF;
-  --secondary-foreground: #FFFFFF;
-  --muted: #F3F4F6; /* gray-100 */
-  --muted-foreground: #4B5563; /* gray-600 */
+  /* Brand Colors - Ship/Ape Orange */
+  --primary: 22 100% 60%;
+  /* #FF6B35 */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 245 100% 65%;
+  /* #5B4CFF */
+  --secondary-foreground: 0 0% 100%;
+
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
   --accent: #F3F4F6;
   --accent-foreground: #111827;
   --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
-  --border: #E5E7EB; /* gray-200 */
+  --border: #E5E7EB;
+  /* gray-200 */
   --input: #E5E7EB;
   --ring: #FF6B35;
   --chart-1: oklch(0.646 0.222 41.116);
@@ -133,6 +142,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
