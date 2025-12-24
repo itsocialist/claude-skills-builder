@@ -117,10 +117,14 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                 </div>
             </main>
 
-            {/* Inspector Panel - 320px, fixed height viewport */}
+            {/* Inspector Panel - 400px, fixed height viewport */}
             {inspector && (
-                <aside className="w-full md:w-80 bg-card border-l border-border flex-shrink-0 h-[calc(100vh-96px)] sticky top-14">
-                    <div className="h-full">
+                <aside className="w-full md:w-[400px] bg-card border-l border-border flex-shrink-0 h-[calc(100vh-96px)] sticky top-14">
+                    {/* Inspector Header - matches main header */}
+                    <div className="h-14 border-b border-border flex items-center px-6">
+                        <span className="text-lg font-medium text-foreground">Inspector</span>
+                    </div>
+                    <div className="h-[calc(100%-56px)]">
                         {inspector}
                     </div>
                 </aside>
