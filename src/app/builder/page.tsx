@@ -72,14 +72,14 @@ export default function BuilderPage() {
     };
 
     const InspectorPanel = (
-        <div className="space-y-4 h-full flex flex-col">
+        <div className="h-full flex flex-col">
             {/* Tab Switcher */}
-            <div className="flex border-b border-gray-200">
+            <div className="flex border-b border-border">
                 <button
                     onClick={() => setActiveTab('preview')}
                     className={`px-4 py-2 text-sm font-medium ${activeTab === 'preview'
                         ? 'text-primary border-b-2 border-primary'
-                        : 'text-gray-500 hover:text-gray-700'
+                        : 'text-muted-foreground hover:text-foreground'
                         }`}
                 >
                     Export
@@ -88,19 +88,19 @@ export default function BuilderPage() {
                     onClick={() => setActiveTab('config')}
                     className={`px-4 py-2 text-sm font-medium ${activeTab === 'config'
                         ? 'text-primary border-b-2 border-primary'
-                        : 'text-gray-500 hover:text-gray-700'
+                        : 'text-muted-foreground hover:text-foreground'
                         }`}
                 >
                     Config
                 </button>
             </div>
 
-            {/* Tab Content */}
-            <div className="flex-1 overflow-hidden">
+            {/* Tab Content - Flex grow to fill available space */}
+            <div className="flex-1 overflow-auto">
                 {activeTab === 'preview' ? (
                     <SkillPreview skill={skill} />
                 ) : (
-                    <div className="space-y-6">
+                    <div className="space-y-6 p-4">
                         <div>
                             <h3 className="text-sm font-semibold text-primary mb-3 uppercase tracking-wider">Configuration</h3>
                             <Card className="p-4 bg-card border-border shadow-none space-y-4">
@@ -126,8 +126,8 @@ export default function BuilderPage() {
                 )}
             </div>
 
-            {/* Generate Button - Always visible */}
-            <div className="pt-4 border-t border-border">
+            {/* Generate Button - Sticky at bottom */}
+            <div className="p-4 border-t border-border bg-card mt-auto">
                 <Button
                     onClick={handleGenerate}
                     disabled={!skill.name || !skill.instructions || isGenerating}
@@ -136,7 +136,7 @@ export default function BuilderPage() {
                 >
                     {isGenerating ? 'Generating...' : 'Generate Skill'}
                 </Button>
-                <Button variant="ghost" onClick={reset} className="w-full mt-2 text-muted-foreground hover:text-foreground">
+                <Button variant="ghost" onClick={reset} className="w-full mt-2 text-muted-foreground hover:text-foreground text-xs">
                     Reset Form
                 </Button>
             </div>

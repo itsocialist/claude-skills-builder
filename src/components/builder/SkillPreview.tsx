@@ -46,25 +46,26 @@ export function SkillPreview({ skill }: SkillPreviewProps) {
     }, [previewContent]);
 
     return (
-        <div className="bg-gray-900 rounded-lg overflow-hidden h-full">
-            <div className="p-4 border-b border-gray-700 flex items-center justify-between">
-                <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">
+        <div className="bg-background rounded-lg overflow-hidden h-full flex flex-col">
+            <div className="p-3 border-b border-border flex items-center justify-between">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Export Preview
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-muted-foreground">
                     {previewContent.length} chars
                 </span>
             </div>
-            <div className="p-4 font-mono text-sm overflow-auto max-h-[400px]">
+            <div className="p-3 font-mono text-xs overflow-auto flex-1">
                 {/* YAML Frontmatter */}
-                <pre className="text-gray-500 whitespace-pre-wrap">
+                <pre className="text-primary whitespace-pre-wrap">
                     {frontmatterSection}
                 </pre>
                 {/* Markdown Body */}
-                <pre className="text-gray-200 whitespace-pre-wrap mt-2">
+                <pre className="text-muted-foreground whitespace-pre-wrap mt-2">
                     {bodySection}
                 </pre>
             </div>
         </div>
     );
 }
+
