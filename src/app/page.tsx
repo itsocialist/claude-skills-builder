@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { PenTool, Rocket, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { getAllTemplates } from '@/lib/templates';
@@ -33,8 +34,8 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
             <Card className="p-6 border-none shadow-lg">
-              <div className="h-12 w-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4 text-2xl">
-                📝
+              <div className="h-12 w-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4 text-primary">
+                <PenTool className="h-6 w-6" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Simple Form Builder</h3>
               <p className="text-gray-600">
@@ -42,8 +43,8 @@ export default function HomePage() {
               </p>
             </Card>
             <Card className="p-6 border-none shadow-lg">
-              <div className="h-12 w-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4 text-2xl">
-                🚀
+              <div className="h-12 w-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4 text-primary">
+                <Rocket className="h-6 w-6" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Industry Templates</h3>
               <p className="text-gray-600">
@@ -51,8 +52,8 @@ export default function HomePage() {
               </p>
             </Card>
             <Card className="p-6 border-none shadow-lg">
-              <div className="h-12 w-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4 text-2xl">
-                ⚡
+              <div className="h-12 w-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4 text-primary">
+                <Download className="h-6 w-6" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Instant Download</h3>
               <p className="text-gray-600">

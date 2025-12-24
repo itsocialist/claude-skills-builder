@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useSkillStore } from '@/lib/store/skillStore';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
+import { getTemplateById } from '@/lib/templates';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,8 +14,27 @@ import { InstructionsEditor } from '@/components/builder/InstructionsEditor';
 import { Shell } from '@/components/layout/Shell';
 
 export default function BuilderPage() {
-    const { skill, updateField, reset } = useSkillStore();
+    const searchParams = useSearchParams();
+    const { skill, updateField, setSkill, reset } = useSkillStore();
     const [isGenerating, setIsGenerating] = useState(false);
+
+    // Load template from query parameter on mount
+    useEffect(() => {
+        const templateId = searchParams.get('template');
+        if (templateId) {
+            const template = getTemplateById(templateId);
+            if (template) {
+                setSkill({
+                    name: template.name,
+                    description: template.description,
+                    category: template.category,
+                    tags: template.tags,
+                    triggers: template.triggers,
+                    instructions: template.instructions,
+                });
+            }
+        }
+    }, [searchParams, setSkill]);
 
     const handleGenerate = async () => {
         setIsGenerating(true);
@@ -22,9 +43,19 @@ export default function BuilderPage() {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `${skill.name.toLowerCase().replace(/\s+/g, '-')}.zip`;
+            // Use skill name or fallback to 'skill' if empty
+            const filename = skill.name?.trim()
+                ? skill.name.toLowerCase().replace(/\s+/g, '-')
+                : 'skill';
+            a.download = `${filename}.zip`;
+            a.style.display = 'none';
+            document.body.appendChild(a);
             a.click();
-            URL.revokeObjectURL(url);
+            // Delay removal and URL revocation to ensure download starts
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
         } catch (error) {
             console.error('Generation failed:', error);
             alert('Failed to generate skill. Please try again.');

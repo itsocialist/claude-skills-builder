@@ -37,7 +37,7 @@ export function Shell({ children, inspector }: ShellProps) {
 
             {/* Main Content - Flexible */}
             <main className="flex-1 min-w-0 overflow-y-auto">
-                <div className="h-16 bg-primary flex items-center justify-between px-8">
+                <div className="h-16 bg-primary flex items-center justify-between px-8 sticky top-0 z-10">
                     <h1 className="text-lg font-medium text-primary-foreground">Untitled Skill</h1>
                     <div className="flex gap-2">
                         {/* Toolbar items can go here */}
