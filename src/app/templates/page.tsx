@@ -64,8 +64,8 @@ export default function TemplatesPage() {
                                 key={category}
                                 onClick={() => setSelectedCategory(category)}
                                 className={`px-3 py-1.5 text-sm rounded-full transition-colors ${selectedCategory === category
-                                        ? 'bg-primary text-primary-foreground'
-                                        : 'bg-muted text-muted-foreground hover:bg-accent hover:text-foreground'
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'bg-muted text-muted-foreground hover:bg-accent hover:text-foreground'
                                     }`}
                             >
                                 {category}
@@ -82,19 +82,19 @@ export default function TemplatesPage() {
                 {/* Templates Grid */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredTemplates.map((template) => (
-                        <Card key={template.id} className="flex flex-col p-6 hover:shadow-lg transition-shadow border-border">
-                            <div className="mb-4">
-                                <span className="inline-block px-2 py-1 text-xs font-semibold text-primary bg-primary/10 rounded-full mb-2">
+                        <Card key={template.id} className="flex flex-col p-5 hover:shadow-lg transition-shadow border-border">
+                            <div className="mb-2">
+                                <span className="inline-block px-2 py-1 text-xs font-semibold text-primary bg-primary/10 rounded-full mb-1">
                                     {template.category}
                                 </span>
                                 <h3 className="text-xl font-bold text-foreground">{template.name}</h3>
                             </div>
 
-                            <p className="text-muted-foreground mb-6 flex-grow text-sm">
+                            <p className="text-muted-foreground mb-4 flex-grow text-sm">
                                 {template.description}
                             </p>
 
-                            <div className="pt-4 border-t border-border mt-auto">
+                            <div className="pt-3 border-t border-border mt-auto">
                                 <Link href={`/templates/${template.id}`} className="block w-full">
                                     <Button variant="outline" className="w-full">
                                         View Details
