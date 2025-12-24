@@ -100,27 +100,20 @@ export default function BuilderPage() {
                 {activeTab === 'preview' ? (
                     <SkillPreview skill={skill} />
                 ) : (
-                    <div className="space-y-6 p-4">
+                    <div className="p-4 space-y-6">
                         <div>
-                            <h3 className="text-sm font-semibold text-primary mb-3 uppercase tracking-wider">Configuration</h3>
-                            <Card className="p-4 bg-card border-border shadow-none space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium mb-1 text-muted-foreground">Category</label>
-                                    <Input
-                                        value={skill.category}
-                                        onChange={(e) => updateField('category', e.target.value)}
-                                        placeholder="e.g. Finance"
-                                        className="bg-muted"
-                                    />
-                                </div>
-                            </Card>
+                            <label className="block text-xs font-medium mb-2 text-muted-foreground uppercase tracking-wider">Category</label>
+                            <Input
+                                value={skill.category}
+                                onChange={(e) => updateField('category', e.target.value)}
+                                placeholder="e.g. Finance"
+                                className="bg-background border-border"
+                            />
                         </div>
 
                         <div>
-                            <h3 className="text-sm font-semibold text-primary mb-3 uppercase tracking-wider">Triggers</h3>
-                            <Card className="p-4 bg-card border-border shadow-none">
-                                <TriggerEditor />
-                            </Card>
+                            <label className="block text-xs font-medium mb-2 text-muted-foreground uppercase tracking-wider">Triggers</label>
+                            <TriggerEditor />
                         </div>
                     </div>
                 )}

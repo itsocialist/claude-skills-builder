@@ -48,28 +48,18 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
     };
 
     return (
-        <div className="flex min-h-screen bg-background flex-col md:flex-row pb-10">
-            {/* Sidebar - 240px */}
-            <aside className="w-full md:w-64 bg-card border-r border-border flex-shrink-0">
-                <div className="h-14 flex items-center px-6 border-b border-border">
+        <div className="flex flex-col min-h-screen bg-background">
+            {/* Unified Header Row */}
+            <header className="h-14 bg-card border-b border-border flex items-stretch sticky top-0 z-20">
+                {/* Sidebar Header */}
+                <div className="w-64 flex items-center px-6 border-r border-border flex-shrink-0">
                     <Link href="/" className="font-bold text-xl tracking-tight text-primary">
                         ClaudeSkills
                     </Link>
                 </div>
-                <nav className="p-4 space-y-1">
-                    <Link href="/builder" className="block px-4 py-2 text-sm font-medium text-foreground bg-accent rounded-md">
-                        Skill Builder
-                    </Link>
-                    <Link href="/templates" className="block px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
-                        Templates
-                    </Link>
-                </nav>
-            </aside>
 
-            {/* Main Content - Flexible */}
-            <main className="flex-1 min-w-0 overflow-y-auto bg-background">
-                {/* Redesigned Header */}
-                <header className="h-14 bg-card border-b border-border flex items-center justify-between px-6 sticky top-0 z-10">
+                {/* Main Header */}
+                <div className="flex-1 flex items-center justify-between px-6">
                     {/* Title Section */}
                     <div className="flex items-center gap-2">
                         {isEditing ? (
@@ -110,25 +100,46 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                             <Download className="h-4 w-4" />
                         </button>
                     </div>
-                </header>
-
-                <div className="p-8">
-                    {children}
                 </div>
-            </main>
 
-            {/* Inspector Panel - 400px, fixed height viewport */}
-            {inspector && (
-                <aside className="w-full md:w-[400px] bg-card border-l border-border flex-shrink-0 h-[calc(100vh-96px)] sticky top-14">
-                    {/* Inspector Header - matches main header */}
-                    <div className="h-14 border-b border-border flex items-center px-6">
+                {/* Inspector Header */}
+                {inspector && (
+                    <div className="w-[400px] flex items-center px-6 border-l border-border flex-shrink-0">
                         <span className="text-lg font-medium text-foreground">Inspector</span>
                     </div>
-                    <div className="h-[calc(100%-56px)]">
-                        {inspector}
-                    </div>
+                )}
+            </header>
+
+            {/* Body Row */}
+            <div className="flex flex-1 pb-10">
+                {/* Sidebar Navigation */}
+                <aside className="w-64 bg-card border-r border-border flex-shrink-0">
+                    <nav className="p-4 space-y-1">
+                        <Link href="/builder" className="block px-4 py-2 text-sm font-medium text-foreground bg-accent rounded-md">
+                            Skill Builder
+                        </Link>
+                        <Link href="/templates" className="block px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
+                            Templates
+                        </Link>
+                    </nav>
                 </aside>
-            )}
+
+                {/* Main Content */}
+                <main className="flex-1 min-w-0 overflow-y-auto bg-background">
+                    <div className="p-8">
+                        {children}
+                    </div>
+                </main>
+
+                {/* Inspector Panel */}
+                {inspector && (
+                    <aside className="w-[400px] bg-card border-l border-border flex-shrink-0 h-[calc(100vh-96px)] overflow-hidden">
+                        <div className="h-full">
+                            {inspector}
+                        </div>
+                    </aside>
+                )}
+            </div>
 
             {/* Fixed Bottom Status Bar */}
             <footer className="fixed bottom-0 left-0 right-0 h-10 bg-card border-t border-border flex items-center px-6 z-20">
@@ -142,3 +153,4 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
         </div>
     );
 }
+
