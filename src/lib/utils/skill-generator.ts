@@ -7,9 +7,11 @@ export async function generateSkillZip(skill: Skill): Promise<Blob> {
     const frontmatter = yaml.dump({
         name: skill.name,
         description: skill.description,
-        triggers: skill.triggers,
-        category: skill.category,
-        tags: skill.tags || [],
+        metadata: {
+            triggers: skill.triggers,
+            category: skill.category,
+            tags: skill.tags || [],
+        },
     }, {
         indent: 2,
         lineWidth: 80,
