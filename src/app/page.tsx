@@ -71,14 +71,14 @@ export default function HomePage() {
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             {templates.map((template) => (
-              <Card key={template.id} className="p-6 hover:shadow-md transition-shadow border-border">
-                <h3 className="text-xl font-semibold mb-2 text-foreground">{template.name}</h3>
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{template.description}</p>
-                <div className="mb-6">
-                  <span className="text-xs bg-muted px-2 py-1 rounded-full text-muted-foreground font-medium">
+              <Card key={template.id} className="p-5 hover:shadow-md transition-shadow border-border">
+                <div className="mb-2">
+                  <span className="inline-block px-2 py-1 text-xs font-semibold text-primary bg-primary/10 rounded-full mb-1">
                     {template.category}
                   </span>
+                  <h3 className="text-xl font-bold text-foreground">{template.name}</h3>
                 </div>
+                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{template.description}</p>
                 <Link href={`/templates/${template.id}`}>
                   <Button variant="outline" className="w-full">
                     Use Template
