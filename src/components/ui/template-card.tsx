@@ -55,19 +55,19 @@ export function TemplateCard({ template, variant = 'default', className }: Templ
             </p>
 
             {isCompact ? (
-                <Link href={`/templates/${template.id}`}>
+                <Link href={`/app/templates/${template.id}`}>
                     <Button variant="outline" size="sm" className="w-full">
                         Use Template
                     </Button>
                 </Link>
             ) : (
                 <div className="pt-3 border-t border-border mt-auto">
-                    <Link href={`/templates/${template.id}`} className="block w-full">
+                    <Link href={`/app/templates/${template.id}`} className="block w-full">
                         <Button variant="outline" className="w-full">
                             View Details
                         </Button>
                     </Link>
-                    <Link href={`/builder?template=${template.id}`} className="block w-full mt-2">
+                    <Link href={`/app/builder?template=${template.id}`} className="block w-full mt-2">
                         <Button className="w-full">
                             Use Template
                         </Button>

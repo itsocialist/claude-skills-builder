@@ -6,17 +6,19 @@ describe('Home Page', () => {
     it('renders the hero heading', () => {
         render(<Home />);
 
+        // Target h1 specifically by matching the exact hero text pattern
         const heading = screen.getByRole('heading', {
-            name: /Build Claude Skills in Minutes, Not Hours/i
+            name: /Build Claude Skills.*Without the Trial and Error/i,
+            level: 1
         });
 
         expect(heading).toBeDefined();
     });
 
-    it('renders the template cards', () => {
+    it('renders the CTA buttons', () => {
         render(<Home />);
 
-        expect(screen.getByText('Property Listing Generator')).toBeDefined();
-        expect(screen.getByText('Meeting Notes & Action Items')).toBeDefined();
+        const ctaButtons = screen.getAllByText(/Start Building Free/i);
+        expect(ctaButtons.length).toBeGreaterThanOrEqual(1);
     });
 });

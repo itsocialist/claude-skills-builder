@@ -18,6 +18,9 @@ import { TriggerTester } from '@/components/builder/TriggerTester';
 import { OutputPreview } from '@/components/builder/OutputPreview';
 import { Shell } from '@/components/layout/Shell';
 import { validateSkill, getValidationStatus } from '@/lib/utils/validation';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { saveSkill } from '@/lib/api/skillsApi';
+import { Save, Loader2 } from 'lucide-react';
 
 export default function BuilderPage() {
     return (
@@ -29,14 +32,32 @@ export default function BuilderPage() {
 
 function BuilderContent() {
     const searchParams = useSearchParams();
+    const { user, isConfigured } = useAuth();
     const { skill, updateField, setSkill, reset, addResource, removeResource } = useSkillStore();
     const [isGenerating, setIsGenerating] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
     const [activeTab, setActiveTab] = useState<'preview' | 'config' | 'test'>('preview');
     const [apiKey, setApiKey] = useState<string | null>(null);
 
     const handleApiKeyChange = useCallback((key: string | null) => {
         setApiKey(key);
     }, []);
+
+    const handleSaveToLibrary = async () => {
+        if (!user) return;
+        setIsSaving(true);
+        setSaveSuccess(false);
+        try {
+            const result = await saveSkill(user.id, skill);
+            if (result) {
+                setSaveSuccess(true);
+                setTimeout(() => setSaveSuccess(false), 3000);
+            }
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     // Run validation whenever skill changes
     const validationResult = useMemo(() => validateSkill(skill), [skill]);
@@ -168,7 +189,23 @@ function BuilderContent() {
             </div>
 
             {/* Generate Button - Sticky at bottom */}
-            <div className="p-4 border-t border-border bg-card mt-auto">
+            <div className="p-4 border-t border-border bg-card mt-auto space-y-2">
+                {isConfigured && user && (
+                    <Button
+                        onClick={handleSaveToLibrary}
+                        disabled={!skill.name || !skill.instructions || isSaving}
+                        variant="default"
+                        className="w-full font-medium bg-primary hover:bg-primary/90"
+                    >
+                        {isSaving ? (
+                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
+                        ) : saveSuccess ? (
+                            <><Save className="w-4 h-4 mr-2" /> Saved to Library!</>
+                        ) : (
+                            <><Save className="w-4 h-4 mr-2" /> Save to Library</>
+                        )}
+                    </Button>
+                )}
                 <Button
                     onClick={handleGenerate}
                     disabled={!skill.name || !skill.instructions || isGenerating}
@@ -177,7 +214,7 @@ function BuilderContent() {
                 >
                     {isGenerating ? 'Generating...' : 'Generate Skill'}
                 </Button>
-                <Button variant="ghost" onClick={reset} className="w-full mt-2 text-muted-foreground hover:text-foreground text-xs">
+                <Button variant="ghost" onClick={reset} className="w-full text-muted-foreground hover:text-foreground text-xs">
                     Reset Form
                 </Button>
             </div>

@@ -1,6 +1,11 @@
+'use client';
+
 import { ReactNode, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Pencil, Download, Check } from 'lucide-react';
+import { Pencil, Download, Library, LogIn } from 'lucide-react';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { UserMenu } from '@/components/auth/UserMenu';
+import { LoginModal } from '@/components/auth/LoginModal';
 
 interface ShellProps {
     children: ReactNode;
@@ -14,9 +19,11 @@ interface ShellProps {
 }
 
 export function Shell({ children, inspector, title, onTitleChange, validation }: ShellProps) {
+    const { user, isConfigured } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [editedTitle, setEditedTitle] = useState(title || 'New Skill');
     const [saveStatus, setSaveStatus] = useState<'saved' | 'editing'>('saved');
+    const [showLoginModal, setShowLoginModal] = useState(false);
 
     useEffect(() => {
         setEditedTitle(title || 'New Skill');
@@ -53,7 +60,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
             <header className="h-14 bg-card border-b border-border flex items-stretch sticky top-0 z-20">
                 {/* Sidebar Header */}
                 <div className="w-64 flex items-center px-6 border-r border-border flex-shrink-0">
-                    <Link href="/" className="font-bold text-xl tracking-tight text-primary">
+                    <Link href="/app" className="font-bold text-xl tracking-tight text-primary">
                         ClaudeSkills
                     </Link>
                 </div>
@@ -88,15 +95,28 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                         </button>
                     </div>
 
-                    {/* Actions - only show when building */}
-                    {inspector && (
-                        <div className="flex items-center gap-3">
-                            <div className="w-px h-5 bg-border"></div>
-                            <button className="p-2 text-muted-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
-                                <Download className="h-4 w-4" />
+                    {/* User Actions */}
+                    <div className="flex items-center gap-3">
+                        {inspector && (
+                            <>
+                                <button className="p-2 text-muted-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+                                    <Download className="h-4 w-4" />
+                                </button>
+                                <div className="w-px h-5 bg-border"></div>
+                            </>
+                        )}
+                        {isConfigured && !user ? (
+                            <button
+                                onClick={() => setShowLoginModal(true)}
+                                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
+                            >
+                                <LogIn className="w-4 h-4" />
+                                Sign In
                             </button>
-                        </div>
-                    )}
+                        ) : (
+                            <UserMenu />
+                        )}
+                    </div>
                 </div>
 
                 {/* Inspector Header */}
@@ -112,15 +132,21 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                 {/* Sidebar Navigation */}
                 <aside className="w-64 bg-card border-r border-border flex-shrink-0">
                     <nav className="p-4 space-y-1">
-                        <Link href="/builder" className="block px-4 py-2 text-sm font-medium text-foreground bg-accent rounded-md">
+                        <Link href="/app/builder" className="block px-4 py-2 text-sm font-medium text-foreground bg-accent rounded-md">
                             Skill Builder
                         </Link>
-                        <Link href="/templates" className="block px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
+                        <Link href="/app/templates" className="block px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
                             Templates
                         </Link>
-                        <Link href="/packages" className="block px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
+                        <Link href="/app/packages" className="block px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
                             Packages
                         </Link>
+                        {user && (
+                            <Link href="/library" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
+                                <Library className="w-4 h-4" />
+                                My Library
+                            </Link>
+                        )}
                     </nav>
                 </aside>
 
@@ -166,6 +192,9 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                     )}
                 </div>
             </footer>
+
+            {/* Login Modal */}
+            <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
         </div>
     );
 }
