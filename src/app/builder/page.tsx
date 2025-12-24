@@ -131,7 +131,8 @@ export default function BuilderPage() {
                 <Button
                     onClick={handleGenerate}
                     disabled={!skill.name || !skill.instructions || isGenerating}
-                    className="w-full font-semibold py-6 text-lg shadow-lg shadow-primary/20"
+                    variant="outline"
+                    className="w-full font-medium text-foreground hover:bg-accent hover:text-foreground border-border"
                 >
                     {isGenerating ? 'Generating...' : 'Generate Skill'}
                 </Button>

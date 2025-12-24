@@ -116,13 +116,9 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                             {saveStatus === 'saved' && <Check className="h-3.5 w-3.5" />}
                             {saveStatus === 'saved' ? 'Saved' : 'Editing...'}
                         </span>
-                        <button
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium 
-                                       bg-primary text-primary-foreground rounded-md 
-                                       hover:bg-primary/90 transition-colors"
-                        >
+                        <div className="w-px h-5 bg-primary"></div>
+                        <button className="p-2 text-muted-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
                             <Download className="h-4 w-4" />
-                            Export
                         </button>
                     </div>
                 </header>
