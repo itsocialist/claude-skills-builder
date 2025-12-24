@@ -11,14 +11,14 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary/90 to-primary/60 text-white py-14">
-        <div className="container mx-auto px-4 text-center">
+        <div className="container mx-auto px-4">
           <h1 className="text-4xl font-bold mb-4">
             Claude Skills: Find, Build and Bundle
           </h1>
-          <p className="text-lg mb-6 max-w-2xl mx-auto opacity-90">
+          <p className="text-lg mb-6 max-w-2xl opacity-90">
             Unlock the power of Claude Skills, without the trial and error. So you can get to flexing YOUR powers.
           </p>
-          <div className="flex gap-4 justify-center">
+          <div className="flex gap-4">
             <Link href="/builder">
               <Button size="lg" variant="secondary" className="font-semibold px-8">
                 Start Building Free
