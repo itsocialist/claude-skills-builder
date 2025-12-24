@@ -20,7 +20,8 @@ import { Shell } from '@/components/layout/Shell';
 import { validateSkill, getValidationStatus } from '@/lib/utils/validation';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { saveSkill } from '@/lib/api/skillsApi';
-import { Save, Loader2 } from 'lucide-react';
+import { AISkillGenerator } from '@/components/builder/AISkillGenerator';
+import { Save, Loader2, Sparkles } from 'lucide-react';
 
 export default function BuilderPage() {
     return (
@@ -37,6 +38,7 @@ function BuilderContent() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
+    const [showAIGenerator, setShowAIGenerator] = useState(false);
     const [activeTab, setActiveTab] = useState<'preview' | 'config' | 'test'>('preview');
     const [apiKey, setApiKey] = useState<string | null>(null);
 
@@ -57,6 +59,23 @@ function BuilderContent() {
         } finally {
             setIsSaving(false);
         }
+    };
+
+    const handleAISkillAccept = (generatedSkill: {
+        name: string;
+        description: string;
+        category: string;
+        triggers: string[];
+        instructions: string;
+    }) => {
+        setSkill({
+            name: generatedSkill.name,
+            description: generatedSkill.description,
+            category: generatedSkill.category,
+            tags: [],
+            triggers: generatedSkill.triggers,
+            instructions: generatedSkill.instructions,
+        });
     };
 
     // Run validation whenever skill changes
@@ -236,6 +255,18 @@ function BuilderContent() {
             }}
         >
             <div className="max-w-3xl">
+                {/* Create with AI Button */}
+                <div className="mb-6">
+                    <Button
+                        variant="outline"
+                        onClick={() => setShowAIGenerator(true)}
+                        className="border-primary/50 text-primary hover:bg-primary/10"
+                    >
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Create with AI
+                    </Button>
+                </div>
+
                 <div className="mb-6">
                     <label className="block text-sm font-medium mb-2 text-muted-foreground uppercase tracking-wide">Skill Name</label>
                     <Input
@@ -264,6 +295,13 @@ function BuilderContent() {
                     <InstructionsEditor />
                 </div>
             </div>
+
+            {/* AI Skill Generator Modal */}
+            <AISkillGenerator
+                isOpen={showAIGenerator}
+                onClose={() => setShowAIGenerator(false)}
+                onAccept={handleAISkillAccept}
+            />
         </Shell>
     );
 }
