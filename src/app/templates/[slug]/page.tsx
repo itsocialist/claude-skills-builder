@@ -17,7 +17,7 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
     if (!template) {
         return (
             <div className="container mx-auto py-20 text-center">
-                <h1 className="text-2xl font-bold mb-4">Template not found</h1>
+                <h1 className="text-2xl font-bold mb-4 text-foreground">Template not found</h1>
                 <Button onClick={() => router.push('/')}>Return Home</Button>
             </div>
         );
@@ -36,9 +36,9 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
     };
 
     return (
-        <div className="container max-w-4xl mx-auto py-8 px-4">
+        <div className="container max-w-4xl mx-auto py-8 px-4 bg-background min-h-screen">
             <div className="mb-8">
-                <Button variant="ghost" onClick={() => router.push('/')} className="pl-0 hover:pl-2 transition-all">
+                <Button variant="ghost" onClick={() => router.push('/templates')} className="pl-0 hover:pl-2 transition-all">
                     ← Back to Templates
                 </Button>
             </div>
@@ -46,35 +46,35 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
             <Card className="p-8 shadow-lg">
                 <div className="flex justify-between items-start mb-6">
                     <div>
-                        <h1 className="text-3xl font-bold mb-2">{template.name}</h1>
-                        <div className="flex gap-2 mb-4">
-                            <span className="bg-primary-100 text-primary-800 px-3 py-1 rounded-full text-sm font-medium">
+                        <h1 className="text-3xl font-bold mb-2 text-foreground">{template.name}</h1>
+                        <div className="flex gap-2 mb-4 flex-wrap">
+                            <span className="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm font-medium">
                                 {template.category}
                             </span>
                             {template.tags.map(tag => (
-                                <span key={tag} className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm">
+                                <span key={tag} className="bg-muted text-muted-foreground px-3 py-1 rounded-full text-sm">
                                     {tag}
                                 </span>
                             ))}
                         </div>
                     </div>
-                    <Button onClick={handleUseTemplate} size="lg" className="bg-primary-500 hover:bg-primary-600">
+                    <Button onClick={handleUseTemplate} size="lg">
                         Use This Template
                     </Button>
                 </div>
 
-                <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
                     {template.description}
                 </p>
 
                 <div className="space-y-8">
                     <div>
-                        <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                            <span className="w-8 h-8 rounded-full bg-secondary-100 text-secondary-600 flex items-center justify-center text-sm">⚡</span>
+                        <h3 className="font-semibold text-lg mb-4 flex items-center gap-2 text-foreground">
+                            <span className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm">⚡</span>
                             Activation Triggers
                         </h3>
-                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                            <ul className="list-disc list-inside space-y-2 text-gray-700">
+                        <div className="bg-card p-4 rounded-lg border border-border">
+                            <ul className="list-disc list-inside space-y-2 text-foreground">
                                 {template.triggers.map((trigger, i) => (
                                     <li key={i}>{trigger}</li>
                                 ))}
@@ -83,11 +83,11 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
                     </div>
 
                     <div>
-                        <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                            <span className="w-8 h-8 rounded-full bg-secondary-100 text-secondary-600 flex items-center justify-center text-sm">📝</span>
+                        <h3 className="font-semibold text-lg mb-4 flex items-center gap-2 text-foreground">
+                            <span className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm">📝</span>
                             Preview Instructions
                         </h3>
-                        <div className="bg-gray-900 text-gray-100 p-6 rounded-lg font-mono text-sm overflow-x-auto max-h-[400px]">
+                        <div className="bg-slate-900 text-slate-100 p-6 rounded-lg font-mono text-sm overflow-x-auto max-h-[400px]">
                             <pre className="whitespace-pre-wrap">{template.instructions}</pre>
                         </div>
                     </div>
@@ -95,11 +95,12 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
             </Card>
 
             <div className="mt-8 text-center">
-                <p className="text-gray-500 mb-4">Ready to customize this skill?</p>
-                <Button onClick={handleUseTemplate} size="lg" className="bg-primary-500 hover:bg-primary-600 w-full md:w-auto px-8">
+                <p className="text-muted-foreground mb-4">Ready to customize this skill?</p>
+                <Button onClick={handleUseTemplate} size="lg" className="w-full md:w-auto px-8">
                     Customize in Builder
                 </Button>
             </div>
         </div>
     );
 }
+

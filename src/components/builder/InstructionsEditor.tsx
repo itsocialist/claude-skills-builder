@@ -7,13 +7,13 @@ export function InstructionsEditor() {
     const { skill, updateField } = useSkillStore();
 
     return (
-        <div className="border rounded-lg overflow-hidden h-[500px]">
+        <div className="border border-border rounded-lg overflow-hidden h-[500px]">
             <Editor
                 height="100%"
                 defaultLanguage="markdown"
                 value={skill.instructions}
                 onChange={(value) => updateField('instructions', value || '')}
-                theme="vs-light"
+                theme="vs-dark"
                 options={{
                     minimap: { enabled: false },
                     lineNumbers: 'on',
@@ -25,3 +25,4 @@ export function InstructionsEditor() {
         </div>
     );
 }
+
