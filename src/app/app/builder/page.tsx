@@ -19,7 +19,7 @@ import { OutputPreview } from '@/components/builder/OutputPreview';
 import { Shell } from '@/components/layout/Shell';
 import { validateSkill, getValidationStatus } from '@/lib/utils/validation';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { saveSkill } from '@/lib/api/skillsApi';
+import { saveSkill, getSkillById, updateSkill } from '@/lib/api/skillsApi';
 import { AISkillGenerator } from '@/components/builder/AISkillGenerator';
 import { Save, Loader2, Sparkles } from 'lucide-react';
 
@@ -41,6 +41,8 @@ function BuilderContent() {
     const [showAIGenerator, setShowAIGenerator] = useState(false);
     const [activeTab, setActiveTab] = useState<'preview' | 'config' | 'test'>('preview');
     const [apiKey, setApiKey] = useState<string | null>(null);
+    const [editId, setEditId] = useState<string | null>(null);
+    const [isLoadingSkill, setIsLoadingSkill] = useState(false);
 
     const handleApiKeyChange = useCallback((key: string | null) => {
         setApiKey(key);
@@ -51,7 +53,18 @@ function BuilderContent() {
         setIsSaving(true);
         setSaveSuccess(false);
         try {
-            const result = await saveSkill(user.id, skill);
+            let result;
+            if (editId) {
+                // Update existing skill
+                result = await updateSkill(editId, skill);
+            } else {
+                // Create new skill
+                result = await saveSkill(user.id, skill);
+                if (result) {
+                    // Set editId so subsequent saves are updates
+                    setEditId(result.id);
+                }
+            }
             if (result) {
                 setSaveSuccess(true);
                 setTimeout(() => setSaveSuccess(false), 3000);
@@ -99,6 +112,29 @@ function BuilderContent() {
             }
         }
     }, [searchParams, setSkill]);
+
+    // Load skill for editing from query parameter
+    useEffect(() => {
+        const editSkillId = searchParams.get('edit');
+        if (editSkillId && editSkillId !== editId) {
+            setIsLoadingSkill(true);
+            getSkillById(editSkillId).then(savedSkill => {
+                if (savedSkill) {
+                    setEditId(savedSkill.id);
+                    setSkill({
+                        name: savedSkill.name,
+                        description: savedSkill.description,
+                        category: savedSkill.category,
+                        tags: savedSkill.tags || [],
+                        triggers: savedSkill.triggers,
+                        instructions: savedSkill.instructions,
+                        resources: savedSkill.resources || [],
+                    });
+                }
+                setIsLoadingSkill(false);
+            });
+        }
+    }, [searchParams, editId, setSkill]);
 
     const handleGenerate = async () => {
         setIsGenerating(true);

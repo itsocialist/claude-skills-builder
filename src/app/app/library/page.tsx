@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { SkillCard } from '@/components/library/SkillCard';
+import { SkillUploader } from '@/components/library/SkillUploader';
 import { Shell } from '@/components/layout/Shell';
 import { fetchUserSkills, deleteSkill, duplicateSkill, type SavedSkill } from '@/lib/api/skillsApi';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
@@ -35,7 +36,7 @@ export default function LibraryPage() {
     };
 
     const handleEdit = (skill: SavedSkill) => {
-        router.push(`/builder?id=${skill.id}`);
+        router.push(`/app/builder?edit=${skill.id}`);
     };
 
     const handleDelete = async (skillId: string) => {
@@ -110,7 +111,7 @@ export default function LibraryPage() {
                         Create an account or sign in to save and manage your skills.
                     </p>
                     <button
-                        onClick={() => router.push('/')}
+                        onClick={() => router.push('/app')}
                         className="bg-[#C15F3C] hover:bg-[#a84e31] text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
                     >
                         Go to Home
@@ -132,13 +133,16 @@ export default function LibraryPage() {
                         </p>
                     </div>
                     <button
-                        onClick={() => router.push('/builder')}
+                        onClick={() => router.push('/app/builder')}
                         className="flex items-center gap-2 bg-[#C15F3C] hover:bg-[#a84e31] text-white px-4 py-2.5 rounded-lg font-medium transition-colors"
                     >
                         <Plus className="w-4 h-4" />
                         New Skill
                     </button>
                 </div>
+
+                {/* Upload Zone */}
+                <SkillUploader />
 
                 {/* Filters */}
                 <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -185,7 +189,7 @@ export default function LibraryPage() {
                                     Create your first skill to get started!
                                 </p>
                                 <button
-                                    onClick={() => router.push('/builder')}
+                                    onClick={() => router.push('/app/builder')}
                                     className="bg-[#C15F3C] hover:bg-[#a84e31] text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
                                 >
                                     Create Skill

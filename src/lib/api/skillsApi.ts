@@ -29,6 +29,26 @@ export async function fetchUserSkills(userId: string): Promise<SavedSkill[]> {
 }
 
 /**
+ * Get a single skill by ID
+ */
+export async function getSkillById(skillId: string): Promise<SavedSkill | null> {
+    if (!supabase) return null;
+
+    const { data, error } = await supabase
+        .from('user_skills')
+        .select('*')
+        .eq('id', skillId)
+        .single();
+
+    if (error) {
+        console.error('Error fetching skill:', error);
+        return null;
+    }
+
+    return data;
+}
+
+/**
  * Save a new skill
  */
 export async function saveSkill(userId: string, skill: Skill): Promise<SavedSkill | null> {

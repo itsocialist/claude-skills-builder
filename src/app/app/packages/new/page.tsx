@@ -66,8 +66,8 @@ export default function NewPackagePage() {
                     {STEPS.map((s, i) => (
                         <div key={s} className="flex items-center">
                             <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${i < step ? 'bg-primary text-white' :
-                                    i === step ? 'bg-primary/20 text-primary border-2 border-primary' :
-                                        'bg-muted text-muted-foreground'
+                                i === step ? 'bg-primary/20 text-primary border-2 border-primary' :
+                                    'bg-muted text-muted-foreground'
                                 }`}>
                                 {i < step ? <Check className="h-4 w-4" /> : i + 1}
                             </div>
@@ -118,8 +118,8 @@ export default function NewPackagePage() {
                                         key={template.id}
                                         onClick={() => toggleSkill(template.id)}
                                         className={`p-3 rounded-lg border cursor-pointer transition ${isSkillSelected(template.id)
-                                                ? 'border-primary bg-primary/10'
-                                                : 'border-border hover:border-primary/50'
+                                            ? 'border-primary bg-primary/10'
+                                            : 'border-border hover:border-primary/50'
                                             }`}
                                     >
                                         <div className="flex items-center justify-between">
@@ -172,7 +172,7 @@ export default function NewPackagePage() {
                     <div className="flex justify-between mt-6 pt-6 border-t border-border">
                         <Button
                             variant="outline"
-                            onClick={() => step > 0 ? setStep(step - 1) : router.push('/packages')}
+                            onClick={() => step > 0 ? setStep(step - 1) : router.push('/app/packages')}
                         >
                             <ChevronLeft className="h-4 w-4 mr-1" />
                             {step === 0 ? 'Cancel' : 'Back'}

@@ -1,20 +1,20 @@
 import { test, expect } from '@playwright/test';
 
 test('complete user flow', async ({ page }) => {
-    // 1. Start at Home Page
+    // 1. Start at Marketing Page
     await page.goto('/');
     await expect(page).toHaveTitle(/ClaudeSkillsFacet/);
-    await expect(page.getByText('Build Claude Skills in Minutes')).toBeVisible();
+    await expect(page.getByText('Build Claude Skills')).toBeVisible();
 
     // 2. Navigate to Templates page
-    await page.goto('/templates');
+    await page.goto('/app/templates');
     await expect(page.getByText('Skill Templates')).toBeVisible();
 
     // 3. Click "Use Template" for Property Listing Generator
     await page.getByRole('link', { name: 'Use Template' }).first().click();
 
     // Wait for navigation to builder with template param
-    await expect(page).toHaveURL(/\/builder\?template=property-listing/);
+    await expect(page).toHaveURL(/\/app\/builder\?template=property-listing/);
 
     // 4. Verify Builder Pre-filled
     await expect(page.locator('input[placeholder="Name your skill..."]')).toHaveValue('Property Listing Generator');

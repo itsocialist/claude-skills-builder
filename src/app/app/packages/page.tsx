@@ -18,7 +18,7 @@ export default function PackagesPage() {
                         <h1 className="text-3xl font-bold text-foreground mb-2">Skill Packages</h1>
                         <p className="text-muted-foreground">Bundle multiple skills into a single uploadable package.</p>
                     </div>
-                    <Link href="/packages/new">
+                    <Link href="/app/packages/new">
                         <Button>
                             <Plus className="h-4 w-4 mr-2" />
                             Create Package
@@ -33,7 +33,7 @@ export default function PackagesPage() {
                         <p className="text-muted-foreground mb-4">
                             Create your first skill package to bundle multiple skills together.
                         </p>
-                        <Link href="/packages/new">
+                        <Link href="/app/packages/new">
                             <Button>Create Package</Button>
                         </Link>
                     </Card>

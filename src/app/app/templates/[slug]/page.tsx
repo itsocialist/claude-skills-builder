@@ -18,7 +18,7 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
         return (
             <div className="container mx-auto py-20 text-center">
                 <h1 className="text-2xl font-bold mb-4 text-foreground">Template not found</h1>
-                <Button onClick={() => router.push('/')}>Return Home</Button>
+                <Button onClick={() => router.push('/app')}>Return Home</Button>
             </div>
         );
     }
@@ -32,13 +32,13 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
             triggers: template.triggers,
             instructions: template.instructions,
         });
-        router.push('/builder');
+        router.push('/app/builder');
     };
 
     return (
         <div className="container max-w-4xl mx-auto py-8 px-4 bg-background min-h-screen">
             <div className="mb-8">
-                <Button variant="ghost" onClick={() => router.push('/templates')} className="pl-0 hover:pl-2 transition-all">
+                <Button variant="ghost" onClick={() => router.push('/app/templates')} className="pl-0 hover:pl-2 transition-all">
                     ← Back to Templates
                 </Button>
             </div>

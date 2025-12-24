@@ -6,6 +6,7 @@ import { Pencil, Download, Library, LogIn } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { UserMenu } from '@/components/auth/UserMenu';
 import { LoginModal } from '@/components/auth/LoginModal';
+import { RecentSkills } from '@/components/library/RecentSkills';
 
 interface ShellProps {
     children: ReactNode;
@@ -142,12 +143,15 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                             Packages
                         </Link>
                         {user && (
-                            <Link href="/library" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
+                            <Link href="/app/library" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
                                 <Library className="w-4 h-4" />
                                 My Library
                             </Link>
                         )}
                     </nav>
+
+                    {/* Recent Skills (authenticated users) */}
+                    <RecentSkills />
                 </aside>
 
                 {/* Main Content */}

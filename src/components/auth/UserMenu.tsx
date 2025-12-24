@@ -56,7 +56,7 @@ export function UserMenu() {
                     </div>
 
                     <Link
-                        href="/library"
+                        href="/app/library"
                         onClick={() => setIsOpen(false)}
                         className="flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-[#3a3a3a] transition-colors"
                     >
