@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from './AuthProvider';
-import { User, LogOut, Library, ChevronDown } from 'lucide-react';
+import { User, LogOut, Library, ChevronDown, Users } from 'lucide-react';
 import Link from 'next/link';
 
 export function UserMenu() {
@@ -62,6 +62,15 @@ export function UserMenu() {
                     >
                         <Library className="w-4 h-4" />
                         My Library
+                    </Link>
+
+                    <Link
+                        href="/app/settings/team"
+                        onClick={() => setIsOpen(false)}
+                        className="flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-[#3a3a3a] transition-colors"
+                    >
+                        <Users className="w-4 h-4" />
+                        Team Settings
                     </Link>
 
                     <button
