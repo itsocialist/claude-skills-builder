@@ -6,7 +6,11 @@ import { User, LogOut, Library, ChevronDown, Users, Shield, Building2 } from 'lu
 import Link from 'next/link';
 import { useUserTier } from '@/hooks/useUserTier';
 
-const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').toLowerCase().split(',');
+const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '')
+    .toLowerCase()
+    .split(',')
+    .map(e => e.trim())
+    .filter(Boolean);
 
 export function UserMenu() {
     const { user, signOut, loading, isConfigured } = useAuth();
@@ -14,8 +18,8 @@ export function UserMenu() {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    // Check if user is admin (case-insensitive)
-    const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase());
+    // Check if user is admin (case-insensitive + trim)
+    const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase().trim());
     const isEnterprise = tier === 'enterprise';
 
     // Close menu on outside click

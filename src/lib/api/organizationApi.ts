@@ -19,6 +19,24 @@ export interface OrgMember {
     created_at: string;
 }
 
+export interface OrgMemberWithProfile extends OrgMember {
+    profile?: {
+        full_name: string | null;
+        email: string | null;
+        avatar_url: string | null;
+    };
+}
+
+export interface OrgInvite {
+    id: string;
+    org_id: string;
+    email: string;
+    role: 'admin' | 'member';
+    invited_by: string;
+    created_at: string;
+    expires_at: string;
+}
+
 // Get user's organizations
 export async function getUserOrganizations(userId: string): Promise<Organization[]> {
     if (!supabase) return [];
@@ -34,6 +52,43 @@ export async function getUserOrganizations(userId: string): Promise<Organization
     }
 
     return data || [];
+}
+
+// Get organization by ID
+export async function getOrganizationById(orgId: string): Promise<Organization | null> {
+    if (!supabase) return null;
+
+    const { data, error } = await supabase
+        .from('organizations')
+        .select('*')
+        .eq('id', orgId)
+        .single();
+
+    if (error) {
+        console.error('Error fetching organization:', error);
+        return null;
+    }
+
+    return data;
+}
+
+// Update organization
+export async function updateOrganization(orgId: string, updates: Partial<Organization>): Promise<Organization | null> {
+    if (!supabase) return null;
+
+    const { data, error } = await supabase
+        .from('organizations')
+        .update(updates)
+        .eq('id', orgId)
+        .select()
+        .single();
+
+    if (error) {
+        console.error('Error updating organization:', error);
+        return null;
+    }
+
+    return data;
 }
 
 // Create organization
@@ -111,8 +166,61 @@ export async function updateOrgMemberRole(orgId: string, userId: string, newRole
 
 // Invite member to org
 export async function inviteOrgMember(orgId: string, email: string, role: 'admin' | 'member'): Promise<boolean> {
-    // TODO: Implement invite flow with email
-    console.log('Invite:', { orgId, email, role });
+    if (!supabase) return false;
+
+    // Get current user ID for invited_by
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+
+    const { error } = await supabase
+        .from('org_invites')
+        .insert({
+            org_id: orgId,
+            email,
+            role,
+            invited_by: user.id
+        });
+
+    if (error) {
+        console.error('Error inviting member:', error);
+        return false;
+    }
+
+    return true;
+}
+
+// Get organization invites
+export async function getOrgInvites(orgId: string): Promise<OrgInvite[]> {
+    if (!supabase) return [];
+
+    const { data, error } = await supabase
+        .from('org_invites')
+        .select('*')
+        .eq('org_id', orgId)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching invites:', error);
+        return [];
+    }
+
+    return data || [];
+}
+
+// Cancel invite
+export async function cancelOrgInvite(inviteId: string): Promise<boolean> {
+    if (!supabase) return false;
+
+    const { error } = await supabase
+        .from('org_invites')
+        .delete()
+        .eq('id', inviteId);
+
+    if (error) {
+        console.error('Error canceling invite:', error);
+        return false;
+    }
+
     return true;
 }
 
@@ -165,4 +273,40 @@ export async function getUserTier(userId: string): Promise<'individual' | 'enter
         .limit(1);
 
     return data && data.length > 0 ? 'enterprise' : 'individual';
+}
+
+// Get organization members with profile details
+export async function getOrgMembersWithDetails(orgId: string): Promise<OrgMemberWithProfile[]> {
+    if (!supabase) return [];
+
+    const members = await getOrgMembers(orgId);
+
+    if (members.length === 0) return [];
+
+    const userIds = members.map(m => m.user_id);
+
+    // Fetch profiles
+    const { data: profiles, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .in('id', userIds);
+
+    if (error) {
+        console.error('Error fetching member profiles:', error);
+        // Return members without profile details if profiles fetch fails
+        return members;
+    }
+
+    // Map profiles to members
+    return members.map(member => {
+        const profile = profiles?.find(p => p.id === member.user_id);
+        return {
+            ...member,
+            profile: profile ? {
+                full_name: profile.full_name,
+                email: profile.email,
+                avatar_url: profile.avatar_url,
+            } : undefined
+        };
+    });
 }

@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Trash2, FileText, FolderOpen } from 'lucide-react';
+import { Plus, Trash2, FileText, FolderOpen, Upload } from 'lucide-react';
 import type { SkillResource, ResourceFolder } from '@/types/skill.types';
 
 interface ResourceManagerProps {
@@ -55,22 +55,46 @@ export function ResourceManager({ resources, onAdd, onRemove }: ResourceManagerP
             {isAdding && (
                 <Card className="p-4 border-border bg-muted/30">
                     <div className="space-y-3">
-                        <div className="flex gap-2">
-                            <select
-                                value={folder}
-                                onChange={(e) => setFolder(e.target.value as ResourceFolder)}
-                                className="px-3 py-2 rounded-md border border-border bg-background text-sm"
-                            >
-                                {FOLDERS.map(f => (
-                                    <option key={f.value} value={f.value}>{f.icon} {f.label}</option>
-                                ))}
-                            </select>
-                            <Input
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                placeholder="filename.md"
-                                className="flex-1"
-                            />
+                        <div className="flex gap-2 items-center">
+                            <div className="flex-1 flex gap-2">
+                                <select
+                                    value={folder}
+                                    onChange={(e) => setFolder(e.target.value as ResourceFolder)}
+                                    className="px-3 py-2 rounded-md border border-border bg-background text-sm"
+                                >
+                                    {FOLDERS.map(f => (
+                                        <option key={f.value} value={f.value}>{f.icon} {f.label}</option>
+                                    ))}
+                                </select>
+                                <Input
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    placeholder="filename.md"
+                                    className="flex-1"
+                                />
+                            </div>
+                            <div>
+                                <input
+                                    type="file"
+                                    id="file-upload"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            setName(file.name);
+                                            const reader = new FileReader();
+                                            reader.onload = (e) => setContent(e.target?.result as string || '');
+                                            reader.readAsText(file);
+                                        }
+                                    }}
+                                />
+                                <Button variant="outline" size="sm" asChild>
+                                    <label htmlFor="file-upload" className="cursor-pointer">
+                                        <Upload className="h-4 w-4 mr-1" />
+                                        Upload
+                                    </label>
+                                </Button>
+                            </div>
                         </div>
                         <Textarea
                             value={content}

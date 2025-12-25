@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Shell } from '@/components/layout/Shell';
 import { Card } from '@/components/ui/card';
@@ -8,10 +8,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { usePackageStore } from '@/lib/store/packageStore';
-import { getAllTemplates } from '@/lib/templates';
+import { getTemplates } from '@/lib/api/templateApi';
 import { generatePackageZip } from '@/lib/utils/package-generator';
 import { Check, ChevronLeft, ChevronRight, Download, Package } from 'lucide-react';
 import type { SkillType } from '@/types/package.types';
+import { Template } from '@/types/skill.types';
 
 const STEPS = ['Details', 'Skills', 'Resources', 'Export'];
 
@@ -19,7 +20,22 @@ export default function NewPackagePage() {
     const router = useRouter();
     const [step, setStep] = useState(0);
     const { pkg, updateField, addSkill, removeSkill, reset } = usePackageStore();
-    const templates = getAllTemplates();
+    const [templates, setTemplates] = useState<Template[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function load() {
+            try {
+                const data = await getTemplates();
+                setTemplates(data);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setLoading(false);
+            }
+        }
+        load();
+    }, []);
 
     const handleDownload = async () => {
         try {
@@ -113,7 +129,8 @@ export default function NewPackagePage() {
                                 Choose skills to bundle ({pkg.skills.length} selected)
                             </p>
                             <div className="grid gap-3 max-h-80 overflow-y-auto">
-                                {templates.map((template) => (
+                                {loading && <div className="text-center p-4">Loading templates...</div>}
+                                {!loading && templates.map((template) => (
                                     <div
                                         key={template.id}
                                         onClick={() => toggleSkill(template.id)}

@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useSkillStore } from '@/lib/store/skillStore';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
-import { getTemplateById } from '@/lib/templates';
+import { getTemplateById } from '@/lib/api/templateApi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -99,17 +99,20 @@ function BuilderContent() {
     useEffect(() => {
         const templateId = searchParams.get('template');
         if (templateId) {
-            const template = getTemplateById(templateId);
-            if (template) {
-                setSkill({
-                    name: template.name,
-                    description: template.description,
-                    category: template.category,
-                    tags: template.tags,
-                    triggers: template.triggers,
-                    instructions: template.instructions,
-                });
-            }
+            setIsLoadingSkill(true);
+            getTemplateById(templateId).then(template => {
+                if (template) {
+                    setSkill({
+                        name: template.name,
+                        description: template.description,
+                        category: template.category,
+                        tags: template.tags,
+                        triggers: template.triggers,
+                        instructions: template.instructions,
+                    });
+                }
+                setIsLoadingSkill(false);
+            });
         }
     }, [searchParams, setSkill]);
 

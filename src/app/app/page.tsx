@@ -1,14 +1,31 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { PenTool, Rocket, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Shell } from '@/components/layout/Shell';
-import { getAllTemplates } from '@/lib/templates';
+import { getTemplates } from '@/lib/api/templateApi';
+import { Template } from '@/types/skill.types';
 
 export default function AppHomePage() {
-  const templates = getAllTemplates();
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await getTemplates();
+        setTemplates(data);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
 
   return (
     <Shell title="Dashboard">
@@ -77,22 +94,30 @@ export default function AppHomePage() {
               View all →
             </Link>
           </div>
-          <div className="grid md:grid-cols-3 gap-4">
-            {templates.slice(0, 3).map((template) => (
-              <Card key={template.id} className="p-4 hover:shadow-md transition-shadow border-border">
-                <span className="inline-block px-2 py-0.5 text-xs font-semibold text-primary bg-primary/10 rounded-full mb-2">
-                  {template.category}
-                </span>
-                <h3 className="font-bold text-foreground mb-1">{template.name}</h3>
-                <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{template.description}</p>
-                <Link href={`/app/templates/${template.id}`}>
-                  <Button variant="outline" size="sm" className="w-full">
-                    Use Template
-                  </Button>
-                </Link>
-              </Card>
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid md:grid-cols-3 gap-4">
+              {[1, 2, 3].map(i => (
+                <Card key={i} className="p-4 h-40 animate-pulse border-border bg-card/50" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-4">
+              {templates.slice(0, 3).map((template) => (
+                <Card key={template.id} className="p-4 hover:shadow-md transition-shadow border-border">
+                  <span className="inline-block px-2 py-0.5 text-xs font-semibold text-primary bg-primary/10 rounded-full mb-2">
+                    {template.category}
+                  </span>
+                  <h3 className="font-bold text-foreground mb-1">{template.name}</h3>
+                  <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{template.description}</p>
+                  <Link href={`/app/templates/${template.id}`}>
+                    <Button variant="outline" size="sm" className="w-full">
+                      Use Template
+                    </Button>
+                  </Link>
+                </Card>
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </Shell>

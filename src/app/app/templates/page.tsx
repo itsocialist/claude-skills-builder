@@ -1,19 +1,36 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TemplateCard } from '@/components/ui/template-card';
-import { getAllTemplates } from '@/lib/templates';
+import { getTemplates } from '@/lib/api/templateApi';
+import { Template } from '@/types/skill.types';
 import { Shell } from '@/components/layout/Shell';
 import { Search, X } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 
 const CATEGORIES = ['All', 'Real Estate', 'Business', 'Finance', 'Product', 'Marketing', 'Sales'];
 
 export default function TemplatesPage() {
-    const templates = getAllTemplates();
+    const [templates, setTemplates] = useState<Template[]>([]);
+    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
+
+    useEffect(() => {
+        async function load() {
+            try {
+                const data = await getTemplates();
+                setTemplates(data);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setLoading(false);
+            }
+        }
+        load();
+    }, []);
 
     const filteredTemplates = useMemo(() => {
         return templates.filter((template) => {
@@ -76,21 +93,29 @@ export default function TemplatesPage() {
 
                 {/* Results Count */}
                 <p className="text-sm text-muted-foreground mb-4">
-                    {filteredTemplates.length} template{filteredTemplates.length !== 1 ? 's' : ''} found
+                    {loading ? 'Loading templates...' : `${filteredTemplates.length} template${filteredTemplates.length !== 1 ? 's' : ''} found`}
                 </p>
 
                 {/* Templates Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredTemplates.map((template) => (
-                        <TemplateCard
-                            key={template.id}
-                            template={template}
-                            variant="default"
-                        />
-                    ))}
-                </div>
+                {loading ? (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[1, 2, 3, 4, 5, 6].map((i) => (
+                            <Card key={i} className="h-[200px] animate-pulse bg-card/50" />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredTemplates.map((template) => (
+                            <TemplateCard
+                                key={template.id}
+                                template={template}
+                                variant="default"
+                            />
+                        ))}
+                    </div>
+                )}
 
-                {filteredTemplates.length === 0 && (
+                {!loading && filteredTemplates.length === 0 && (
                     <div className="text-center py-12">
                         <p className="text-muted-foreground">No templates match your search.</p>
                         <Button

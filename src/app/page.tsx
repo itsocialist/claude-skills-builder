@@ -115,7 +115,7 @@ export default function MarketingPage() {
               <div className="text-xs text-muted-foreground">Business</div>
             </Link>
 
-            <Link href="/app/templates/email-response" className="block p-4 rounded-lg border border-border bg-background hover:border-primary transition-colors">
+            <Link href="/app/templates/email-drafter" className="block p-4 rounded-lg border border-border bg-background hover:border-primary transition-colors">
               <MessageSquare className="h-5 w-5 text-primary mb-2" />
               <div className="font-medium text-foreground text-sm">Email Templates</div>
               <div className="text-xs text-muted-foreground">Communication</div>

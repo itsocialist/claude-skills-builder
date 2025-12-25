@@ -4,20 +4,47 @@ import { useRouter } from 'next/navigation';
 import { use, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { getTemplateById } from '@/lib/templates';
+import { getTemplateById } from '@/lib/api/templateApi';
 import { useSkillStore } from '@/lib/store/skillStore';
+import { Template } from '@/types/skill.types';
 
 export default function TemplatePage({ params }: { params: Promise<{ slug: string }> }) {
     // In Next.js 15+ params is a Promise
     const resolvedParams = use(params);
     const router = useRouter();
     const { setSkill } = useSkillStore();
-    const template = getTemplateById(resolvedParams.slug);
+    const [template, setTemplate] = useState<Template | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function load() {
+            try {
+                const data = await getTemplateById(resolvedParams.slug);
+                setTemplate(data);
+            } catch (error) {
+                console.error('Error loading template:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        load();
+    }, [resolvedParams.slug]);
+
+    if (loading) {
+        return (
+            <div className="container max-w-4xl mx-auto py-20 px-4 min-h-screen bg-background">
+                <div className="animate-pulse space-y-8">
+                    <div className="h-10 bg-muted rounded w-32 mb-8"></div>
+                    <div className="h-96 bg-card rounded-lg border border-border"></div>
+                </div>
+            </div>
+        );
+    }
 
     if (!template) {
         return (
-            <div className="container mx-auto py-20 text-center">
-                <h1 className="text-2xl font-bold mb-4 text-foreground">Template not found</h1>
+            <div className="container mx-auto py-20 text-center text-foreground">
+                <h1 className="text-2xl font-bold mb-4">Template not found</h1>
                 <Button onClick={() => router.push('/app')}>Return Home</Button>
             </div>
         );

@@ -14,6 +14,7 @@ import {
     createOrganization,
     Organization,
 } from '@/lib/api/organizationApi';
+import Link from 'next/link';
 
 export default function OrgPage() {
     const router = useRouter();
@@ -133,18 +134,24 @@ export default function OrgPage() {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Button variant="outline" size="sm">
-                                            <Users className="w-4 h-4 mr-2" />
-                                            Members
-                                        </Button>
-                                        <Button variant="outline" size="sm">
-                                            <FileText className="w-4 h-4 mr-2" />
-                                            Audit Log
-                                        </Button>
-                                        <Button variant="outline" size="sm">
-                                            <Shield className="w-4 h-4 mr-2" />
-                                            Settings
-                                        </Button>
+                                        <Link href={`/app/org/${org.id}/members`}>
+                                            <Button variant="outline" size="sm">
+                                                <Users className="w-4 h-4 mr-2" />
+                                                Members
+                                            </Button>
+                                        </Link>
+                                        <Link href={`/app/org/${org.id}/audit`}>
+                                            <Button variant="outline" size="sm">
+                                                <FileText className="w-4 h-4 mr-2" />
+                                                Audit Log
+                                            </Button>
+                                        </Link>
+                                        <Link href={`/app/org/${org.id}/settings`}>
+                                            <Button variant="outline" size="sm">
+                                                <Shield className="w-4 h-4 mr-2" />
+                                                Settings
+                                            </Button>
+                                        </Link>
                                     </div>
                                 </div>
                             </Card>
