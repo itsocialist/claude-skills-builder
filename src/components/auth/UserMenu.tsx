@@ -2,13 +2,18 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from './AuthProvider';
-import { User, LogOut, Library, ChevronDown, Users } from 'lucide-react';
+import { User, LogOut, Library, ChevronDown, Users, Shield } from 'lucide-react';
 import Link from 'next/link';
+
+const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').toLowerCase().split(',');
 
 export function UserMenu() {
     const { user, signOut, loading, isConfigured } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
+
+    // Check if user is admin (case-insensitive)
+    const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase());
 
     // Close menu on outside click
     useEffect(() => {
@@ -54,6 +59,17 @@ export function UserMenu() {
                     <div className="px-3 py-2 border-b border-[#3a3a3a]">
                         <p className="text-sm text-white truncate">{user.email}</p>
                     </div>
+
+                    {isAdmin && (
+                        <Link
+                            href="/app/admin"
+                            onClick={() => setIsOpen(false)}
+                            className="flex items-center gap-2 px-3 py-2 text-sm text-[#C15F3C] hover:bg-[#3a3a3a] transition-colors"
+                        >
+                            <Shield className="w-4 h-4" />
+                            Admin Panel
+                        </Link>
+                    )}
 
                     <Link
                         href="/app/library"

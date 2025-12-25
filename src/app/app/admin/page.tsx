@@ -9,8 +9,8 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import { Users, FileText, Building2, TrendingUp, Settings, Shield } from 'lucide-react';
 import Link from 'next/link';
 
-// Admin emails from env (or could be from Supabase)
-const ADMIN_EMAILS = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',') || [];
+// Admin emails from env (case-insensitive)
+const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').toLowerCase().split(',');
 
 export default function AdminPage() {
     const router = useRouter();
@@ -25,8 +25,8 @@ export default function AdminPage() {
 
     useEffect(() => {
         if (!loading && user) {
-            // Check admin status
-            const adminCheck = ADMIN_EMAILS.includes(user.email || '');
+            // Check admin status (case-insensitive)
+            const adminCheck = ADMIN_EMAILS.includes((user.email || '').toLowerCase());
             setIsAdmin(adminCheck);
 
             if (!adminCheck) {
