@@ -72,6 +72,31 @@ Write 3-4 paragraphs:
 **Generated Listing:**
 [Example output would go here]
 `,
+        sampleOutput: `## Stunning Family Home in Prime Location
+
+### Description
+
+Welcome to this beautifully updated **3-bedroom, 2-bathroom** home nestled on Oak Street. The recently renovated chef's kitchen features granite countertops, stainless steel appliances, and custom cabinetry—perfect for entertaining.
+
+The open floor plan creates a seamless flow between the living areas, with natural light pouring through the oversized windows. Step outside to your private oasis: a **spacious backyard** with mature trees and endless possibilities for outdoor living.
+
+### Key Details
+
+| Feature | Value |
+|---------|-------|
+| **Price** | $450,000 |
+| **Bedrooms** | 3 |
+| **Bathrooms** | 2 |
+| **Square Feet** | 1,800 |
+
+### Features
+
+- ✓ Updated gourmet kitchen with granite counters
+- ✓ Large, landscaped backyard
+- ✓ Hardwood floors throughout
+- ✓ Central air conditioning
+- ✓ Attached 2-car garage
+`,
     },
 
     'meeting-notes': {

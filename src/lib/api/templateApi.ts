@@ -22,6 +22,7 @@ export async function getTemplates(): Promise<Template[]> {
         tags: row.tags || [],
         triggers: row.triggers || [],
         instructions: row.instructions || '',
+        sampleOutput: row.sample_output || undefined,
     }));
 }
 
@@ -44,5 +45,6 @@ export async function getTemplateById(id: string): Promise<Template | null> {
         tags: data.tags || [],
         triggers: data.triggers || [],
         instructions: data.instructions || '',
+        sampleOutput: data.sample_output || undefined,
     };
 }

@@ -60,13 +60,13 @@ export function TemplateCard({ template, variant = 'default', className }: Templ
             </p>
 
             {/* Single Action */}
-            <Link href={`/app/builder?template=${template.id}`} className="block">
+            <Link href={`/app/templates/${template.id}`} className="block">
                 <Button
                     variant={isCompact ? 'outline' : 'default'}
                     size={isCompact ? 'sm' : 'default'}
                     className="w-full"
                 >
-                    Use Template
+                    View Template
                 </Button>
             </Link>
         </Card>

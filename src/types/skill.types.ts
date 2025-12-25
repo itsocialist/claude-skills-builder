@@ -31,4 +31,5 @@ export interface Template {
     tags: string[];
     triggers: string[];
     instructions: string;
+    sampleOutput?: string;
 }

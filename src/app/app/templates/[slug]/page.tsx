@@ -4,10 +4,14 @@ import { useRouter } from 'next/navigation';
 import { use, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { getTemplateById } from '@/lib/api/templateApi';
 import { useSkillStore } from '@/lib/store/skillStore';
 import { Template } from '@/types/skill.types';
 import { CheckCircle, ChevronDown, ChevronUp, ArrowLeft, Download } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 // Generate "What You Get" based on template content
 function generateBenefits(template: Template): string[] {
@@ -32,6 +36,7 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
     const [template, setTemplate] = useState<Template | null>(null);
     const [loading, setLoading] = useState(true);
     const [showInstructions, setShowInstructions] = useState(true);
+    const [showSampleOutput, setShowSampleOutput] = useState(true);
 
     useEffect(() => {
         async function load() {
@@ -86,6 +91,38 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
         router.push('/app/builder');
     };
 
+    const handleDownloadZip = async () => {
+        const zip = new JSZip();
+
+        // Create SKILL.md content
+        const skillContent = `---
+name: ${template.name}
+description: ${template.description}
+category: ${template.category}
+tags: [${template.tags.map(t => `"${t}"`).join(', ')}]
+---
+
+# ${template.name}
+
+${template.description}
+
+## Triggers
+
+${template.triggers.map(t => `- "${t}"`).join('\n')}
+
+## Instructions
+
+${template.instructions}
+`;
+
+        zip.file('SKILL.md', skillContent);
+
+        // Generate and download
+        const blob = await zip.generateAsync({ type: 'blob' });
+        const safeName = template.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        saveAs(blob, `${safeName}.zip`);
+    };
+
     const benefits = generateBenefits(template);
 
     return (
@@ -128,7 +165,31 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
                         </ul>
                     </Card>
 
-                    {/* Instructions (Collapsible) */}
+                    {/* Sample Output (if available) */}
+                    {template.sampleOutput && (
+                        <Card className="p-6">
+                            <button
+                                onClick={() => setShowSampleOutput(!showSampleOutput)}
+                                className="w-full flex items-center justify-between text-left"
+                            >
+                                <h3 className="font-semibold text-lg text-foreground">
+                                    Sample Output
+                                </h3>
+                                {showSampleOutput ? (
+                                    <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                                ) : (
+                                    <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                                )}
+                            </button>
+                            {showSampleOutput && (
+                                <div className="mt-4 prose prose-sm prose-invert max-w-none">
+                                    <ReactMarkdown>{template.sampleOutput}</ReactMarkdown>
+                                </div>
+                            )}
+                        </Card>
+                    )}
+
+                    {/* Instructions (Collapsible) - Code Editor Format */}
                     <Card className="p-6">
                         <button
                             onClick={() => setShowInstructions(!showInstructions)}
@@ -143,14 +204,10 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
                                 <ChevronDown className="w-5 h-5 text-muted-foreground" />
                             )}
                         </button>
-                        {showInstructions ? (
-                            <div className="mt-4 bg-muted p-4 rounded-lg font-mono text-sm overflow-x-auto max-h-[400px]">
-                                <pre className="whitespace-pre-wrap text-foreground">{template.instructions}</pre>
+                        {showInstructions && (
+                            <div className="mt-4 bg-zinc-900 border border-zinc-700 rounded-lg p-4 overflow-x-auto max-h-[500px] overflow-y-auto">
+                                <pre className="text-sm font-mono text-zinc-300 whitespace-pre-wrap">{template.instructions}</pre>
                             </div>
-                        ) : (
-                            <p className="mt-3 text-sm text-muted-foreground">
-                                Click to view the complete skill instructions
-                            </p>
                         )}
                     </Card>
                 </div>
@@ -162,13 +219,10 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
                         <Button onClick={handleUseTemplate} size="lg" className="w-full mb-3">
                             Use This Template
                         </Button>
-                        <Button variant="outline" className="w-full" disabled>
+                        <Button variant="outline" className="w-full" onClick={handleDownloadZip}>
                             <Download className="w-4 h-4 mr-2" />
                             Download ZIP
                         </Button>
-                        <p className="text-xs text-muted-foreground text-center mt-3">
-                            Coming soon
-                        </p>
                     </Card>
 
                     {/* Template Info */}
@@ -177,12 +231,24 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
                         <div className="space-y-3 text-sm">
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Category</span>
-                                <span className="text-foreground">{template.category}</span>
+                                <Badge variant="secondary">{template.category}</Badge>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Prompts</span>
                                 <span className="text-foreground">{template.triggers.length}</span>
                             </div>
+                            {template.tags.length > 0 && (
+                                <div>
+                                    <span className="text-muted-foreground block mb-2">Tags</span>
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {template.tags.map((tag, i) => (
+                                            <Badge key={i} variant="outline" className="text-xs">
+                                                {tag}
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </Card>
 
