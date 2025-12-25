@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { getTemplateById } from '@/lib/api/templateApi';
 import { useSkillStore } from '@/lib/store/skillStore';
 import { Template } from '@/types/skill.types';
-import { CheckCircle, ChevronDown, ChevronUp, ArrowLeft } from 'lucide-react';
+import { CheckCircle, ChevronDown, ChevronUp, ArrowLeft, Download } from 'lucide-react';
 
 // Generate "What You Get" based on template content
 function generateBenefits(template: Template): string[] {
@@ -31,7 +31,7 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
     const { setSkill } = useSkillStore();
     const [template, setTemplate] = useState<Template | null>(null);
     const [loading, setLoading] = useState(true);
-    const [showInstructions, setShowInstructions] = useState(false);
+    const [showInstructions, setShowInstructions] = useState(true);
 
     useEffect(() => {
         async function load() {
@@ -162,8 +162,12 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
                         <Button onClick={handleUseTemplate} size="lg" className="w-full mb-3">
                             Use This Template
                         </Button>
-                        <p className="text-sm text-muted-foreground text-center">
-                            Opens in Builder for customization
+                        <Button variant="outline" className="w-full" disabled>
+                            <Download className="w-4 h-4 mr-2" />
+                            Download ZIP
+                        </Button>
+                        <p className="text-xs text-muted-foreground text-center mt-3">
+                            Coming soon
                         </p>
                     </Card>
 
