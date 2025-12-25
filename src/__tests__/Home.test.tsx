@@ -6,9 +6,9 @@ describe('Home Page', () => {
     it('renders the hero heading', () => {
         render(<Home />);
 
-        // Target h1 specifically by matching the exact hero text pattern
+        // Target h1 with current hero text
         const heading = screen.getByRole('heading', {
-            name: /Build Claude Skills.*Without the Trial and Error/i,
+            name: /Stop Typing the Same Prompts/i,
             level: 1
         });
 
@@ -18,7 +18,8 @@ describe('Home Page', () => {
     it('renders the CTA buttons', () => {
         render(<Home />);
 
-        const ctaButtons = screen.getAllByText(/Start Building Free/i);
+        // Match current CTA button text
+        const ctaButtons = screen.getAllByText(/Start Building/i);
         expect(ctaButtons.length).toBeGreaterThanOrEqual(1);
     });
 });
