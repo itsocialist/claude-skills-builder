@@ -49,10 +49,17 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
 
     if (loading) {
         return (
-            <div className="container max-w-4xl mx-auto py-12 px-4 min-h-screen bg-background">
+            <div className="container max-w-6xl mx-auto py-12 px-4 min-h-screen bg-background">
                 <div className="animate-pulse space-y-6">
                     <div className="h-8 bg-muted rounded w-40" />
-                    <div className="h-64 bg-card rounded-lg border border-border" />
+                    <div className="grid lg:grid-cols-3 gap-8">
+                        <div className="lg:col-span-2 space-y-4">
+                            <div className="h-10 bg-muted rounded w-3/4" />
+                            <div className="h-6 bg-muted rounded w-full" />
+                            <div className="h-40 bg-card rounded-lg border border-border" />
+                        </div>
+                        <div className="h-64 bg-card rounded-lg border border-border" />
+                    </div>
                 </div>
             </div>
         );
@@ -82,7 +89,7 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
     const benefits = generateBenefits(template);
 
     return (
-        <div className="container max-w-4xl mx-auto py-8 px-4 bg-background min-h-screen">
+        <div className="container max-w-6xl mx-auto py-8 px-4 bg-background min-h-screen">
             {/* Breadcrumb */}
             <Button
                 variant="ghost"
@@ -93,81 +100,105 @@ export default function TemplatePage({ params }: { params: Promise<{ slug: strin
                 Templates
             </Button>
 
-            {/* Header */}
-            <div className="mb-8">
-                <p className="text-sm text-muted-foreground mb-2">{template.category}</p>
-                <h1 className="text-3xl font-bold text-foreground mb-3">{template.name}</h1>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                    {template.description}
-                </p>
-            </div>
+            {/* Two-Column Layout */}
+            <div className="grid lg:grid-cols-3 gap-8">
+                {/* Main Content - Left Column */}
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Header */}
+                    <div>
+                        <p className="text-sm text-muted-foreground mb-2">{template.category}</p>
+                        <h1 className="text-3xl font-bold text-foreground mb-3">{template.name}</h1>
+                        <p className="text-lg text-muted-foreground leading-relaxed">
+                            {template.description}
+                        </p>
+                    </div>
 
-            {/* Primary CTA */}
-            <Card className="p-6 mb-8">
-                <Button onClick={handleUseTemplate} size="lg" className="w-full md:w-auto">
-                    Use This Template
-                </Button>
-                <p className="text-sm text-muted-foreground mt-3">
-                    Opens in Builder where you can customize before saving
-                </p>
-            </Card>
+                    {/* What You Get */}
+                    <Card className="p-6">
+                        <h3 className="font-semibold text-lg mb-4 text-foreground">
+                            What You Get
+                        </h3>
+                        <ul className="space-y-3">
+                            {benefits.map((benefit, i) => (
+                                <li key={i} className="flex items-start gap-3">
+                                    <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                                    <span className="text-foreground">{benefit}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </Card>
 
-            {/* What You Get */}
-            <Card className="p-6 mb-6">
-                <h3 className="font-semibold text-lg mb-4 text-foreground">
-                    What You Get
-                </h3>
-                <ul className="space-y-3">
-                    {benefits.map((benefit, i) => (
-                        <li key={i} className="flex items-start gap-3">
-                            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                            <span className="text-foreground">{benefit}</span>
-                        </li>
-                    ))}
-                </ul>
-            </Card>
-
-            {/* Example Prompts */}
-            {template.triggers.length > 0 && (
-                <Card className="p-6 mb-6">
-                    <h3 className="font-semibold text-lg mb-4 text-foreground">
-                        Example Prompts
-                    </h3>
-                    <div className="space-y-2">
-                        {template.triggers.map((trigger, i) => (
-                            <div key={i} className="text-sm bg-muted px-4 py-3 rounded-lg text-foreground">
-                                "{trigger}"
+                    {/* Instructions (Collapsible) */}
+                    <Card className="p-6">
+                        <button
+                            onClick={() => setShowInstructions(!showInstructions)}
+                            className="w-full flex items-center justify-between text-left"
+                        >
+                            <h3 className="font-semibold text-lg text-foreground">
+                                Full Instructions
+                            </h3>
+                            {showInstructions ? (
+                                <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                            ) : (
+                                <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                            )}
+                        </button>
+                        {showInstructions ? (
+                            <div className="mt-4 bg-muted p-4 rounded-lg font-mono text-sm overflow-x-auto max-h-[400px]">
+                                <pre className="whitespace-pre-wrap text-foreground">{template.instructions}</pre>
                             </div>
-                        ))}
-                    </div>
-                </Card>
-            )}
+                        ) : (
+                            <p className="mt-3 text-sm text-muted-foreground">
+                                Click to view the complete skill instructions
+                            </p>
+                        )}
+                    </Card>
+                </div>
 
-            {/* Instructions (Collapsible) */}
-            <Card className="p-6">
-                <button
-                    onClick={() => setShowInstructions(!showInstructions)}
-                    className="w-full flex items-center justify-between text-left"
-                >
-                    <h3 className="font-semibold text-lg text-foreground">
-                        Full Instructions
-                    </h3>
-                    {showInstructions ? (
-                        <ChevronUp className="w-5 h-5 text-muted-foreground" />
-                    ) : (
-                        <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                {/* Sidebar - Right Column */}
+                <div className="space-y-6">
+                    {/* Primary CTA */}
+                    <Card className="p-6">
+                        <Button onClick={handleUseTemplate} size="lg" className="w-full mb-3">
+                            Use This Template
+                        </Button>
+                        <p className="text-sm text-muted-foreground text-center">
+                            Opens in Builder for customization
+                        </p>
+                    </Card>
+
+                    {/* Template Info */}
+                    <Card className="p-6">
+                        <h4 className="font-semibold mb-4 text-foreground">Template Info</h4>
+                        <div className="space-y-3 text-sm">
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">Category</span>
+                                <span className="text-foreground">{template.category}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">Prompts</span>
+                                <span className="text-foreground">{template.triggers.length}</span>
+                            </div>
+                        </div>
+                    </Card>
+
+                    {/* Example Prompts */}
+                    {template.triggers.length > 0 && (
+                        <Card className="p-6">
+                            <h4 className="font-semibold mb-4 text-foreground">
+                                Example Prompts
+                            </h4>
+                            <div className="space-y-2">
+                                {template.triggers.map((trigger, i) => (
+                                    <div key={i} className="text-sm bg-muted px-3 py-2 rounded-lg text-foreground">
+                                        "{trigger}"
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
                     )}
-                </button>
-                {showInstructions ? (
-                    <div className="mt-4 bg-muted p-4 rounded-lg font-mono text-sm overflow-x-auto max-h-[400px]">
-                        <pre className="whitespace-pre-wrap text-foreground">{template.instructions}</pre>
-                    </div>
-                ) : (
-                    <p className="mt-3 text-sm text-muted-foreground">
-                        Click to view the complete skill instructions
-                    </p>
-                )}
-            </Card>
+                </div>
+            </div>
         </div>
     );
 }
