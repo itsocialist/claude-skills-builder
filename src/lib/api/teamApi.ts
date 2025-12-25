@@ -36,9 +36,14 @@ export async function getUserTeams(userId: string): Promise<Team[]> {
 
 // Create a new team
 export async function createTeam(userId: string, name: string): Promise<Team | null> {
-    if (!supabase) return null;
+    if (!supabase) {
+        console.error('Supabase not initialized');
+        return null;
+    }
 
     const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
+    console.log('Creating team:', { userId, name, slug });
 
     const { data, error } = await supabase
         .from('teams')
@@ -52,16 +57,25 @@ export async function createTeam(userId: string, name: string): Promise<Team | n
 
     if (error) {
         console.error('Error creating team:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
+        // Surface error to user for debugging
+        alert(`Team creation failed: ${error.message}`);
         return null;
     }
 
+    console.log('Team created:', data);
+
     // Add owner as a member
-    await supabase.from('team_members').insert({
+    const { error: memberError } = await supabase.from('team_members').insert({
         team_id: data.id,
         user_id: userId,
         role: 'owner',
         joined_at: new Date().toISOString(),
     });
+
+    if (memberError) {
+        console.error('Error adding owner as member:', memberError);
+    }
 
     return data;
 }
