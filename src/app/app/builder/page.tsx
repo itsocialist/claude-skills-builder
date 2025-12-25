@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useSkillStore } from '@/lib/store/skillStore';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
@@ -13,9 +13,7 @@ import { TriggerEditor } from '@/components/builder/TriggerEditor';
 import { InstructionsEditor } from '@/components/builder/InstructionsEditor';
 import { SkillPreview } from '@/components/builder/SkillPreview';
 import { ResourceManager } from '@/components/builder/ResourceManager';
-import { ApiKeySettings } from '@/components/builder/ApiKeySettings';
-import { TriggerTester } from '@/components/builder/TriggerTester';
-import { OutputPreview } from '@/components/builder/OutputPreview';
+import { TestConsole } from '@/components/builder/TestConsole';
 import { Shell } from '@/components/layout/Shell';
 import { validateSkill, getValidationStatus } from '@/lib/utils/validation';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -40,13 +38,8 @@ function BuilderContent() {
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [showAIGenerator, setShowAIGenerator] = useState(false);
     const [activeTab, setActiveTab] = useState<'preview' | 'config' | 'test'>('preview');
-    const [apiKey, setApiKey] = useState<string | null>(null);
     const [editId, setEditId] = useState<string | null>(null);
     const [isLoadingSkill, setIsLoadingSkill] = useState(false);
-
-    const handleApiKeyChange = useCallback((key: string | null) => {
-        setApiKey(key);
-    }, []);
 
     const handleSaveToLibrary = async () => {
         if (!user) return;
@@ -203,7 +196,19 @@ function BuilderContent() {
             {/* Tab Content - Flex grow to fill available space */}
             <div className="flex-1 overflow-auto">
                 {activeTab === 'preview' && (
-                    <SkillPreview skill={skill} />
+                    <div className="flex flex-col h-full">
+                        <SkillPreview skill={skill} />
+                        {/* Generate Button in Export tab */}
+                        <div className="p-4 border-t border-border bg-card mt-auto">
+                            <Button
+                                onClick={handleGenerate}
+                                disabled={!skill.name || !skill.instructions || isGenerating}
+                                className="w-full font-medium"
+                            >
+                                {isGenerating ? 'Generating...' : 'Download Skill ZIP'}
+                            </Button>
+                        </div>
+                    </div>
                 )}
                 {activeTab === 'config' && (
                     <div className="p-4 space-y-6">
@@ -232,22 +237,12 @@ function BuilderContent() {
                     </div>
                 )}
                 {activeTab === 'test' && (
-                    <div className="p-4 space-y-6">
-                        <ApiKeySettings onKeyChange={handleApiKeyChange} />
-
-                        <div className="border-t border-border pt-4">
-                            <TriggerTester skill={skill} apiKey={apiKey} />
-                        </div>
-
-                        <div className="border-t border-border pt-4">
-                            <OutputPreview skill={skill} apiKey={apiKey} />
-                        </div>
-                    </div>
+                    <TestConsole skill={skill} />
                 )}
             </div>
 
-            {/* Generate Button - Sticky at bottom */}
-            <div className="p-4 border-t border-border bg-card mt-auto space-y-2">
+            {/* Bottom Actions */}
+            <div className="p-4 border-t border-border bg-card mt-auto">
                 {isConfigured && user && (
                     <Button
                         onClick={handleSaveToLibrary}
@@ -264,17 +259,12 @@ function BuilderContent() {
                         )}
                     </Button>
                 )}
-                <Button
-                    onClick={handleGenerate}
-                    disabled={!skill.name || !skill.instructions || isGenerating}
-                    variant="outline"
-                    className="w-full font-medium text-foreground hover:bg-accent hover:text-foreground border-border"
+                <button
+                    onClick={reset}
+                    className="w-full mt-2 text-xs text-muted-foreground hover:text-foreground text-center py-1"
                 >
-                    {isGenerating ? 'Generating...' : 'Generate Skill'}
-                </Button>
-                <Button variant="ghost" onClick={reset} className="w-full text-muted-foreground hover:text-foreground text-xs">
                     Reset Form
-                </Button>
+                </button>
             </div>
         </div>
     );
