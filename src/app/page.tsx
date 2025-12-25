@@ -32,10 +32,10 @@ export default function MarketingPage() {
             src="/hero-banner.png"
             alt=""
             fill
-            className="object-cover opacity-30"
+            className="object-cover opacity-60"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/95 to-background/80" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/70 to-background/50" />
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
