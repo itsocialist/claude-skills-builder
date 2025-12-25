@@ -34,7 +34,7 @@ export default function AppHomePage() {
         <section>
           <h1 className="text-2xl font-bold mb-4 text-foreground">Welcome to ClaudeSkills</h1>
           <p className="text-muted-foreground mb-6">
-            Build powerful Claude Skills in minutes. Start with a template or create from scratch.
+            Build powerful Claude Skills quickly. Start with a template or create from scratch.
           </p>
           <div className="flex gap-4">
             <Link href="/app/builder">
@@ -57,7 +57,7 @@ export default function AppHomePage() {
           <h2 className="text-lg font-semibold mb-4 text-foreground">What You Can Do</h2>
           <div className="grid md:grid-cols-3 gap-4">
             <Card className="p-4 border-border">
-              <div className="h-10 w-10 bg-primary/20 rounded-lg flex items-center justify-center mb-3">
+              <div className="h-10 w-10 bg-primary/20 rounded-md flex items-center justify-center mb-3">
                 <PenTool className="h-5 w-5 text-primary" />
               </div>
               <h3 className="font-semibold mb-1 text-foreground">Build Skills</h3>
@@ -66,7 +66,7 @@ export default function AppHomePage() {
               </p>
             </Card>
             <Card className="p-4 border-border">
-              <div className="h-10 w-10 bg-primary/20 rounded-lg flex items-center justify-center mb-3">
+              <div className="h-10 w-10 bg-primary/20 rounded-md flex items-center justify-center mb-3">
                 <Rocket className="h-5 w-5 text-primary" />
               </div>
               <h3 className="font-semibold mb-1 text-foreground">Use Templates</h3>
@@ -75,7 +75,7 @@ export default function AppHomePage() {
               </p>
             </Card>
             <Card className="p-4 border-border">
-              <div className="h-10 w-10 bg-primary/20 rounded-lg flex items-center justify-center mb-3">
+              <div className="h-10 w-10 bg-primary/20 rounded-md flex items-center justify-center mb-3">
                 <Download className="h-5 w-5 text-primary" />
               </div>
               <h3 className="font-semibold mb-1 text-foreground">Export & Upload</h3>

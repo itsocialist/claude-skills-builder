@@ -15,7 +15,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "ClaudeSkillsFacet",
-  description: "Build Claude Skills in minutes, not hours",
+  description: "Build Claude Skills quickly, not slowly",
 };
 
 export default function RootLayout({

@@ -2,7 +2,7 @@
 
 import { ReactNode, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Pencil, Download, Library, LogIn, Building2, Menu } from 'lucide-react';
+import { Pencil, Download, Library, LogIn, Building2, Menu, PanelRightOpen } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { UserMenu } from '@/components/auth/UserMenu';
 import { LoginModal } from '@/components/auth/LoginModal';
@@ -31,6 +31,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
     const [editedTitle, setEditedTitle] = useState(title || 'New Skill');
     const [saveStatus, setSaveStatus] = useState<'saved' | 'editing'>('saved');
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [mobileInspectorOpen, setMobileInspectorOpen] = useState(false);
 
     useEffect(() => {
         setEditedTitle(title || 'New Skill');
@@ -66,7 +67,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
             {/* Unified Header Row - Brighter with accent */}
             <header className="h-14 bg-card border-b-2 border-primary flex items-stretch sticky top-0 z-20 shadow-sm">
                 {/* Mobile Menu Trigger */}
-                <div className="md:hidden flex items-center px-4 border-r border-border">
+                <div className="lg:hidden flex items-center px-4 border-r border-border">
                     <Sheet>
                         <SheetTrigger asChild>
                             <Button variant="ghost" size="icon">
@@ -109,7 +110,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                 </div>
 
                 {/* Sidebar Header (Desktop) */}
-                <div className="hidden md:flex w-64 items-center px-6 border-r border-border flex-shrink-0">
+                <div className="hidden lg:flex w-64 items-center px-6 border-r border-border flex-shrink-0">
                     <Link href="/app" className="font-bold text-xl tracking-tight text-primary">
                         ClaudeSkills
                     </Link>
@@ -180,7 +181,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
             {/* Body Row */}
             <div className="flex flex-1 pb-10">
                 {/* Sidebar Navigation (Desktop) */}
-                <aside className="hidden md:block w-64 bg-card border-r border-border flex-shrink-0">
+                <aside className="hidden lg:block w-64 bg-card border-r border-border flex-shrink-0">
                     <nav className="p-4 space-y-1">
                         <Link href="/app/builder" className="block px-4 py-2 text-sm font-medium text-foreground bg-accent rounded-md">
                             Skill Builder
@@ -211,9 +212,9 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                     <RecentSkills />
                 </aside>
 
-                {/* Main Content */}
-                <main className="flex-1 min-w-0 overflow-y-auto bg-background">
-                    <div className="p-4 md:p-8">
+                {/* Main Content - Centered when no inspector on desktop */}
+                <main className={`flex-1 min-w-0 overflow-y-auto bg-background ${inspector ? '' : 'lg:flex lg:justify-center'}`}>
+                    <div className={`p-4 md:p-8 ${inspector ? '' : 'lg:max-w-4xl lg:w-full'}`}>
                         {children}
                     </div>
                 </main>
@@ -226,11 +227,33 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                         </div>
                     </aside>
                 )}
+
+                {/* Mobile Inspector Sheet */}
+                {inspector && (
+                    <Sheet open={mobileInspectorOpen} onOpenChange={setMobileInspectorOpen}>
+                        <SheetContent side="bottom" className="h-[70vh] p-0">
+                            <div className="h-full overflow-y-auto">
+                                {inspector}
+                            </div>
+                        </SheetContent>
+                    </Sheet>
+                )}
             </div>
+
+            {/* Mobile Inspector Floating Button */}
+            {inspector && (
+                <button
+                    onClick={() => setMobileInspectorOpen(true)}
+                    className="lg:hidden fixed bottom-14 right-4 z-30 p-3 bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary/90 transition-colors"
+                    aria-label="Open Inspector"
+                >
+                    <PanelRightOpen className="w-5 h-5" />
+                </button>
+            )}
 
             {/* Fixed Bottom Status Bar */}
             <footer className="fixed bottom-0 left-0 right-0 h-10 bg-card border-t border-border flex items-center px-4 md:px-6 z-20">
-                <div className="flex items-center gap-4 md:ml-64">
+                <div className="flex items-center gap-4 lg:ml-64">
                     {/* Validation Status */}
                     <div className="flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full ${statusColors[validation?.status || 'valid']}`}></div>

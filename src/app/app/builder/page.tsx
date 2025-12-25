@@ -293,7 +293,7 @@ function BuilderContent() {
                         : 'Ready to export'
             }}
         >
-            <div className="max-w-3xl">
+            <div className="max-w-3xl mx-auto">
                 {/* Create with AI Button */}
                 <div className="mb-6">
                     <Button
