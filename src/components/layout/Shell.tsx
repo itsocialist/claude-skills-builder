@@ -57,8 +57,8 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
 
     return (
         <div className="flex flex-col min-h-screen bg-background">
-            {/* Unified Header Row */}
-            <header className="h-14 bg-card border-b border-border flex items-stretch sticky top-0 z-20">
+            {/* Unified Header Row - Brighter with accent */}
+            <header className="h-14 bg-card border-b-2 border-primary flex items-stretch sticky top-0 z-20 shadow-sm">
                 {/* Sidebar Header */}
                 <div className="w-64 flex items-center px-6 border-r border-border flex-shrink-0">
                     <Link href="/app" className="font-bold text-xl tracking-tight text-primary">

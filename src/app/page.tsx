@@ -6,14 +6,14 @@ import { Button } from '@/components/ui/button';
 export default function MarketingPage() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation - Solid, no blur */}
-      <nav className="bg-background border-b border-border sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-3 flex items-center justify-between">
+      {/* Navigation - Brighter header with accent */}
+      <nav className="bg-card border-b-2 border-primary sticky top-0 z-50 shadow-sm">
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="font-bold text-xl text-primary">
             GetClaudeSkills
           </Link>
           <div className="flex items-center gap-4">
-            <Link href="/app/templates" className="text-sm text-muted-foreground hover:text-foreground hidden sm:block">
+            <Link href="/app/templates" className="text-sm text-foreground hover:text-primary hidden sm:block">
               Templates
             </Link>
             <Link href="/app/builder">
