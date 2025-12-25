@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TemplateCard } from '@/components/ui/template-card';
+import { TemplateDetailSheet } from '@/components/ui/template-detail-sheet';
 import { getTemplates } from '@/lib/api/templateApi';
 import { Template } from '@/types/skill.types';
 import { Shell } from '@/components/layout/Shell';
@@ -17,6 +18,10 @@ export default function TemplatesPage() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
+
+    // Sheet state for pop-out details
+    const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+    const [sheetOpen, setSheetOpen] = useState(false);
 
     useEffect(() => {
         async function load() {
@@ -45,6 +50,11 @@ export default function TemplatesPage() {
             return matchesSearch && matchesCategory;
         });
     }, [templates, searchQuery, selectedCategory]);
+
+    const handleTemplateClick = (template: Template) => {
+        setSelectedTemplate(template);
+        setSheetOpen(true);
+    };
 
     return (
         <Shell title="Templates">
@@ -110,6 +120,7 @@ export default function TemplatesPage() {
                                 key={template.id}
                                 template={template}
                                 variant="default"
+                                onClick={() => handleTemplateClick(template)}
                             />
                         ))}
                     </div>
@@ -128,8 +139,13 @@ export default function TemplatesPage() {
                     </div>
                 )}
             </div>
+
+            {/* Template Details Sheet */}
+            <TemplateDetailSheet
+                template={selectedTemplate}
+                open={sheetOpen}
+                onOpenChange={setSheetOpen}
+            />
         </Shell>
     );
 }
-
-
