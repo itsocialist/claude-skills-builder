@@ -2,11 +2,17 @@
 
 import { ReactNode, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Pencil, Download, Library, LogIn, Building2 } from 'lucide-react';
+import { Pencil, Download, Library, LogIn, Building2, Menu } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { UserMenu } from '@/components/auth/UserMenu';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { RecentSkills } from '@/components/library/RecentSkills';
+import { Button } from '@/components/ui/button';
+import {
+    Sheet,
+    SheetContent,
+    SheetTrigger,
+} from "@/components/ui/sheet";
 
 interface ShellProps {
     children: ReactNode;
@@ -59,8 +65,51 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
         <div className="flex flex-col min-h-screen bg-background">
             {/* Unified Header Row - Brighter with accent */}
             <header className="h-14 bg-card border-b-2 border-primary flex items-stretch sticky top-0 z-20 shadow-sm">
-                {/* Sidebar Header */}
-                <div className="w-64 flex items-center px-6 border-r border-border flex-shrink-0">
+                {/* Mobile Menu Trigger */}
+                <div className="md:hidden flex items-center px-4 border-r border-border">
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                                <Menu className="h-5 w-5" />
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent side="left" className="p-0 w-64">
+                            <div className="h-14 flex items-center px-6 border-b border-border">
+                                <Link href="/app" className="font-bold text-xl tracking-tight text-primary">
+                                    ClaudeSkills
+                                </Link>
+                            </div>
+                            <nav className="p-4 space-y-1">
+                                <Link href="/app/builder" className="block px-4 py-2 text-sm font-medium text-foreground bg-accent rounded-md">
+                                    Skill Builder
+                                </Link>
+                                <Link href="/app/templates" className="block px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
+                                    Templates
+                                </Link>
+                                <Link href="/app/packages" className="block px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
+                                    Packages
+                                </Link>
+                                {user && (
+                                    <Link href="/app/org" className="block px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
+                                        <span className="flex items-center gap-2">
+                                            <Building2 className="w-4 h-4" />
+                                            Organization
+                                        </span>
+                                    </Link>
+                                )}
+                                {user && (
+                                    <Link href="/app/library" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
+                                        <Library className="w-4 h-4" />
+                                        My Library
+                                    </Link>
+                                )}
+                            </nav>
+                        </SheetContent>
+                    </Sheet>
+                </div>
+
+                {/* Sidebar Header (Desktop) */}
+                <div className="hidden md:flex w-64 items-center px-6 border-r border-border flex-shrink-0">
                     <Link href="/app" className="font-bold text-xl tracking-tight text-primary">
                         ClaudeSkills
                     </Link>
@@ -78,11 +127,11 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                                 onKeyDown={(e) => e.key === 'Enter' && handleTitleSubmit()}
                                 autoFocus
                                 className="bg-transparent text-lg font-medium text-foreground 
-                                           focus:outline-none border-b-2 border-primary px-1"
+                                           focus:outline-none border-b-2 border-primary px-1 max-w-[150px] md:max-w-md"
                             />
                         ) : (
                             <h1
-                                className="text-lg font-medium text-foreground cursor-pointer hover:text-primary transition-colors"
+                                className="text-lg font-medium text-foreground cursor-pointer hover:text-primary transition-colors truncate max-w-[150px] md:max-w-md"
                                 onClick={() => setIsEditing(true)}
                             >
                                 {editedTitle}
@@ -100,10 +149,10 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                     <div className="flex items-center gap-3">
                         {inspector && (
                             <>
-                                <button className="p-2 text-muted-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+                                <button className="p-2 text-muted-foreground hover:text-primary hover:bg-accent rounded-md transition-colors hidden sm:block">
                                     <Download className="h-4 w-4" />
                                 </button>
-                                <div className="w-px h-5 bg-border"></div>
+                                <div className="hidden sm:block w-px h-5 bg-border"></div>
                             </>
                         )}
                         {isConfigured && !user ? (
@@ -112,7 +161,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                                 className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
                             >
                                 <LogIn className="w-4 h-4" />
-                                Sign In
+                                <span className="hidden sm:inline">Sign In</span>
                             </button>
                         ) : (
                             <UserMenu />
@@ -122,7 +171,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
 
                 {/* Inspector Header */}
                 {inspector && (
-                    <div className="w-[400px] flex items-center px-6 border-l border-border flex-shrink-0">
+                    <div className="hidden lg:flex w-[400px] items-center px-6 border-l border-border flex-shrink-0">
                         <span className="text-lg font-medium text-foreground">Inspector</span>
                     </div>
                 )}
@@ -130,8 +179,8 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
 
             {/* Body Row */}
             <div className="flex flex-1 pb-10">
-                {/* Sidebar Navigation */}
-                <aside className="w-64 bg-card border-r border-border flex-shrink-0">
+                {/* Sidebar Navigation (Desktop) */}
+                <aside className="hidden md:block w-64 bg-card border-r border-border flex-shrink-0">
                     <nav className="p-4 space-y-1">
                         <Link href="/app/builder" className="block px-4 py-2 text-sm font-medium text-foreground bg-accent rounded-md">
                             Skill Builder
@@ -164,14 +213,14 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
 
                 {/* Main Content */}
                 <main className="flex-1 min-w-0 overflow-y-auto bg-background">
-                    <div className="p-8">
+                    <div className="p-4 md:p-8">
                         {children}
                     </div>
                 </main>
 
                 {/* Inspector Panel */}
                 {inspector && (
-                    <aside className="w-[400px] bg-card border-l border-border flex-shrink-0 h-[calc(100vh-96px)] overflow-hidden">
+                    <aside className="hidden lg:block w-[400px] bg-card border-l border-border flex-shrink-0 h-[calc(100vh-96px)] overflow-hidden">
                         <div className="h-full">
                             {inspector}
                         </div>
@@ -180,8 +229,8 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
             </div>
 
             {/* Fixed Bottom Status Bar */}
-            <footer className="fixed bottom-0 left-0 right-0 h-10 bg-card border-t border-border flex items-center px-6 z-20">
-                <div className="flex items-center gap-4 ml-64">
+            <footer className="fixed bottom-0 left-0 right-0 h-10 bg-card border-t border-border flex items-center px-4 md:px-6 z-20">
+                <div className="flex items-center gap-4 md:ml-64">
                     {/* Validation Status */}
                     <div className="flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full ${statusColors[validation?.status || 'valid']}`}></div>

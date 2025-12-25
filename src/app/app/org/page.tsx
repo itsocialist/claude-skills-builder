@@ -71,7 +71,7 @@ export default function OrgPage() {
         <Shell title="Organization">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
                     <div className="flex items-center gap-3">
                         <Building2 className="w-8 h-8 text-primary" />
                         <div>
@@ -79,7 +79,7 @@ export default function OrgPage() {
                             <p className="text-muted-foreground">Manage your enterprise organization</p>
                         </div>
                     </div>
-                    <Button onClick={() => setShowCreate(true)}>
+                    <Button onClick={() => setShowCreate(true)} className="w-full md:w-auto">
                         <Plus className="w-4 h-4 mr-2" />
                         Create Organization
                     </Button>
@@ -89,19 +89,21 @@ export default function OrgPage() {
                 {showCreate && (
                     <Card className="p-6 mb-8">
                         <h3 className="text-lg font-semibold mb-4">Create Organization</h3>
-                        <div className="flex gap-4">
+                        <div className="flex flex-col md:flex-row gap-4">
                             <Input
                                 value={newOrgName}
                                 onChange={(e) => setNewOrgName(e.target.value)}
                                 placeholder="Organization name"
                                 className="flex-1"
                             />
-                            <Button onClick={handleCreate} disabled={creating || !newOrgName.trim()}>
-                                {creating ? 'Creating...' : 'Create'}
-                            </Button>
-                            <Button variant="outline" onClick={() => setShowCreate(false)}>
-                                Cancel
-                            </Button>
+                            <div className="flex gap-2">
+                                <Button onClick={handleCreate} disabled={creating || !newOrgName.trim()} className="flex-1 md:flex-none">
+                                    {creating ? 'Creating...' : 'Create'}
+                                </Button>
+                                <Button variant="outline" onClick={() => setShowCreate(false)} className="flex-1 md:flex-none">
+                                    Cancel
+                                </Button>
+                            </div>
                         </div>
                     </Card>
                 )}
@@ -120,10 +122,10 @@ export default function OrgPage() {
                         </Button>
                     </Card>
                 ) : (
-                    <div className="grid gap-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         {orgs.map((org) => (
                             <Card key={org.id} className="p-6">
-                                <div className="flex items-center justify-between">
+                                <div className="flex flex-col gap-4">
                                     <div className="flex items-center gap-4">
                                         <div className="p-3 bg-primary/10 rounded-lg">
                                             <Building2 className="w-6 h-6 text-primary" />
@@ -133,7 +135,7 @@ export default function OrgPage() {
                                             <p className="text-sm text-muted-foreground">/{org.slug}</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 flex-wrap">
                                         <Link href={`/app/org/${org.id}/members`}>
                                             <Button variant="outline" size="sm">
                                                 <Users className="w-4 h-4 mr-2" />
