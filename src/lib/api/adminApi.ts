@@ -35,59 +35,55 @@ export async function getAdminStats() {
     };
 }
 
-// List users with skill counts (from user_skills table)
+// List users with skill counts (from server API with real auth data)
 export interface AdminUser {
     id: string;
     email: string;
     created_at: string;
     skills_count: number;
     disabled: boolean;
+    last_sign_in?: string;
 }
 
-export async function listUsers(): Promise<{ users: AdminUser[], total: number }> {
-    if (!supabase) return { users: [], total: 0 };
+export async function listUsers(token: string): Promise<{ users: AdminUser[], total: number }> {
+    try {
+        const response = await fetch('/api/admin/users', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
 
-    // Get all skills grouped by user
-    const { data: skills, error } = await supabase
-        .from('user_skills')
-        .select('user_id, created_at');
+        if (!response.ok) {
+            console.error('Error listing users:', response.statusText);
+            return { users: [], total: 0 };
+        }
 
-    if (error) {
+        return await response.json();
+    } catch (error) {
         console.error('Error listing users:', error);
         return { users: [], total: 0 };
     }
+}
 
-    if (!skills || skills.length === 0) {
-        return { users: [], total: 0 };
+export async function toggleUserStatus(token: string, userId: string, disable: boolean): Promise<boolean> {
+    try {
+        const response = await fetch('/api/admin/users', {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId,
+                action: disable ? 'disable' : 'enable',
+            }),
+        });
+
+        return response.ok;
+    } catch (error) {
+        console.error('Error toggling user status:', error);
+        return false;
     }
-
-    // Group skills by user_id
-    const userMap = new Map<string, { count: number; earliest: string }>();
-    skills.forEach(skill => {
-        const existing = userMap.get(skill.user_id);
-        if (existing) {
-            existing.count++;
-            if (skill.created_at < existing.earliest) {
-                existing.earliest = skill.created_at;
-            }
-        } else {
-            userMap.set(skill.user_id, { count: 1, earliest: skill.created_at });
-        }
-    });
-
-    // Convert to AdminUser array
-    const users: AdminUser[] = Array.from(userMap.entries()).map(([userId, data]) => ({
-        id: userId,
-        email: `User ${userId.substring(0, 8)}...`, // We don't have email access from client
-        created_at: data.earliest,
-        skills_count: data.count,
-        disabled: false,
-    }));
-
-    // Sort by most recent first
-    users.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
-    return { users, total: users.length };
 }
 
 // Get site settings

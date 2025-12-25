@@ -7,42 +7,44 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { ArrowLeft, Search, UserX } from 'lucide-react';
+import { ArrowLeft, Search, UserX, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { listUsers, AdminUser } from '@/lib/api/adminApi';
+import { listUsers, toggleUserStatus, AdminUser } from '@/lib/api/adminApi';
 
 const ADMIN_EMAILS = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',') || [];
 
 export default function AdminUsersPage() {
     const router = useRouter();
-    const { user, loading } = useAuth();
+    const { user, session, loading } = useAuth();
     const [isAdmin, setIsAdmin] = useState(false);
     const [users, setUsers] = useState<AdminUser[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [togglingUser, setTogglingUser] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!loading && user) {
+        if (!loading && user && session) {
             const adminCheck = ADMIN_EMAILS.includes(user.email || '');
             setIsAdmin(adminCheck);
 
             if (!adminCheck) {
                 router.push('/app');
             } else {
-                // Load real users from API
                 loadUsers();
             }
         } else if (!loading && !user) {
             router.push('/');
         }
-    }, [user, loading, router]);
+    }, [user, session, loading, router]);
 
     const loadUsers = async () => {
+        if (!session?.access_token) return;
+
         setIsLoading(true);
         setError(null);
         try {
-            const result = await listUsers();
+            const result = await listUsers(session.access_token);
             setUsers(result.users);
         } catch (err) {
             setError('Failed to load users');
@@ -57,11 +59,18 @@ export default function AdminUsersPage() {
         u.id.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const handleDisable = async (userId: string) => {
-        // Toggle disabled state locally (would call API in production)
-        setUsers(users.map(u =>
-            u.id === userId ? { ...u, disabled: !u.disabled } : u
-        ));
+    const handleToggleUser = async (userId: string, currentlyDisabled: boolean) => {
+        if (!session?.access_token) return;
+
+        setTogglingUser(userId);
+        const success = await toggleUserStatus(session.access_token, userId, !currentlyDisabled);
+
+        if (success) {
+            setUsers(users.map(u =>
+                u.id === userId ? { ...u, disabled: !currentlyDisabled } : u
+            ));
+        }
+        setTogglingUser(null);
     };
 
     if (loading || !isAdmin) {
@@ -150,9 +159,14 @@ export default function AdminUsersPage() {
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() => handleDisable(u.id)}
+                                                onClick={() => handleToggleUser(u.id, u.disabled)}
+                                                disabled={togglingUser === u.id}
                                             >
-                                                <UserX className="w-4 h-4 mr-2" />
+                                                {togglingUser === u.id ? (
+                                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                ) : (
+                                                    <UserX className="w-4 h-4 mr-2" />
+                                                )}
                                                 {u.disabled ? 'Enable' : 'Disable'}
                                             </Button>
                                         </td>
