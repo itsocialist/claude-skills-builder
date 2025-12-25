@@ -7,26 +7,20 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { ArrowLeft, Search, UserX, MoreHorizontal } from 'lucide-react';
+import { ArrowLeft, Search, UserX } from 'lucide-react';
 import Link from 'next/link';
+import { listUsers, AdminUser } from '@/lib/api/adminApi';
 
 const ADMIN_EMAILS = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',') || [];
-
-interface UserRow {
-    id: string;
-    email: string;
-    created_at: string;
-    skills_count: number;
-    disabled: boolean;
-}
 
 export default function AdminUsersPage() {
     const router = useRouter();
     const { user, loading } = useAuth();
     const [isAdmin, setIsAdmin] = useState(false);
-    const [users, setUsers] = useState<UserRow[]>([]);
+    const [users, setUsers] = useState<AdminUser[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!loading && user) {
@@ -36,24 +30,35 @@ export default function AdminUsersPage() {
             if (!adminCheck) {
                 router.push('/app');
             } else {
-                // Load mock data for now (would be from adminApi)
-                setUsers([
-                    { id: '1', email: 'user1@example.com', created_at: '2024-12-20', skills_count: 5, disabled: false },
-                    { id: '2', email: 'user2@example.com', created_at: '2024-12-21', skills_count: 3, disabled: false },
-                    { id: '3', email: 'user3@example.com', created_at: '2024-12-22', skills_count: 0, disabled: true },
-                ]);
-                setIsLoading(false);
+                // Load real users from API
+                loadUsers();
             }
         } else if (!loading && !user) {
             router.push('/');
         }
     }, [user, loading, router]);
 
+    const loadUsers = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const result = await listUsers();
+            setUsers(result.users);
+        } catch (err) {
+            setError('Failed to load users');
+            console.error(err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const filteredUsers = users.filter(u =>
-        u.email.toLowerCase().includes(searchQuery.toLowerCase())
+        u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        u.id.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const handleDisable = async (userId: string) => {
+        // Toggle disabled state locally (would call API in production)
         setUsers(users.map(u =>
             u.id === userId ? { ...u, disabled: !u.disabled } : u
         ));

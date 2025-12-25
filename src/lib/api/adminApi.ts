@@ -35,19 +35,59 @@ export async function getAdminStats() {
     };
 }
 
-// List users with pagination
-export async function listUsers(page = 0, limit = 20) {
+// List users with skill counts (from user_skills table)
+export interface AdminUser {
+    id: string;
+    email: string;
+    created_at: string;
+    skills_count: number;
+    disabled: boolean;
+}
+
+export async function listUsers(): Promise<{ users: AdminUser[], total: number }> {
     if (!supabase) return { users: [], total: 0 };
 
-    const { data, error, count } = await supabase
-        .rpc('get_users_with_stats', { page_num: page, page_size: limit });
+    // Get all skills grouped by user
+    const { data: skills, error } = await supabase
+        .from('user_skills')
+        .select('user_id, created_at');
 
     if (error) {
         console.error('Error listing users:', error);
         return { users: [], total: 0 };
     }
 
-    return { users: data || [], total: count || 0 };
+    if (!skills || skills.length === 0) {
+        return { users: [], total: 0 };
+    }
+
+    // Group skills by user_id
+    const userMap = new Map<string, { count: number; earliest: string }>();
+    skills.forEach(skill => {
+        const existing = userMap.get(skill.user_id);
+        if (existing) {
+            existing.count++;
+            if (skill.created_at < existing.earliest) {
+                existing.earliest = skill.created_at;
+            }
+        } else {
+            userMap.set(skill.user_id, { count: 1, earliest: skill.created_at });
+        }
+    });
+
+    // Convert to AdminUser array
+    const users: AdminUser[] = Array.from(userMap.entries()).map(([userId, data]) => ({
+        id: userId,
+        email: `User ${userId.substring(0, 8)}...`, // We don't have email access from client
+        created_at: data.earliest,
+        skills_count: data.count,
+        disabled: false,
+    }));
+
+    // Sort by most recent first
+    users.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+    return { users, total: users.length };
 }
 
 // Get site settings
