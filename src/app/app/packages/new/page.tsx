@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { usePackageStore } from '@/lib/store/packageStore';
 import { getTemplates } from '@/lib/api/templateApi';
 import { generatePackageZip } from '@/lib/utils/package-generator';
+import { ResourceManager } from '@/components/builder/ResourceManager';
 import { Check, ChevronLeft, ChevronRight, Download, Package } from 'lucide-react';
 import type { SkillType } from '@/types/package.types';
 import { Template } from '@/types/skill.types';
@@ -19,7 +20,7 @@ const STEPS = ['Details', 'Skills', 'Resources', 'Export'];
 export default function NewPackagePage() {
     const router = useRouter();
     const [step, setStep] = useState(0);
-    const { pkg, updateField, addSkill, removeSkill, reset } = usePackageStore();
+    const { pkg, updateField, addSkill, removeSkill, addResource, removeResource, reset } = usePackageStore();
     const [templates, setTemplates] = useState<Template[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -159,14 +160,13 @@ export default function NewPackagePage() {
                         <div className="space-y-4">
                             <h2 className="text-xl font-bold text-foreground mb-2">Add Resources</h2>
                             <p className="text-sm text-muted-foreground mb-4">
-                                Attach reference files (optional)
+                                Attach reference files to include in the bundle ({pkg.resources.length} files)
                             </p>
-                            <div className="p-8 border-2 border-dashed border-border rounded-lg text-center">
-                                <Package className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                                <p className="text-sm text-muted-foreground">
-                                    Resource manager coming soon
-                                </p>
-                            </div>
+                            <ResourceManager
+                                resources={pkg.resources}
+                                onAdd={(resource) => addResource(resource)}
+                                onRemove={(id) => removeResource(id)}
+                            />
                         </div>
                     )}
 
