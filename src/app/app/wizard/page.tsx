@@ -72,8 +72,7 @@ export default function WizardPage() {
         switch (step) {
             case 0: return skill.name && skill.description;
             case 1: return skill.triggers.length > 0;
-            case 2: return skill.instructions.length > 20;
-            default: return true;
+            default: return true; // Steps 2+ are always navigable
         }
     };
 
@@ -91,8 +90,8 @@ export default function WizardPage() {
                             <div key={s.id} className="flex items-center">
                                 <div
                                     className={`flex items-center justify-center w-10 h-10 rounded-full ${i < step ? 'bg-primary text-white' :
-                                            i === step ? 'bg-primary/20 text-primary border-2 border-primary' :
-                                                'bg-muted text-muted-foreground'
+                                        i === step ? 'bg-primary/20 text-primary border-2 border-primary' :
+                                            'bg-muted text-muted-foreground'
                                         }`}
                                 >
                                     {i < step ? <Check className="h-5 w-5" /> : <Icon className="h-5 w-5" />}
