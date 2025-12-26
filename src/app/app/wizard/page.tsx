@@ -12,6 +12,7 @@ import { useSkillStore } from '@/lib/store/skillStore';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
 import { SkillSnippets } from '@/components/builder/SkillSnippets';
 import { ResourceManager } from '@/components/builder/ResourceManager';
+import { FloatingIdeas } from '@/components/wizard/FloatingIdeas';
 import {
     Check, ChevronLeft, ChevronRight, Download,
     Lightbulb, MessageSquare, FileText, Paperclip, Rocket,
@@ -81,7 +82,8 @@ export default function WizardPage() {
 
     return (
         <Shell title="Quick Start Wizard">
-            <div className="container mx-auto py-8 max-w-2xl">
+            <FloatingIdeas />
+            <div className="container mx-auto py-8 max-w-2xl relative z-10">
                 {/* Progress */}
                 <div className="flex items-center justify-center mb-8 gap-1">
                     {STEPS.map((s, i) => {
