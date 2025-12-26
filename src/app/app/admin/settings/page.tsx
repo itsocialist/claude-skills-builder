@@ -16,6 +16,9 @@ const ADMIN_EMAILS = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',') || [];
 interface LocalSiteSettings {
     site_name: string;
     primary_color: string;
+    background_color: string;
+    accent_color: string;
+    muted_color: string;
     categories: string[];
     menu_items: { label: string; href: string }[];
     max_skills_per_user: number;
@@ -35,6 +38,9 @@ export default function AdminSettingsPage() {
     const [settings, setSettings] = useState<LocalSiteSettings>({
         site_name: 'ClaudeSkillsFacet',
         primary_color: '#C15F3C',
+        background_color: '#1a1a1a',
+        accent_color: '#2a2a2a',
+        muted_color: '#6b6b6b',
         categories: [],
         menu_items: [],
         max_skills_per_user: 100,
@@ -59,15 +65,19 @@ export default function AdminSettingsPage() {
     useEffect(() => {
         if (isAdmin) {
             getSiteSettings().then(data => {
+                console.log('Loaded settings:', data);
                 setSettings(prev => ({
                     ...prev,
                     ...data,
-                    // Ensure arrays are initialized if missing
-                    categories: data.categories || prev.categories,
-                    menu_items: data.menu_items || prev.menu_items,
+                    // Ensure arrays are properly parsed
+                    categories: Array.isArray(data.categories) ? data.categories : prev.categories,
+                    menu_items: Array.isArray(data.menu_items) ? data.menu_items : prev.menu_items,
                     primary_color: data.primary_color || prev.primary_color,
+                    background_color: data.background_color || prev.background_color,
+                    accent_color: data.accent_color || prev.accent_color,
+                    muted_color: data.muted_color || prev.muted_color,
                 }));
-            });
+            }).catch(err => console.error('Failed to load settings:', err));
         }
     }, [isAdmin]);
 
@@ -168,25 +178,94 @@ export default function AdminSettingsPage() {
                             />
                         </div>
 
-                        {/* Primary Color */}
-                        <div>
-                            <label className="block text-sm font-medium text-foreground mb-2">
-                                Primary Theme Color
-                            </label>
-                            <div className="flex items-center gap-3">
-                                <div className="relative w-12 h-12 rounded-full overflow-hidden border border-border shadow-sm">
-                                    <input
-                                        type="color"
+                        {/* Theme Colors */}
+                        <div className="grid grid-cols-2 gap-4">
+                            {/* Primary Color */}
+                            <div>
+                                <label className="block text-sm font-medium text-foreground mb-2">
+                                    Primary Color
+                                </label>
+                                <div className="flex items-center gap-2">
+                                    <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-border shadow-sm">
+                                        <input
+                                            type="color"
+                                            value={settings.primary_color}
+                                            onChange={(e) => setSettings({ ...settings, primary_color: e.target.value })}
+                                            className="absolute -top-2 -left-2 w-14 h-14 p-0 cursor-pointer border-0"
+                                        />
+                                    </div>
+                                    <Input
                                         value={settings.primary_color}
                                         onChange={(e) => setSettings({ ...settings, primary_color: e.target.value })}
-                                        className="absolute -top-2 -left-2 w-16 h-16 p-0 cursor-pointer border-0"
+                                        className="w-24 font-mono uppercase text-xs"
                                     />
                                 </div>
-                                <Input
-                                    value={settings.primary_color}
-                                    onChange={(e) => setSettings({ ...settings, primary_color: e.target.value })}
-                                    className="w-32 font-mono uppercase"
-                                />
+                            </div>
+
+                            {/* Background Color */}
+                            <div>
+                                <label className="block text-sm font-medium text-foreground mb-2">
+                                    Background
+                                </label>
+                                <div className="flex items-center gap-2">
+                                    <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-border shadow-sm">
+                                        <input
+                                            type="color"
+                                            value={settings.background_color}
+                                            onChange={(e) => setSettings({ ...settings, background_color: e.target.value })}
+                                            className="absolute -top-2 -left-2 w-14 h-14 p-0 cursor-pointer border-0"
+                                        />
+                                    </div>
+                                    <Input
+                                        value={settings.background_color}
+                                        onChange={(e) => setSettings({ ...settings, background_color: e.target.value })}
+                                        className="w-24 font-mono uppercase text-xs"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Accent Color */}
+                            <div>
+                                <label className="block text-sm font-medium text-foreground mb-2">
+                                    Accent Color
+                                </label>
+                                <div className="flex items-center gap-2">
+                                    <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-border shadow-sm">
+                                        <input
+                                            type="color"
+                                            value={settings.accent_color}
+                                            onChange={(e) => setSettings({ ...settings, accent_color: e.target.value })}
+                                            className="absolute -top-2 -left-2 w-14 h-14 p-0 cursor-pointer border-0"
+                                        />
+                                    </div>
+                                    <Input
+                                        value={settings.accent_color}
+                                        onChange={(e) => setSettings({ ...settings, accent_color: e.target.value })}
+                                        className="w-24 font-mono uppercase text-xs"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Muted Color */}
+                            <div>
+                                <label className="block text-sm font-medium text-foreground mb-2">
+                                    Muted Text
+                                </label>
+                                <div className="flex items-center gap-2">
+                                    <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-border shadow-sm">
+                                        <input
+                                            type="color"
+                                            value={settings.muted_color}
+                                            onChange={(e) => setSettings({ ...settings, muted_color: e.target.value })}
+                                            className="absolute -top-2 -left-2 w-14 h-14 p-0 cursor-pointer border-0"
+                                        />
+                                    </div>
+                                    <Input
+                                        value={settings.muted_color}
+                                        onChange={(e) => setSettings({ ...settings, muted_color: e.target.value })}
+                                        className="w-24 font-mono uppercase text-xs"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </Card>
