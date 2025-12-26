@@ -229,7 +229,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                 </aside>
 
                 {/* Main Content - Centered when no inspector on desktop */}
-                <main className={`flex-1 min-w-0 overflow-y-auto bg-background ${inspector ? '' : 'lg:flex lg:justify-center'}`}>
+                <main className={`flex-1 min-w-0 overflow-y-auto bg-background relative ${inspector ? '' : 'lg:flex lg:justify-center'}`}>
                     <div className={`p-4 md:p-8 ${inspector ? '' : 'lg:max-w-4xl lg:w-full'}`}>
                         {children}
                     </div>
