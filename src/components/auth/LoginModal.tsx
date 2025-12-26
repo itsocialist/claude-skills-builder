@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from './AuthProvider';
 import { X, Mail, Lock, Loader2 } from 'lucide-react';
 
@@ -10,6 +11,7 @@ interface LoginModalProps {
 }
 
 export function LoginModal({ isOpen, onClose }: LoginModalProps) {
+    const router = useRouter();
     const { signIn, signUp, signInWithGoogle, isConfigured } = useAuth();
     const [mode, setMode] = useState<'login' | 'signup'>('login');
     const [email, setEmail] = useState('');
@@ -47,6 +49,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                     setError(error.message);
                 } else {
                     onClose();
+                    router.push('/app');
                 }
             } else {
                 const { error } = await signUp(email, password);
