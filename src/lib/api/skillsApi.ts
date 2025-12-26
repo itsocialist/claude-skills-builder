@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import type { Skill } from '@/types/skill.types';
+import type { Skill, SkillResource } from '@/types/skill.types';
 
 export interface SavedSkill extends Skill {
     id: string;
@@ -58,6 +58,54 @@ export async function getSkillById(skillId: string): Promise<SavedSkill | null> 
 export async function saveSkill(userId: string, skill: Skill): Promise<SavedSkill | null> {
     if (!supabase) return null;
 
+    // ---------- Validation ----------
+    const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB per file
+    const MAX_TOTAL_SIZE = 5 * 1024 * 1024; // 5 MB per skill
+    let totalSize = 0;
+    if (skill.resources) {
+        for (const r of skill.resources) {
+            const size = r.size_bytes ?? (r.content ? new TextEncoder().encode(r.content).length : 0);
+            if (size > MAX_FILE_SIZE) {
+                console.error(`Resource ${r.filename} exceeds per‑file limit of 1 MB`);
+                return null;
+            }
+            totalSize += size;
+        }
+        if (totalSize > MAX_TOTAL_SIZE) {
+            console.error('Total resources size exceeds 5 MB limit');
+            return null;
+        }
+    }
+
+    // ---------- Upload resources ----------
+    const uploadedResources: SkillResource[] = [];
+    if (skill.resources) {
+        for (const r of skill.resources) {
+            // If already uploaded, keep existing info
+            if (r.storage_path) {
+                uploadedResources.push(r);
+                continue;
+            }
+            const bucket = supabase.storage.from('skill_resources');
+            const filePath = `${userId}/${skill.name}/${r.filename}`;
+            const { error: uploadError } = await bucket.upload(filePath, r.content ?? '', {
+                upsert: true,
+                contentType: r.mime_type ?? 'application/octet-stream',
+            });
+            if (uploadError) {
+                console.error('Error uploading resource', r.filename, uploadError);
+                return null;
+            }
+            const storagePath = `skill_resources/${filePath}`;
+            uploadedResources.push({
+                ...r,
+                storage_path: storagePath,
+                size_bytes: r.size_bytes ?? (r.content ? new TextEncoder().encode(r.content).length : 0),
+            });
+        }
+    }
+
+    // ---------- Insert skill record ----------
     const { data, error } = await supabase
         .from('user_skills')
         .insert({
@@ -68,7 +116,7 @@ export async function saveSkill(userId: string, skill: Skill): Promise<SavedSkil
             tags: skill.tags,
             triggers: skill.triggers,
             instructions: skill.instructions,
-            resources: skill.resources || [],
+            resources: uploadedResources,
         })
         .select()
         .single();
