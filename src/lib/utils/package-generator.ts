@@ -122,6 +122,28 @@ ${pkg.skills.map(ps => `- **${ps.skill.name}** (${ps.type})`).join('\n')}
 }
 
 /**
+ * Generate config.yaml for the package
+ */
+function generatePackageConfig(pkg: Package): string {
+    const slugName = slugifyName(pkg.name || 'skill-bundle');
+    return yaml.dump({
+        name: slugName,
+        version: '1.0.0',
+        description: pkg.description,
+        skills_count: pkg.skills.length,
+        skills: pkg.skills.map(ps => ({
+            name: slugifyName(ps.skill.name),
+            type: ps.type,
+            category: ps.skill.category,
+        })),
+        compatibility: {
+            claude_web: true,
+            claude_code: true,
+        },
+    }, { indent: 2 });
+}
+
+/**
  * Generate a ZIP package containing bundled skills and resources
  */
 export async function generatePackageZip(pkg: Package): Promise<Blob> {
@@ -133,9 +155,21 @@ export async function generatePackageZip(pkg: Package): Promise<Blob> {
     // Add README
     zip.file('README.md', generatePackageReadme(pkg));
 
-    // Add resources by folder
+    // Add config.yaml
+    zip.file('config.yaml', generatePackageConfig(pkg));
+
+    // Add package-level resources
     for (const resource of pkg.resources) {
         zip.file(`${resource.folder}/${resource.name}`, resource.content);
+    }
+
+    // Add individual skill resources
+    for (const ps of pkg.skills) {
+        if (ps.skill.resources && ps.skill.resources.length > 0) {
+            for (const resource of ps.skill.resources) {
+                zip.file(`${resource.folder}/${resource.name}`, resource.content);
+            }
+        }
     }
 
     return await zip.generateAsync({ type: 'blob' });
