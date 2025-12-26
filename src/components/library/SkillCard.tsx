@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Edit3, Trash2, Copy, Download, MoreVertical } from 'lucide-react';
+import { Edit3, Trash2, Copy, Download, MoreVertical, Eye } from 'lucide-react';
 import type { SavedSkill } from '@/lib/api/skillsApi';
 
 interface SkillCardProps {
@@ -104,11 +104,26 @@ export function SkillCard({ skill, onEdit, onDelete, onDuplicate, onExport }: Sk
                 {skill.description || 'No description'}
             </p>
 
-            {/* Footer */}
+            {/* Footer with Analytics */}
             <div className="flex items-center justify-between text-xs text-gray-500">
-                <span>{skill.triggers.length} trigger{skill.triggers.length !== 1 ? 's' : ''}</span>
+                <div className="flex items-center gap-3">
+                    <span>{skill.triggers.length} trigger{skill.triggers.length !== 1 ? 's' : ''}</span>
+                    {(skill.view_count ?? 0) > 0 && (
+                        <span className="flex items-center gap-1">
+                            <Eye className="w-3 h-3" />
+                            {skill.view_count}
+                        </span>
+                    )}
+                    {(skill.download_count ?? 0) > 0 && (
+                        <span className="flex items-center gap-1">
+                            <Download className="w-3 h-3" />
+                            {skill.download_count}
+                        </span>
+                    )}
+                </div>
                 <span>Updated {formatDate(skill.updated_at)}</span>
             </div>
         </div>
     );
 }
+

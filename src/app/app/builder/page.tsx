@@ -17,9 +17,9 @@ import { TestConsole } from '@/components/builder/TestConsole';
 import { Shell } from '@/components/layout/Shell';
 import { validateSkill, getValidationStatus } from '@/lib/utils/validation';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { saveSkill, getSkillById, updateSkill } from '@/lib/api/skillsApi';
+import { saveSkill, getSkillById, updateSkill, trackSkillDownload, trackSkillView, type SavedSkill } from '@/lib/api/skillsApi';
 import { AISkillGenerator } from '@/components/builder/AISkillGenerator';
-import { Save, Loader2, Sparkles } from 'lucide-react';
+import { Save, Loader2, Sparkles, Eye, Download } from 'lucide-react';
 
 export default function BuilderPage() {
     return (
@@ -39,6 +39,7 @@ function BuilderContent() {
     const [showAIGenerator, setShowAIGenerator] = useState(false);
     const [activeTab, setActiveTab] = useState<'preview' | 'config' | 'test'>('preview');
     const [editId, setEditId] = useState<string | null>(null);
+    const [currentSkillData, setCurrentSkillData] = useState<SavedSkill | null>(null);
     const [isLoadingSkill, setIsLoadingSkill] = useState(false);
 
     const handleSaveToLibrary = async () => {
@@ -117,6 +118,9 @@ function BuilderContent() {
             getSkillById(editSkillId).then(savedSkill => {
                 if (savedSkill) {
                     setEditId(savedSkill.id);
+                    setCurrentSkillData(savedSkill);
+                    // Track view when opening for edit
+                    trackSkillView(savedSkill.id);
                     setSkill({
                         name: savedSkill.name,
                         description: savedSkill.description,
@@ -147,6 +151,10 @@ function BuilderContent() {
             a.style.display = 'none';
             document.body.appendChild(a);
             a.click();
+            // Track download if this is a saved skill
+            if (editId) {
+                trackSkillDownload(editId);
+            }
             // Delay removal and URL revocation to ensure download starts
             setTimeout(() => {
                 document.body.removeChild(a);
@@ -284,7 +292,6 @@ function BuilderContent() {
             }}
         >
             <div className="max-w-3xl mx-auto">
-                {/* Create with AI Button */}
                 <div className="mb-6">
                     <Button
                         variant="outline"
@@ -294,6 +301,20 @@ function BuilderContent() {
                         <Sparkles className="w-4 h-4 mr-2" />
                         Create with AI
                     </Button>
+
+                    {/* Analytics Stats for saved skills */}
+                    {currentSkillData && (
+                        <div className="inline-flex items-center gap-4 ml-4 text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                                <Eye className="w-4 h-4" />
+                                {currentSkillData.view_count ?? 0} views
+                            </span>
+                            <span className="flex items-center gap-1">
+                                <Download className="w-4 h-4" />
+                                {currentSkillData.download_count ?? 0} downloads
+                            </span>
+                        </div>
+                    )}
                 </div>
 
                 <div className="mb-6">

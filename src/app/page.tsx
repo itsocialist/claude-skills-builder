@@ -69,9 +69,9 @@ export default function MarketingPage() {
 
             {/* Right: Screenshot - Smaller */}
             <div className="md:col-span-2 hidden md:block">
-              <div className="rounded-lg overflow-hidden border border-border">
+              <div className="rounded-xl overflow-hidden border border-border/50 shadow-2xl shadow-black/50">
                 <Image
-                  src="/screenshots/builder.png"
+                  src="/screenshots/builder-mock.png"
                   alt="Template Builder"
                   width={500}
                   height={350}
