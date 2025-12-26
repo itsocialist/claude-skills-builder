@@ -36,6 +36,7 @@ interface Bubble {
     content: { type: string; line1: string; line2: string };
     side: 'left' | 'right';
     top: number;
+    left: number;
     delay: number;
 }
 
@@ -45,16 +46,28 @@ export function FloatingIdeas() {
     useEffect(() => {
         const allContent = [...SKILL_IDEAS, ...TIPS];
 
-        // Create 6 bubbles - 3 on each side, positioned to not overlap center
-        const initialBubbles: Bubble[] = [
-            { id: 0, side: 'left' as const, top: 5, delay: 0 },
-            { id: 1, side: 'right' as const, top: 8, delay: 0.5 },
-            { id: 2, side: 'left' as const, top: 35, delay: 1 },
-            { id: 3, side: 'right' as const, top: 40, delay: 1.5 },
-            { id: 4, side: 'left' as const, top: 70, delay: 2 },
-            { id: 5, side: 'right' as const, top: 75, delay: 2.5 },
-        ].map(b => ({
-            ...b,
+        // Create 8 bubbles spread around the darker areas (avoiding center card)
+        const positions = [
+            // Top area
+            { side: 'left' as const, top: 2, left: 15 },
+            { side: 'right' as const, top: 5, left: 75 },
+            // Left side
+            { side: 'left' as const, top: 25, left: 3 },
+            { side: 'left' as const, top: 55, left: 8 },
+            // Right side
+            { side: 'right' as const, top: 30, left: 85 },
+            { side: 'right' as const, top: 60, left: 82 },
+            // Bottom area
+            { side: 'left' as const, top: 85, left: 20 },
+            { side: 'right' as const, top: 88, left: 70 },
+        ];
+
+        const initialBubbles: Bubble[] = positions.map((pos, i) => ({
+            id: i,
+            side: pos.side,
+            top: pos.top,
+            left: pos.left,
+            delay: i * 0.6,
             content: allContent[Math.floor(Math.random() * allContent.length)],
         }));
 
@@ -78,7 +91,7 @@ export function FloatingIdeas() {
                     key={bubble.id}
                     className="absolute animate-float opacity-0"
                     style={{
-                        [bubble.side]: '8px',
+                        left: `${bubble.left}%`,
                         top: `${bubble.top}%`,
                         animationDelay: `${bubble.delay}s`,
                     }}
