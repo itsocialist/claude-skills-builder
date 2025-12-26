@@ -82,9 +82,20 @@ export function ResourceManager({ resources, onAdd, onRemove }: ResourceManagerP
                                         const file = e.target.files?.[0];
                                         if (file) {
                                             setName(file.name);
-                                            const reader = new FileReader();
-                                            reader.onload = (e) => setContent(e.target?.result as string || '');
-                                            reader.readAsText(file);
+                                            // Check if it's a binary file
+                                            const isBinary = /\.(png|jpg|jpeg|gif|webp|ico|pdf|zip|exe|bin|woff|woff2|ttf|eot|mp3|mp4|wav|avi|mov)$/i.test(file.name);
+
+                                            if (isBinary) {
+                                                // For binary files, read as data URL
+                                                const reader = new FileReader();
+                                                reader.onload = (e) => setContent(e.target?.result as string || '');
+                                                reader.readAsDataURL(file);
+                                            } else {
+                                                // For text files, read as text
+                                                const reader = new FileReader();
+                                                reader.onload = (e) => setContent(e.target?.result as string || '');
+                                                reader.readAsText(file);
+                                            }
                                         }
                                     }}
                                 />
@@ -96,12 +107,23 @@ export function ResourceManager({ resources, onAdd, onRemove }: ResourceManagerP
                                 </Button>
                             </div>
                         </div>
-                        <Textarea
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            placeholder="File content..."
-                            rows={4}
-                        />
+                        {/* Show preview or placeholder for binary */}
+                        {content.startsWith('data:') ? (
+                            <div className="p-4 bg-muted/50 rounded-md text-center">
+                                <FileText className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                                <p className="text-sm text-muted-foreground">Binary file: {name}</p>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                    {Math.round(content.length / 1024)}KB (stored as data URL)
+                                </p>
+                            </div>
+                        ) : (
+                            <Textarea
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
+                                placeholder="File content..."
+                                rows={4}
+                            />
+                        )}
                         <div className="flex justify-end gap-2">
                             <Button variant="outline" size="sm" onClick={() => setIsAdding(false)}>
                                 Cancel
