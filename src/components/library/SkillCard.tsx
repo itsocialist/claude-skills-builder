@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Edit3, Trash2, Copy, Download, MoreVertical, Eye } from 'lucide-react';
+import { Edit3, Trash2, Copy, Download, MoreVertical, Eye, Share2 } from 'lucide-react';
 import type { SavedSkill } from '@/lib/api/skillsApi';
 
 interface SkillCardProps {
@@ -81,6 +81,17 @@ export function SkillCard({ skill, onEdit, onDelete, onDuplicate, onExport }: Sk
                                 >
                                     <Download className="w-3.5 h-3.5" />
                                     Export
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const shareUrl = `${window.location.origin}/s/${skill.id}`;
+                                        navigator.clipboard.writeText(shareUrl);
+                                        setShowMenu(false);
+                                    }}
+                                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-[#3a3a3a]"
+                                >
+                                    <Share2 className="w-3.5 h-3.5" />
+                                    Share Link
                                 </button>
                                 <hr className="my-1 border-[#3a3a3a]" />
                                 <button

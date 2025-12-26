@@ -7,9 +7,9 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { ArrowLeft, Search, UserX, Loader2 } from 'lucide-react';
+import { ArrowLeft, Search, UserX, Loader2, UserPlus, X } from 'lucide-react';
 import Link from 'next/link';
-import { listUsers, toggleUserStatus, AdminUser } from '@/lib/api/adminApi';
+import { listUsers, toggleUserStatus, inviteUser, AdminUser } from '@/lib/api/adminApi';
 
 const ADMIN_EMAILS = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',') || [];
 
@@ -22,6 +22,10 @@ export default function AdminUsersPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [togglingUser, setTogglingUser] = useState<string | null>(null);
+    const [showInviteModal, setShowInviteModal] = useState(false);
+    const [inviteEmail, setInviteEmail] = useState('');
+    const [inviting, setInviting] = useState(false);
+    const [inviteMessage, setInviteMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     useEffect(() => {
         if (!loading && user && session) {
@@ -73,6 +77,25 @@ export default function AdminUsersPage() {
         setTogglingUser(null);
     };
 
+    const handleInviteUser = async () => {
+        if (!session?.access_token || !inviteEmail) return;
+
+        setInviting(true);
+        setInviteMessage(null);
+
+        const result = await inviteUser(session.access_token, inviteEmail);
+
+        if (result.success) {
+            setInviteMessage({ type: 'success', text: result.message || 'Invitation sent!' });
+            setInviteEmail('');
+            loadUsers(); // Refresh the user list
+        } else {
+            setInviteMessage({ type: 'error', text: result.error || 'Failed to send invitation' });
+        }
+
+        setInviting(false);
+    };
+
     if (loading || !isAdmin) {
         return (
             <Shell>
@@ -94,10 +117,14 @@ export default function AdminUsersPage() {
                             Back
                         </Button>
                     </Link>
-                    <div>
+                    <div className="flex-1">
                         <h1 className="text-2xl font-bold text-foreground">User Management</h1>
                         <p className="text-muted-foreground">{users.length} registered users</p>
                     </div>
+                    <Button onClick={() => setShowInviteModal(true)}>
+                        <UserPlus className="w-4 h-4 mr-2" />
+                        Add User
+                    </Button>
                 </div>
 
                 {/* Search */}
@@ -177,6 +204,74 @@ export default function AdminUsersPage() {
                     </table>
                 </Card>
             </div>
+
+            {/* Invite User Modal */}
+            {showInviteModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-card border border-border rounded-xl p-6 w-full max-w-md">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-lg font-semibold text-foreground">Invite User</h2>
+                            <button
+                                onClick={() => {
+                                    setShowInviteModal(false);
+                                    setInviteEmail('');
+                                    setInviteMessage(null);
+                                }}
+                                className="text-muted-foreground hover:text-foreground"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <p className="text-muted-foreground text-sm mb-4">
+                            Enter the email address of the user you want to invite. They will receive an invitation email to create their account.
+                        </p>
+
+                        <Input
+                            type="email"
+                            placeholder="user@example.com"
+                            value={inviteEmail}
+                            onChange={(e) => setInviteEmail(e.target.value)}
+                            className="mb-4"
+                        />
+
+                        {inviteMessage && (
+                            <div className={`p-3 rounded-lg mb-4 text-sm ${inviteMessage.type === 'success'
+                                    ? 'bg-green-500/20 text-green-400'
+                                    : 'bg-red-500/20 text-red-400'
+                                }`}>
+                                {inviteMessage.text}
+                            </div>
+                        )}
+
+                        <div className="flex justify-end gap-2">
+                            <Button
+                                variant="ghost"
+                                onClick={() => {
+                                    setShowInviteModal(false);
+                                    setInviteEmail('');
+                                    setInviteMessage(null);
+                                }}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={handleInviteUser}
+                                disabled={!inviteEmail || inviting}
+                            >
+                                {inviting ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        Sending...
+                                    </>
+                                ) : (
+                                    'Send Invitation'
+                                )}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </Shell>
     );
 }

@@ -86,6 +86,30 @@ export async function toggleUserStatus(token: string, userId: string, disable: b
     }
 }
 
+export async function inviteUser(token: string, email: string, role?: string): Promise<{ success: boolean; message?: string; error?: string }> {
+    try {
+        const response = await fetch('/api/admin/users/invite', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, role }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return { success: false, error: data.error || 'Failed to invite user' };
+        }
+
+        return { success: true, message: data.message };
+    } catch (error) {
+        console.error('Error inviting user:', error);
+        return { success: false, error: 'Network error' };
+    }
+}
+
 // Site Settings Types
 export interface SiteSettings {
     site_name: string;
