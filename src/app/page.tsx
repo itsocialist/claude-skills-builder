@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Play, Home, Briefcase, TrendingUp, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { DemoGallery } from '@/components/marketing/DemoGallery';
 
 export default function MarketingPage() {
   return (
@@ -157,33 +158,44 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* Demo - Just images, minimal card styling */}
+      {/* Demo - User Journey Steps */}
       <section id="demo" className="py-10 bg-card border-y border-border">
         <div className="container mx-auto px-6">
-          <h2 className="text-xl font-bold mb-6 text-foreground">See the Builder</h2>
+          <h2 className="text-xl font-bold mb-2 text-foreground">See the Builder</h2>
+          <p className="text-sm text-muted-foreground mb-6">From template to download in 4 simple steps — click any image to enlarge</p>
 
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl">
-            <div>
-              <Image
-                src="/screenshots/builder.png"
-                alt="Template Builder Interface"
-                width={600}
-                height={400}
-                className="w-full h-auto rounded-lg border border-border"
-              />
-              <p className="text-sm text-muted-foreground mt-2">Fill in the form, get a skill file.</p>
-            </div>
-            <div>
-              <Image
-                src="/screenshots/templates.png"
-                alt="Template Library"
-                width={600}
-                height={400}
-                className="w-full h-auto rounded-lg border border-border"
-              />
-              <p className="text-sm text-muted-foreground mt-2">Browse templates by industry.</p>
-            </div>
-          </div>
+          <DemoGallery
+            steps={[
+              {
+                src: '/screenshots/mock-templates.png',
+                alt: 'Browse skill templates',
+                step: 1,
+                title: '1. Browse Templates',
+                description: 'Pick from ready-made industry templates',
+              },
+              {
+                src: '/screenshots/mock-wizard.png',
+                alt: 'Quick start wizard',
+                step: 2,
+                title: '2. Quick Start',
+                description: 'Guided setup in under a minute',
+              },
+              {
+                src: '/screenshots/mock-builder.png',
+                alt: 'Customize in the builder',
+                step: 3,
+                title: '3. Customize',
+                description: 'Edit name, description & instructions',
+              },
+              {
+                src: '/screenshots/mock-export.png',
+                alt: 'Download your skill',
+                step: 4,
+                title: '4. Download',
+                description: 'Export .zip, upload to Claude.ai',
+              },
+            ]}
+          />
         </div>
       </section>
 

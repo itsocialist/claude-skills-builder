@@ -86,40 +86,44 @@ export async function toggleUserStatus(token: string, userId: string, disable: b
     }
 }
 
+// Site Settings Types
+export interface SiteSettings {
+    site_name: string;
+    primary_color: string;
+    categories: string[];
+    menu_items: { label: string; href: string }[];
+    [key: string]: any;
+}
+
 // Get site settings
-export async function getSiteSettings() {
-    if (!supabase) return {};
-
-    const { data, error } = await supabase
-        .from('site_settings')
-        .select('key, value');
-
-    if (error) {
+export async function getSiteSettings(): Promise<SiteSettings> {
+    try {
+        const response = await fetch('/api/admin/settings');
+        if (!response.ok) return {} as SiteSettings;
+        return await response.json();
+    } catch (error) {
         console.error('Error fetching settings:', error);
-        return {};
+        return {} as SiteSettings;
     }
-
-    return data.reduce((acc, row) => {
-        acc[row.key] = row.value;
-        return acc;
-    }, {} as Record<string, any>);
 }
 
 // Update site setting
-export async function updateSiteSetting(key: string, value: any) {
-    if (!supabase) return false;
+export async function updateSiteSetting(token: string, key: string, value: any): Promise<boolean> {
+    try {
+        const response = await fetch('/api/admin/settings', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ key, value }),
+        });
 
-    const { error } = await supabase
-        .from('site_settings')
-        .update({ value, updated_at: new Date().toISOString() })
-        .eq('key', key);
-
-    if (error) {
+        return response.ok;
+    } catch (error) {
         console.error('Error updating setting:', error);
         return false;
     }
-
-    return true;
 }
 
 // Disable user

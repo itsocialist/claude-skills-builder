@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Pencil, Download, Library, LogIn, Building2, Menu, PanelRightOpen, Wand2, LayoutTemplate, Package, Hammer } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { useSiteSettings } from '@/lib/contexts/SiteSettingsContext';
 import { UserMenu } from '@/components/auth/UserMenu';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { RecentSkills } from '@/components/library/RecentSkills';
@@ -28,6 +29,7 @@ interface ShellProps {
 
 export function Shell({ children, inspector, title, onTitleChange, validation }: ShellProps) {
     const { user, isConfigured } = useAuth();
+    const { settings } = useSiteSettings();
     const pathname = usePathname();
     const [isEditing, setIsEditing] = useState(false);
     const [editedTitle, setEditedTitle] = useState(title || 'New Skill');
@@ -79,7 +81,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                         <SheetContent side="left" className="p-0 w-64">
                             <div className="h-14 flex items-center px-6 border-b border-border">
                                 <Link href="/app" className="font-bold text-xl tracking-tight text-primary">
-                                    ClaudeSkills
+                                    {settings.site_name}
                                 </Link>
                             </div>
                             <nav className="p-4 space-y-1">
@@ -113,6 +115,13 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                                         My Library
                                     </Link>
                                 )}
+                                {/* Dynamic Custom Menu Items (Mobile) */}
+                                {settings.menu_items.map((item, i) => (
+                                    <Link key={`mobile-${i}`} href={item.href} className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md text-muted-foreground hover:bg-accent hover:text-foreground">
+                                        <span className="w-4 h-4" /> {/* Spacer */}
+                                        {item.label}
+                                    </Link>
+                                ))}
                             </nav>
                         </SheetContent>
                     </Sheet>
@@ -120,9 +129,9 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
 
                 {/* Sidebar Header (Desktop) */}
                 <div className="hidden lg:flex w-64 items-center px-6 border-r border-border flex-shrink-0">
-                    <Link href="/app" className="font-bold text-xl tracking-tight text-primary">
-                        ClaudeSkills
-                    </Link>
+                    <span className="font-bold text-xl tracking-tight text-primary mb-1">
+                        {settings.site_name}
+                    </span>
                 </div>
 
                 {/* Main Header */}
@@ -222,6 +231,13 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                                 My Library
                             </Link>
                         )}
+                        {/* Dynamic Custom Menu Items (Desktop) */}
+                        {settings.menu_items.map((item, i) => (
+                            <Link key={`desktop-${i}`} href={item.href} className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md text-muted-foreground hover:bg-accent hover:text-foreground">
+                                <span className="w-4 h-4" /> {/* Spacer */}
+                                {item.label}
+                            </Link>
+                        ))}
                     </nav>
 
                     {/* Recent Skills (authenticated users) */}
