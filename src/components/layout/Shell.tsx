@@ -2,6 +2,7 @@
 
 import { ReactNode, useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Pencil, Download, Library, LogIn, Building2, Menu, PanelRightOpen, Wand2, LayoutTemplate, Package, Hammer } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { UserMenu } from '@/components/auth/UserMenu';
@@ -27,6 +28,7 @@ interface ShellProps {
 
 export function Shell({ children, inspector, title, onTitleChange, validation }: ShellProps) {
     const { user, isConfigured } = useAuth();
+    const pathname = usePathname();
     const [isEditing, setIsEditing] = useState(false);
     const [editedTitle, setEditedTitle] = useState(title || 'New Skill');
     const [saveStatus, setSaveStatus] = useState<'saved' | 'editing'>('saved');
@@ -81,19 +83,19 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                                 </Link>
                             </div>
                             <nav className="p-4 space-y-1">
-                                <Link href="/app/builder" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground bg-accent rounded-md">
+                                <Link href="/app/wizard" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/wizard' ? 'text-foreground bg-accent' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                                    <Wand2 className="w-4 h-4" />
+                                    Quick Start
+                                </Link>
+                                <Link href="/app/builder" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/builder' ? 'text-foreground bg-accent' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                     <Hammer className="w-4 h-4" />
                                     Skill Builder
                                 </Link>
-                                <Link href="/app/wizard" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
-                                    <Wand2 className="w-4 h-4" />
-                                    Wizard
-                                </Link>
-                                <Link href="/app/templates" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
+                                <Link href="/app/templates" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/templates') ? 'text-foreground bg-accent' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                     <LayoutTemplate className="w-4 h-4" />
                                     Templates
                                 </Link>
-                                <Link href="/app/packages" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
+                                <Link href="/app/packages" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/packages') ? 'text-foreground bg-accent' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                     <Package className="w-4 h-4" />
                                     Packages
                                 </Link>
@@ -190,19 +192,19 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                 {/* Sidebar Navigation (Desktop) */}
                 <aside className="hidden lg:block w-64 bg-card border-r border-border flex-shrink-0">
                     <nav className="p-4 space-y-1">
-                        <Link href="/app/builder" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground bg-accent rounded-md">
+                        <Link href="/app/wizard" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/wizard' ? 'text-foreground bg-accent' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                            <Wand2 className="w-4 h-4" />
+                            Quick Start
+                        </Link>
+                        <Link href="/app/builder" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/builder' ? 'text-foreground bg-accent' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                             <Hammer className="w-4 h-4" />
                             Skill Builder
                         </Link>
-                        <Link href="/app/wizard" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
-                            <Wand2 className="w-4 h-4" />
-                            Wizard
-                        </Link>
-                        <Link href="/app/templates" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
+                        <Link href="/app/templates" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/templates') ? 'text-foreground bg-accent' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                             <LayoutTemplate className="w-4 h-4" />
                             Templates
                         </Link>
-                        <Link href="/app/packages" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
+                        <Link href="/app/packages" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/packages') ? 'text-foreground bg-accent' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                             <Package className="w-4 h-4" />
                             Packages
                         </Link>
