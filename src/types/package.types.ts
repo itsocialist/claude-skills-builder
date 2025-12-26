@@ -10,9 +10,10 @@ export interface PackageSkill {
 
 export interface PackageResource {
     id: string;
-    folder: 'resources' | 'templates' | 'examples' | 'scripts';
-    name: string;
-    content: string;
+    folder: 'scripts' | 'references' | 'assets' | 'templates' | 'examples';
+    filename: string;
+    content?: string;
+    size_bytes?: number;
 }
 
 export interface Package {

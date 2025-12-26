@@ -160,14 +160,14 @@ export async function generatePackageZip(pkg: Package): Promise<Blob> {
 
     // Add package-level resources
     for (const resource of pkg.resources) {
-        zip.file(`${resource.folder}/${resource.name}`, resource.content);
+        zip.file(`${resource.folder}/${resource.filename}`, resource.content || '');
     }
 
     // Add individual skill resources
     for (const ps of pkg.skills) {
         if (ps.skill.resources && ps.skill.resources.length > 0) {
             for (const resource of ps.skill.resources) {
-                zip.file(`${resource.folder}/${resource.name}`, resource.content);
+                zip.file(`${resource.folder}/${resource.filename}`, resource.content || '');
             }
         }
     }

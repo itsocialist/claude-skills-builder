@@ -1,10 +1,13 @@
-export type ResourceFolder = 'resources' | 'templates' | 'examples' | 'scripts';
+export type ResourceFolder = 'scripts' | 'references' | 'assets' | 'templates' | 'examples';
 
 export interface SkillResource {
     id: string;
     folder: ResourceFolder;
-    name: string;
-    content: string;
+    filename: string;
+    content?: string;
+    storage_path?: string;
+    mime_type?: string;
+    size_bytes?: number;
 }
 
 export interface Skill {

@@ -48,7 +48,7 @@ export async function generateSkillZip(skill: Skill): Promise<Blob> {
     // 6. Add resources to folders
     if (skill.resources && skill.resources.length > 0) {
         for (const resource of skill.resources) {
-            zip.file(`${resource.folder}/${resource.name}`, resource.content);
+            zip.file(`${resource.folder}/${resource.filename}`, resource.content || '');
         }
     }
 
@@ -72,7 +72,7 @@ function generateConfig(skill: Skill, slugName: string): string {
 
 function generateReadme(skill: Skill, slugName: string): string {
     const resourceList = skill.resources && skill.resources.length > 0
-        ? `## Attached Files\n\n${skill.resources.map(r => `- \`${r.folder}/${r.name}\``).join('\n')}\n\n`
+        ? `## Attached Files\n\n${skill.resources.map(r => `- \`${r.folder}/${r.filename}\``).join('\n')}\n\n`
         : '';
 
     return `# ${skill.name}

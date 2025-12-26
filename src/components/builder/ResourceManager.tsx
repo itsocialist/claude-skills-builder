@@ -1,19 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useAuth } from '@/components/auth/AuthProvider';
-import {
-    getSkillResources,
-    createSkillResource,
-    deleteSkillResource,
-    getResourceIcon,
-    formatFileSize,
-    SkillResource,
-    GroupedResources
-} from '@/lib/api/skillResourcesApi';
 import {
     FolderOpen,
     Plus,
@@ -23,18 +13,14 @@ import {
     Image,
     ChevronDown,
     ChevronRight,
-    Loader2,
-    Save,
+    Upload,
+    File,
     X
 } from 'lucide-react';
+import type { SkillResource, ResourceFolder } from '@/types/skill.types';
 
-interface ResourceManagerProps {
-    skillId: string;
-    skillType: 'template' | 'user';
-    readOnly?: boolean;
-}
-
-const FOLDER_CONFIG = {
+// Folder configuration
+const FOLDER_CONFIG: Record<ResourceFolder, { icon: typeof Code; label: string; description: string }> = {
     scripts: { icon: Code, label: 'Scripts', description: 'Executable code and automation' },
     references: { icon: FileText, label: 'References', description: 'Documentation and guides' },
     assets: { icon: Image, label: 'Assets', description: 'Templates, images, data files' },
@@ -42,32 +28,65 @@ const FOLDER_CONFIG = {
     examples: { icon: FileText, label: 'Examples', description: 'Usage examples' },
 };
 
-export function ResourceManager({ skillId, skillType, readOnly = false }: ResourceManagerProps) {
-    const { session } = useAuth();
-    const [resources, setResources] = useState<SkillResource[]>([]);
-    const [grouped, setGrouped] = useState<GroupedResources>({});
-    const [loading, setLoading] = useState(true);
-    const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['scripts', 'references', 'assets']));
+// File type to folder mapping
+const EXTENSION_TO_FOLDER: Record<string, ResourceFolder> = {
+    'py': 'scripts',
+    'js': 'scripts',
+    'ts': 'scripts',
+    'sh': 'scripts',
+    'md': 'references',
+    'txt': 'references',
+    'html': 'assets',
+    'css': 'assets',
+    'json': 'assets',
+    'yaml': 'assets',
+    'yml': 'assets',
+    'png': 'assets',
+    'jpg': 'assets',
+    'jpeg': 'assets',
+    'gif': 'assets',
+    'svg': 'assets',
+};
 
-    // New file form
-    const [showNewFile, setShowNewFile] = useState(false);
-    const [newFileFolder, setNewFileFolder] = useState<string>('scripts');
-    const [newFileName, setNewFileName] = useState('');
-    const [newFileContent, setNewFileContent] = useState('');
-    const [saving, setSaving] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+interface ResourceManagerProps {
+    resources: SkillResource[];
+    onAdd: (resource: Omit<SkillResource, 'id'>) => void;
+    onRemove: (id: string) => void;
+    readOnly?: boolean;
+}
 
-    useEffect(() => {
-        loadResources();
-    }, [skillId, skillType]);
-
-    const loadResources = async () => {
-        setLoading(true);
-        const data = await getSkillResources(skillId, skillType);
-        setResources(data.resources);
-        setGrouped(data.grouped);
-        setLoading(false);
+// Helper: Get file icon
+function getResourceIcon(filename: string): string {
+    const ext = filename.split('.').pop()?.toLowerCase();
+    const iconMap: Record<string, string> = {
+        'md': '📝', 'txt': '📄', 'js': '🟨', 'ts': '🔷', 'py': '🐍',
+        'json': '📋', 'yaml': '⚙️', 'yml': '⚙️', 'html': '🌐', 'css': '🎨',
+        'png': '🖼️', 'jpg': '🖼️', 'jpeg': '🖼️', 'gif': '🖼️', 'svg': '🖼️', 'pdf': '📕',
     };
+    return iconMap[ext || ''] || '📎';
+}
+
+// Helper: Format file size
+function formatFileSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+// Helper: Determine folder from extension
+function getFolderForFile(filename: string): ResourceFolder {
+    const ext = filename.split('.').pop()?.toLowerCase() || '';
+    return EXTENSION_TO_FOLDER[ext] || 'assets';
+}
+
+export function ResourceManager({ resources, onAdd, onRemove, readOnly = false }: ResourceManagerProps) {
+    const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['scripts', 'references', 'assets']));
+    const [showAddForm, setShowAddForm] = useState(false);
+    const [newFileName, setNewFileName] = useState('');
+    const [newFileFolder, setNewFileFolder] = useState<ResourceFolder>('scripts');
+    const [newFileContent, setNewFileContent] = useState('');
+    const [dragOver, setDragOver] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const toggleFolder = (folder: string) => {
         const newExpanded = new Set(expandedFolders);
@@ -79,57 +98,102 @@ export function ResourceManager({ skillId, skillType, readOnly = false }: Resour
         setExpandedFolders(newExpanded);
     };
 
-    const handleCreateFile = async () => {
-        if (!session?.access_token || !newFileName.trim()) return;
+    // Group resources by folder
+    const grouped = resources.reduce((acc, resource) => {
+        const folder = resource.folder || 'assets';
+        if (!acc[folder]) acc[folder] = [];
+        acc[folder].push(resource);
+        return acc;
+    }, {} as Record<string, SkillResource[]>);
 
-        setSaving(true);
-        setError(null);
+    // Handle file upload
+    const handleFileUpload = useCallback(async (files: FileList | null) => {
+        if (!files) return;
 
-        const result = await createSkillResource(
-            session.access_token,
-            skillId,
-            newFileFolder,
-            newFileName,
-            newFileContent,
-            skillType
-        );
+        for (const file of Array.from(files)) {
+            // Check size (1MB limit)
+            if (file.size > 1048576) {
+                alert(`File ${file.name} exceeds 1MB limit`);
+                continue;
+            }
 
-        if (result.error) {
-            setError(result.error);
-        } else {
-            setShowNewFile(false);
-            setNewFileName('');
-            setNewFileContent('');
-            await loadResources();
+            const folder = getFolderForFile(file.name);
+
+            // Read file content
+            const content = await new Promise<string>((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target?.result as string || '');
+
+                // For text files, read as text
+                if (file.type.startsWith('text/') ||
+                    ['application/json', 'application/javascript', 'application/x-yaml'].includes(file.type) ||
+                    /\.(md|txt|py|js|ts|json|yaml|yml|html|css|xml)$/i.test(file.name)) {
+                    reader.readAsText(file);
+                } else {
+                    // For binary, read as base64
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            onAdd({
+                folder,
+                filename: file.name,
+                content,
+                size_bytes: file.size,
+                mime_type: file.type,
+            });
+        }
+    }, [onAdd]);
+
+    // Handle manual add
+    const handleManualAdd = () => {
+        if (!newFileName.trim()) return;
+
+        const size = new TextEncoder().encode(newFileContent).length;
+        if (size > 1048576) {
+            alert('Content exceeds 1MB limit');
+            return;
         }
 
-        setSaving(false);
+        onAdd({
+            folder: newFileFolder,
+            filename: newFileName,
+            content: newFileContent,
+            size_bytes: size,
+            mime_type: 'text/plain',
+        });
+
+        setNewFileName('');
+        setNewFileContent('');
+        setShowAddForm(false);
     };
 
-    const handleDeleteResource = async (resourceId: string) => {
-        if (!session?.access_token || !confirm('Delete this resource?')) return;
+    // Drag and drop handlers
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        setDragOver(true);
+    };
 
-        const success = await deleteSkillResource(session.access_token, resourceId);
-        if (success) {
-            await loadResources();
-        }
+    const handleDragLeave = () => {
+        setDragOver(false);
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        setDragOver(false);
+        handleFileUpload(e.dataTransfer.files);
     };
 
     const totalSize = resources.reduce((sum, r) => sum + (r.size_bytes || 0), 0);
     const sizePercent = (totalSize / 5242880) * 100;
 
-    if (loading) {
-        return (
-            <Card className="p-4">
-                <div className="flex items-center justify-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-                </div>
-            </Card>
-        );
-    }
-
     return (
-        <Card className="p-4 space-y-4">
+        <Card
+            className={`p-4 space-y-4 transition-colors ${dragOver ? 'border-primary bg-primary/5' : ''}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+        >
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
@@ -138,31 +202,59 @@ export function ResourceManager({ skillId, skillType, readOnly = false }: Resour
                         Skill Resources
                     </h3>
                     <p className="text-xs text-muted-foreground">
-                        {resources.length} files • {formatFileSize(totalSize)} / 5 MB
+                        {resources.length} file{resources.length !== 1 ? 's' : ''} • {formatFileSize(totalSize)} / 5 MB
                     </p>
                 </div>
                 {!readOnly && (
-                    <Button size="sm" onClick={() => setShowNewFile(true)} disabled={showNewFile}>
-                        <Plus className="w-4 h-4 mr-1" />
-                        Add File
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => fileInputRef.current?.click()}
+                        >
+                            <Upload className="w-4 h-4 mr-1" />
+                            Upload
+                        </Button>
+                        <Button
+                            size="sm"
+                            onClick={() => setShowAddForm(!showAddForm)}
+                        >
+                            <Plus className="w-4 h-4 mr-1" />
+                            New
+                        </Button>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            multiple
+                            className="hidden"
+                            onChange={(e) => handleFileUpload(e.target.files)}
+                        />
+                    </div>
                 )}
             </div>
 
             {/* Size indicator */}
-            <div className="h-1 bg-muted rounded-full overflow-hidden">
+            <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                 <div
                     className={`h-full transition-all ${sizePercent > 80 ? 'bg-destructive' : 'bg-primary'}`}
                     style={{ width: `${Math.min(sizePercent, 100)}%` }}
                 />
             </div>
 
-            {/* New File Form */}
-            {showNewFile && (
+            {/* Drop zone hint */}
+            {dragOver && (
+                <div className="border-2 border-dashed border-primary rounded-lg p-8 text-center">
+                    <Upload className="w-8 h-8 mx-auto text-primary mb-2" />
+                    <p className="text-primary font-medium">Drop files here</p>
+                </div>
+            )}
+
+            {/* Manual Add Form */}
+            {showAddForm && !dragOver && (
                 <div className="p-4 bg-accent/50 rounded-lg border border-border space-y-3">
                     <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">New Resource</span>
-                        <button onClick={() => setShowNewFile(false)} className="text-muted-foreground hover:text-foreground">
+                        <span className="text-sm font-medium">Create New File</span>
+                        <button onClick={() => setShowAddForm(false)} className="text-muted-foreground hover:text-foreground">
                             <X className="w-4 h-4" />
                         </button>
                     </div>
@@ -172,7 +264,7 @@ export function ResourceManager({ skillId, skillType, readOnly = false }: Resour
                             <label className="text-xs text-muted-foreground">Folder</label>
                             <select
                                 value={newFileFolder}
-                                onChange={(e) => setNewFileFolder(e.target.value)}
+                                onChange={(e) => setNewFileFolder(e.target.value as ResourceFolder)}
                                 className="w-full mt-1 bg-background border border-border rounded-md px-3 py-2 text-sm"
                             >
                                 {Object.entries(FOLDER_CONFIG).map(([key, config]) => (
@@ -201,73 +293,87 @@ export function ResourceManager({ skillId, skillType, readOnly = false }: Resour
                         />
                     </div>
 
-                    {error && (
-                        <p className="text-sm text-destructive">{error}</p>
-                    )}
-
-                    <Button onClick={handleCreateFile} disabled={saving || !newFileName.trim()} size="sm">
-                        {saving ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Save className="w-4 h-4 mr-1" />}
-                        Save File
+                    <Button onClick={handleManualAdd} disabled={!newFileName.trim()} size="sm">
+                        <File className="w-4 h-4 mr-1" />
+                        Add File
                     </Button>
                 </div>
             )}
 
+            {/* Empty state */}
+            {resources.length === 0 && !showAddForm && !dragOver && (
+                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                    <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                    <p className="text-sm text-muted-foreground">
+                        Drag & drop files here, or use the buttons above
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                        Supports scripts, documents, templates, and assets (max 1MB each)
+                    </p>
+                </div>
+            )}
+
             {/* Folder Tree */}
-            <div className="space-y-2">
-                {Object.entries(FOLDER_CONFIG).map(([folderKey, config]) => {
-                    const FolderIcon = config.icon;
-                    const folderResources = grouped[folderKey] || [];
-                    const isExpanded = expandedFolders.has(folderKey);
+            {resources.length > 0 && !dragOver && (
+                <div className="space-y-2">
+                    {Object.entries(FOLDER_CONFIG).map(([folderKey, config]) => {
+                        const FolderIcon = config.icon;
+                        const folderResources = grouped[folderKey] || [];
+                        const isExpanded = expandedFolders.has(folderKey);
 
-                    return (
-                        <div key={folderKey} className="border border-border rounded-lg overflow-hidden">
-                            {/* Folder Header */}
-                            <button
-                                onClick={() => toggleFolder(folderKey)}
-                                className="w-full flex items-center justify-between p-3 bg-accent/30 hover:bg-accent/50 transition-colors"
-                            >
-                                <div className="flex items-center gap-2">
-                                    {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                                    <FolderIcon className="w-4 h-4 text-muted-foreground" />
-                                    <span className="font-medium text-sm">{config.label}/</span>
-                                    <span className="text-xs text-muted-foreground">({folderResources.length})</span>
-                                </div>
-                            </button>
+                        // Only show folders with resources or that are expanded
+                        if (folderResources.length === 0 && !isExpanded) return null;
 
-                            {/* Folder Contents */}
-                            {isExpanded && (
-                                <div className="divide-y divide-border">
-                                    {folderResources.length === 0 ? (
-                                        <p className="text-xs text-muted-foreground p-3 italic">
-                                            No files in {config.label.toLowerCase()}
-                                        </p>
-                                    ) : (
-                                        folderResources.map((resource) => (
-                                            <div key={resource.id} className="flex items-center justify-between p-3 hover:bg-accent/20">
-                                                <div className="flex items-center gap-2">
-                                                    <span>{getResourceIcon(resource.filename)}</span>
-                                                    <span className="text-sm font-mono">{resource.filename}</span>
-                                                    <span className="text-xs text-muted-foreground">
-                                                        {formatFileSize(resource.size_bytes || 0)}
-                                                    </span>
+                        return (
+                            <div key={folderKey} className="border border-border rounded-lg overflow-hidden">
+                                {/* Folder Header */}
+                                <button
+                                    onClick={() => toggleFolder(folderKey)}
+                                    className="w-full flex items-center justify-between p-3 bg-accent/30 hover:bg-accent/50 transition-colors"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                                        <FolderIcon className="w-4 h-4 text-muted-foreground" />
+                                        <span className="font-medium text-sm">{config.label}/</span>
+                                        <span className="text-xs text-muted-foreground">({folderResources.length})</span>
+                                    </div>
+                                </button>
+
+                                {/* Folder Contents */}
+                                {isExpanded && (
+                                    <div className="divide-y divide-border">
+                                        {folderResources.length === 0 ? (
+                                            <p className="text-xs text-muted-foreground p-3 italic">
+                                                No files in {config.label.toLowerCase()}
+                                            </p>
+                                        ) : (
+                                            folderResources.map((resource) => (
+                                                <div key={resource.id} className="flex items-center justify-between p-3 hover:bg-accent/20">
+                                                    <div className="flex items-center gap-2 min-w-0">
+                                                        <span>{getResourceIcon(resource.filename)}</span>
+                                                        <span className="text-sm font-mono truncate">{resource.filename}</span>
+                                                        <span className="text-xs text-muted-foreground flex-shrink-0">
+                                                            {formatFileSize(resource.size_bytes || 0)}
+                                                        </span>
+                                                    </div>
+                                                    {!readOnly && (
+                                                        <button
+                                                            onClick={() => onRemove(resource.id)}
+                                                            className="text-muted-foreground hover:text-destructive p-1 flex-shrink-0"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    )}
                                                 </div>
-                                                {!readOnly && (
-                                                    <button
-                                                        onClick={() => handleDeleteResource(resource.id)}
-                                                        className="text-muted-foreground hover:text-destructive p-1"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                )}
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
-            </div>
+                                            ))
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
         </Card>
     );
 }

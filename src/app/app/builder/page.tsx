@@ -37,7 +37,7 @@ function BuilderContent() {
     const [isSaving, setIsSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [showAIGenerator, setShowAIGenerator] = useState(false);
-    const [activeTab, setActiveTab] = useState<'preview' | 'config' | 'test'>('preview');
+    const [activeTab, setActiveTab] = useState<'preview' | 'config' | 'resources' | 'test'>('preview');
     const [editId, setEditId] = useState<string | null>(null);
     const [currentSkillData, setCurrentSkillData] = useState<SavedSkill | null>(null);
     const [isLoadingSkill, setIsLoadingSkill] = useState(false);
@@ -199,6 +199,15 @@ function BuilderContent() {
                 >
                     Test
                 </button>
+                <button
+                    onClick={() => setActiveTab('resources')}
+                    className={`px-4 py-2 text-sm font-medium ${activeTab === 'resources'
+                        ? 'text-primary border-b-2 border-primary'
+                        : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                >
+                    Resources
+                </button>
             </div>
 
             {/* Tab Content - Flex grow to fill available space */}
@@ -234,19 +243,15 @@ function BuilderContent() {
                             <label className="block text-xs font-medium mb-2 text-muted-foreground uppercase tracking-wider">Triggers</label>
                             <TriggerEditor />
                         </div>
-
-                        <div className="border-t border-border pt-4">
-                            {editId ? (
-                                <ResourceManager
-                                    skillId={editId}
-                                    skillType="user"
-                                />
-                            ) : (
-                                <div className="text-sm text-muted-foreground italic p-4 bg-accent/30 rounded-lg">
-                                    Save your skill first to add resource files (scripts, references, assets)
-                                </div>
-                            )}
-                        </div>
+                    </div>
+                )}
+                {activeTab === 'resources' && (
+                    <div className="p-4">
+                        <ResourceManager
+                            resources={skill.resources || []}
+                            onAdd={addResource}
+                            onRemove={removeResource}
+                        />
                     </div>
                 )}
                 {activeTab === 'test' && (
