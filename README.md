@@ -1,36 +1,133 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ClaudeSkillsFacet
 
-## Getting Started
+**Claude Skills: Find, Build and Bundle**
 
-First, run the development server:
+An enterprise skill management platform for creating, validating, and bundling Claude Skills with real-time spec compliance.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Current Status
+
+| Sprint | Status |
+|--------|--------|
+| Sprint 1: Builder Polish | ✅ Complete |
+| Sprint 2: Templates & Editor | ✅ Complete |
+| Sprint 3: Bundling & Package Builder | ✅ Complete |
+| Sprint 3.5: Full Skills Spec Support | ✅ Complete |
+| Sprint 4+: SDK Testing & Beyond | 🔜 Planned |
+
+## 📁 Project Structure
+
+```
+claude-skills-builder/
+├── docs/                           # Current documentation
+│   ├── 00-CURRENT-STATUS.md        # Sprint status & overview
+│   ├── 01-FEATURE-INVENTORY.md     # All delivered features
+│   ├── 02-ARCHITECTURE.md          # System design
+│   ├── 03-DESIGN-SYSTEM.md         # Colors, fonts, tokens
+│   └── archive/phase-1-mvp/        # Legacy MVP docs
+│
+├── frontend/                        # Next.js 14 application
+│   ├── src/app/                    # App Router pages
+│   ├── src/components/             # UI components
+│   └── src/lib/                    # Stores & utilities
+│
+├── DEVELOPER-HANDOFF.md            # Quick-start guide
+└── SHIPAPE_INTEGRATION_BRIEF.md    # Market research
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🎯 Key Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Individual Skill Builder (`/builder`)
+- Monaco markdown editor with dark theme
+- Real-time validation engine
+- Markdown preview with split view
+- Skill snippets library
+- Resource Manager (resources/, examples/, config.yaml)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Template Library (`/templates`)
+- 6 industry-specific templates
+- Keyword search and category filters
+- One-click "Use Template" pre-fill
 
-## Learn More
+### Package Builder (`/packages/new`)
+- Multi-skill bundling wizard
+- Auto-generated trigger index
+- Modular ZIP packaging
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠 Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Layer | Technology |
+|-------|------------|
+| Framework | Next.js 14 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS v4 + Dark Mode |
+| Components | Shadcn/UI |
+| State | Zustand |
+| Editor | Monaco Editor |
+| Testing | Vitest + Playwright |
+| Orchestration | Ship-ape MCP (Shape Core) |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🎨 Design System
 
-## Deploy on Vercel
+- **Primary:** Anthropic Crail `#C15F3C`
+- **Background:** Dark mode `#1a1a1a`
+- **Fonts:** Inter (sans), JetBrains Mono (mono)
+- **Theme:** Dark mode enforced globally
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📖 Documentation
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Document | Purpose |
+|----------|---------|
+| [00-CURRENT-STATUS.md](docs/00-CURRENT-STATUS.md) | Sprint status & roadmap |
+| [01-FEATURE-INVENTORY.md](docs/01-FEATURE-INVENTORY.md) | Complete feature list |
+| [02-ARCHITECTURE.md](docs/02-ARCHITECTURE.md) | System architecture |
+| [REFERENCE-CLAUDE-SKILLS-ARCHITECTURE.md](docs/REFERENCE-CLAUDE-SKILLS-ARCHITECTURE.md) | Deep Dive: Agent Skills Architecture |
+| [03-DESIGN-SYSTEM.md](docs/03-DESIGN-SYSTEM.md) | Design tokens & patterns |
+
+## 🚦 Quick Start
+
+```bash
+# Navigate to frontend
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Run tests
+npm run test        # Unit tests (Vitest)
+npx playwright test # E2E tests
+```
+
+## 📊 Project Context
+
+All context stored in Ship-ape under project `claude-skills-builder`:
+
+```bash
+# Get current status
+ship-ape get_project_context --project_name="claude-skills-builder"
+
+# Search for specific topics
+ship-ape search_context \
+  --project_name="claude-skills-builder" \
+  --query="sprint roadmap"
+```
+
+## 🔗 Resources
+
+- **GitHub:** https://github.com/itsocialist/claude-skills-builder
+- **Local:** `/Users/briandawson/workspace/claude-skills-builder`
+- **Reference:** CIQ Facets at `/Users/briandawson/workspace/ciq-facets`
+
+## 📋 Sprint Roadmap
+
+See [00-CURRENT-STATUS.md](docs/00-CURRENT-STATUS.md#current-sprint-status) for the full 13-sprint roadmap including:
+- Sprint 4: SDK Testing & Validation
+- Sprint 5: Authentication & User Library
+- Sprint 6-8: Claude Code, MCP Tools, Chaining
+- Sprint 9-13: Enterprise features, Legal, Analytics
+
+---
+
+**Next Steps:** Run `npm run dev` in `frontend/` and open http://localhost:3000
