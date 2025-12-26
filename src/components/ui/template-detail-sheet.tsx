@@ -99,7 +99,7 @@ ${template.instructions}
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
-            <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto">
+            <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto px-6">
                 <SheetHeader className="text-left pb-4 border-b border-border">
                     <div className="flex items-center gap-2 mb-1">
                         <Badge variant="secondary">{template.category}</Badge>
@@ -110,7 +110,7 @@ ${template.instructions}
                     </SheetDescription>
                 </SheetHeader>
 
-                <div className="py-6 space-y-6">
+                <div className="py-6 space-y-5">
                     {/* Action Buttons */}
                     <div className="flex gap-3">
                         <Button onClick={handleUseTemplate} size="lg" className="flex-1">

@@ -168,6 +168,37 @@ Format each as:
 - Highlight time-sensitive items
 - Use consistent formatting
 `,
+        sampleOutput: `## Meeting Notes: Q1 Planning Session
+
+**Date:** January 15, 2025  
+**Attendees:** Sarah Chen, Mike Johnson, Lisa Park  
+**Duration:** 45 minutes
+
+### Key Discussion Points
+
+1. Budget allocation for Q1 marketing campaigns
+2. New product launch timeline (March 15 target)
+3. Team hiring priorities
+
+### Decisions Made
+
+- ✅ Approved $50K budget for digital marketing
+- ✅ March 15 launch date confirmed
+- ✅ Will hire 2 additional engineers
+
+### Action Items
+
+| Task | Owner | Due Date | Priority |
+|------|-------|----------|----------|
+| Draft marketing brief | Sarah | Jan 22 | High |
+| Finalize tech specs | Mike | Jan 18 | High |
+| Post job listings | Lisa | Jan 17 | Medium |
+
+### Next Steps
+
+- Follow-up meeting scheduled for January 22
+- Review marketing draft before next sync
+`,
     },
 
     'financial-analysis': {
@@ -337,6 +368,38 @@ Ask the user for:
 ## Tone & Style
 - Inspiring yet practical.
 - Use examples to illustrate voice/tone.
+`,
+        sampleOutput: `# TechFlow Brand Identity Guide
+
+## Brand Essence
+
+*"Empowering teams to build faster, together."*
+
+## Voice & Tone
+
+| Context | Voice | Tone |
+|---------|-------|------|
+| Marketing | Confident, Inspiring | Energetic, Bold |
+| Support | Helpful, Clear | Empathetic, Patient |
+| Documentation | Authoritative, Precise | Neutral, Professional |
+
+## Core Values
+
+- **Innovation** — We push boundaries and question the status quo
+- **Transparency** — We communicate openly and honestly
+- **Collaboration** — We believe the best work happens together
+
+## Writing Style
+
+### Do's ✓
+- Use active voice ("We built" not "It was built")
+- Keep sentences under 20 words
+- Lead with benefits, not features
+
+### Don'ts ✗
+- Avoid jargon and buzzwords
+- Never use passive aggressive language
+- Don't over-promise or use superlatives
 `,
     },
 
