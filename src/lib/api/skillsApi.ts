@@ -6,6 +6,10 @@ export interface SavedSkill extends Skill {
     user_id: string;
     created_at: string;
     updated_at: string;
+    // Analytics fields
+    view_count?: number;
+    download_count?: number;
+    last_used_at?: string;
 }
 
 /**
@@ -160,4 +164,40 @@ export async function duplicateSkill(skillId: string, userId: string): Promise<S
     }
 
     return data;
+}
+
+/**
+ * Track skill view - increment view count and update last_used_at
+ */
+export async function trackSkillView(skillId: string): Promise<void> {
+    if (!supabase) return;
+
+    // Use RPC for atomic increment, or simple update
+    const { error } = await supabase.rpc('increment_skill_view', { skill_id: skillId });
+
+    // Fallback if RPC doesn't exist yet
+    if (error && error.message.includes('function')) {
+        await supabase
+            .from('user_skills')
+            .update({ last_used_at: new Date().toISOString() })
+            .eq('id', skillId);
+    }
+}
+
+/**
+ * Track skill download - increment download count and update last_used_at
+ */
+export async function trackSkillDownload(skillId: string): Promise<void> {
+    if (!supabase) return;
+
+    // Use RPC for atomic increment, or simple update
+    const { error } = await supabase.rpc('increment_skill_download', { skill_id: skillId });
+
+    // Fallback if RPC doesn't exist yet
+    if (error && error.message.includes('function')) {
+        await supabase
+            .from('user_skills')
+            .update({ last_used_at: new Date().toISOString() })
+            .eq('id', skillId);
+    }
 }

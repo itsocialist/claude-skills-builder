@@ -14,8 +14,37 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ClaudeSkillsFacet",
-  description: "Build Claude Skills quickly, not slowly",
+  metadataBase: new URL("https://getclaudeskills.ai"),
+  title: "Claude Skills Builder | Create AI Templates in Minutes",
+  description: "Build custom Claude skills without coding. Free templates for real estate, consulting, and business professionals. Start in 2 minutes.",
+  keywords: ["claude skills", "claude skill builder", "ai templates", "prompt templates", "claude ai", "ai for real estate", "ai for consultants"],
+  authors: [{ name: "GetClaudeSkills" }],
+  openGraph: {
+    title: "Claude Skills Builder | Create AI Templates in Minutes",
+    description: "Build custom Claude skills without coding. Free templates for real estate, consulting, and business. Start in 2 minutes.",
+    url: "https://getclaudeskills.ai",
+    siteName: "GetClaudeSkills",
+    images: [
+      {
+        url: "/hero-banner-wide.png",
+        width: 1200,
+        height: 600,
+        alt: "GetClaudeSkills - Build Claude Skills in Minutes",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Claude Skills Builder | Create AI Templates in Minutes",
+    description: "Build custom Claude skills without coding. Free templates for real estate, consulting, and business.",
+    images: ["/hero-banner-wide.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
