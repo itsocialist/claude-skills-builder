@@ -20,6 +20,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const examples = [
     {
+        id: crypto.randomUUID(),
         name: 'Code Reviewer',
         description: 'Analyzes code for bugs, security issues, and style improvements.',
         category: 'Engineering',
@@ -33,17 +34,10 @@ Your goal is to analyze the provided code snippets for:
 4. Code Style and Readability (Clean Code principles)
 
 Provide your feedback in a structured format with priority levels (Critical, High, Medium, Low). Include refactoring suggestions with code blocks.`,
-        sample_output: `## Code Review Summary
-**Risk Level:** Medium
-
-### 1. Critical Issues
-- **SQL Injection Vulnerability**: Line 14 constructs a query using string concatenation. Use parameterized queries instead.
-
-### 2. Improvements
-- Use \`const\` instead of \`let\` for variables that are not reassigned.
-- Extract the validation logic into a helper function.`
+        // sample_output removed
     },
     {
+        id: crypto.randomUUID(),
         name: 'Technical Writer',
         description: 'Transforms technical concepts into clear, accessible documentation.',
         category: 'Product',
@@ -55,16 +49,10 @@ Your goal is to explain complex technical concepts to a specific audience (defau
 - Structure content with headings, bullet points, and code examples.
 - Focus on the "Why" and "How".
 - Avoid jargon where possible, or define it immediately.`,
-        sample_output: `# How OAuth 2.0 Works
-
-OAuth 2.0 is an authorization protocol that allows applications to access data on behalf of a user without sharing their password.
-
-## Key Concepts
-- **Resource Owner**: The user (You).
-- **Client**: The application trying to access your data.
-- **Authorization Server**: The server that verifies your identity (e.g., Google).`
+        // sample_output removed
     },
     {
+        id: crypto.randomUUID(),
         name: 'Data Analyst',
         description: 'Extracts insights and patterns from raw data sets.',
         category: 'Data',
@@ -76,13 +64,7 @@ Given a dataset (CSV, JSON, or text description):
 2. Calculate summary statistics (mean, median, etc.).
 3. Highlight outliers or anomalies.
 4. Suggest potential business actions based on the data.`,
-        sample_output: `## Data Analysis Report
-
-**Summary:** The dataset shows a **15% increase** in user engagement over the last quarter.
-
-**Key Findings:**
-- Peak activity occurs between 10 AM and 2 PM on weekdays.
-- Mobile users have a significantly higher retention rate (45%) compared to desktop users (30%).`
+        // sample_output removed
     }
 ];
 
