@@ -10,9 +10,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useSkillStore } from '@/lib/store/skillStore';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
+import { SkillSnippets } from '@/components/builder/SkillSnippets';
+import { ResourceManager } from '@/components/builder/ResourceManager';
 import {
     Check, ChevronLeft, ChevronRight, Download,
-    Lightbulb, MessageSquare, FileText, TestTube, Rocket,
+    Lightbulb, MessageSquare, FileText, Paperclip, Rocket,
     Plus, X
 } from 'lucide-react';
 
@@ -20,29 +22,31 @@ const STEPS = [
     { id: 'what', title: 'What', icon: Lightbulb, question: 'What does your skill do?' },
     { id: 'when', title: 'When', icon: MessageSquare, question: 'When should Claude use it?' },
     { id: 'how', title: 'How', icon: FileText, question: 'How should Claude respond?' },
-    { id: 'test', title: 'Test', icon: TestTube, question: 'Test your skill' },
-    { id: 'export', title: 'Export', icon: Rocket, question: 'Download or save' },
+    { id: 'files', title: 'Files', icon: Paperclip, question: 'Attach reference files' },
 ];
 
 const TRIGGER_EXAMPLES = [
     'Create a property listing for...',
-    'Analyze this financial statement...',
-    'Draft a professional email to...',
-    'Generate meeting notes from...',
+    'Analyze this document...',
+    'Draft an email to...',
+    'Generate a report on...',
 ];
 
 export default function WizardPage() {
     const router = useRouter();
-    const { skill, updateField, addTrigger, removeTrigger, reset } = useSkillStore();
+    const { skill, updateField, addTrigger, removeTrigger, addResource, removeResource, reset } = useSkillStore();
     const [step, setStep] = useState(0);
     const [triggerInput, setTriggerInput] = useState('');
-    const [testInput, setTestInput] = useState('');
 
     const handleAddTrigger = () => {
         if (triggerInput.trim()) {
             addTrigger(triggerInput.trim());
             setTriggerInput('');
         }
+    };
+
+    const handleInsertSnippet = (content: string) => {
+        updateField('instructions', skill.instructions + '\n\n' + content);
     };
 
     const handleDownload = async () => {
@@ -59,7 +63,8 @@ export default function WizardPage() {
         }
     };
 
-    const handleUseInBuilder = () => {
+    const handleContinueInBuilder = () => {
+        // Skill is already in store, just navigate
         router.push('/app/builder');
     };
 
@@ -73,9 +78,10 @@ export default function WizardPage() {
     };
 
     const currentStep = STEPS[step];
+    const isLastStep = step === STEPS.length - 1;
 
     return (
-        <Shell title="Skill Wizard">
+        <Shell title="Quick Start Wizard">
             <div className="container mx-auto py-8 max-w-2xl">
                 {/* Progress */}
                 <div className="flex items-center justify-center mb-8 gap-1">
@@ -91,7 +97,7 @@ export default function WizardPage() {
                                 >
                                     {i < step ? <Check className="h-5 w-5" /> : <Icon className="h-5 w-5" />}
                                 </div>
-                                {i < STEPS.length - 1 && <div className="w-6 h-px bg-border mx-1" />}
+                                {i < STEPS.length - 1 && <div className="w-8 h-px bg-border mx-1" />}
                             </div>
                         );
                     })}
@@ -112,9 +118,6 @@ export default function WizardPage() {
                                     onChange={(e) => updateField('name', e.target.value)}
                                     placeholder="Property Listing Generator"
                                 />
-                                <p className="text-xs text-muted-foreground mt-1">
-                                    A short, descriptive name for your skill
-                                </p>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-foreground mb-1 block">
@@ -123,12 +126,9 @@ export default function WizardPage() {
                                 <Textarea
                                     value={skill.description}
                                     onChange={(e) => updateField('description', e.target.value)}
-                                    placeholder="Generate professional real estate listings with compelling descriptions and all key property details."
+                                    placeholder="Generate professional real estate listings with compelling descriptions."
                                     rows={3}
                                 />
-                                <p className="text-xs text-muted-foreground mt-1">
-                                    What does this skill help users accomplish?
-                                </p>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-foreground mb-1 block">
@@ -156,7 +156,7 @@ export default function WizardPage() {
                     {step === 1 && (
                         <div className="space-y-4 mt-6">
                             <p className="text-sm text-muted-foreground">
-                                Add phrases that should activate this skill. Claude will use your skill when users say something similar.
+                                Add phrases that activate this skill.
                             </p>
 
                             <div className="flex gap-2">
@@ -171,7 +171,6 @@ export default function WizardPage() {
                                 </Button>
                             </div>
 
-                            {/* Current triggers */}
                             {skill.triggers.length > 0 && (
                                 <div className="flex flex-wrap gap-2">
                                     {skill.triggers.map((trigger, i) => (
@@ -188,9 +187,8 @@ export default function WizardPage() {
                                 </div>
                             )}
 
-                            {/* Examples */}
                             <div className="pt-4 border-t border-border">
-                                <p className="text-xs text-muted-foreground mb-2">Examples (click to add):</p>
+                                <p className="text-xs text-muted-foreground mb-2">Quick add:</p>
                                 <div className="flex flex-wrap gap-2">
                                     {TRIGGER_EXAMPLES.map((example, i) => (
                                         <button
@@ -210,88 +208,53 @@ export default function WizardPage() {
                         </div>
                     )}
 
-                    {/* Step 3: How */}
+                    {/* Step 3: How (with Snippets) */}
                     {step === 2 && (
                         <div className="space-y-4 mt-6">
-                            <p className="text-sm text-muted-foreground">
-                                Write the instructions that tell Claude how to respond. Be specific about format, tone, and what information to include.
-                            </p>
+                            <SkillSnippets onInsert={handleInsertSnippet} />
                             <Textarea
                                 value={skill.instructions}
                                 onChange={(e) => updateField('instructions', e.target.value)}
                                 placeholder={`# ${skill.name || 'My Skill'}
 
-When the user asks you to ${skill.triggers[0] || 'perform this task'}, follow these steps:
+When the user asks you to ${skill.triggers[0] || 'perform this task'}...
 
-## Step 1: Gather Information
-Ask clarifying questions if needed...
+## Required Information
+- Field 1
+- Field 2
 
-## Step 2: Generate Output
-Create a structured response that includes...
-
-## Format
-- Use clear headings
-- Include bullet points
-- Be professional yet friendly`}
+## Output Format
+Structure your response as...`}
                                 rows={12}
                                 className="font-mono text-sm"
                             />
-                            <p className="text-xs text-muted-foreground">
-                                Tip: Use markdown formatting for better structure
-                            </p>
                         </div>
                     )}
 
-                    {/* Step 4: Test */}
+                    {/* Step 4: Files (Resources) */}
                     {step === 3 && (
                         <div className="space-y-4 mt-6">
                             <p className="text-sm text-muted-foreground">
-                                Preview how your skill will work. Enter a sample input to see the expected behavior.
+                                Attach reference files like templates, examples, or data.
                             </p>
-                            <div>
-                                <label className="text-sm font-medium text-foreground mb-1 block">
-                                    Sample Input
-                                </label>
-                                <Textarea
-                                    value={testInput}
-                                    onChange={(e) => setTestInput(e.target.value)}
-                                    placeholder={skill.triggers[0] || 'Enter a sample request...'}
-                                    rows={3}
-                                />
-                            </div>
-                            <Card className="p-4 bg-muted/50">
-                                <h4 className="text-sm font-medium mb-2">Skill Preview</h4>
-                                <div className="text-xs text-muted-foreground space-y-1">
-                                    <p><strong>Name:</strong> {skill.name || 'Not set'}</p>
-                                    <p><strong>Category:</strong> {skill.category || 'Not set'}</p>
-                                    <p><strong>Triggers:</strong> {skill.triggers.length} phrases</p>
-                                    <p><strong>Instructions:</strong> {skill.instructions.length} characters</p>
-                                </div>
-                            </Card>
-                            <p className="text-xs text-muted-foreground">
-                                Full testing available in the Builder with your Claude API key.
-                            </p>
-                        </div>
-                    )}
+                            <ResourceManager
+                                resources={skill.resources || []}
+                                onAdd={(resource) => addResource(resource)}
+                                onRemove={(id) => removeResource(id)}
+                            />
 
-                    {/* Step 5: Export */}
-                    {step === 4 && (
-                        <div className="space-y-6 mt-6 text-center">
-                            <div className="py-4">
-                                <Rocket className="h-12 w-12 mx-auto text-primary mb-4" />
-                                <h3 className="text-lg font-semibold text-foreground">Your skill is ready!</h3>
-                                <p className="text-muted-foreground">
-                                    Download it or continue refining in the Builder.
-                                </p>
-                            </div>
-                            <div className="flex flex-col gap-3">
-                                <Button onClick={handleDownload} size="lg">
-                                    <Download className="h-4 w-4 mr-2" />
-                                    Download ZIP
-                                </Button>
-                                <Button variant="outline" onClick={handleUseInBuilder}>
-                                    Continue in Builder
-                                </Button>
+                            {/* Export Actions */}
+                            <div className="pt-6 border-t border-border">
+                                <div className="flex flex-col gap-3">
+                                    <Button onClick={handleDownload} size="lg" className="w-full">
+                                        <Download className="h-4 w-4 mr-2" />
+                                        Download ZIP
+                                    </Button>
+                                    <Button variant="outline" onClick={handleContinueInBuilder} className="w-full">
+                                        <Rocket className="h-4 w-4 mr-2" />
+                                        Continue in Builder
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -305,7 +268,7 @@ Create a structured response that includes...
                             <ChevronLeft className="h-4 w-4 mr-1" />
                             {step === 0 ? 'Cancel' : 'Back'}
                         </Button>
-                        {step < STEPS.length - 1 && (
+                        {!isLastStep && (
                             <Button
                                 onClick={() => setStep(step + 1)}
                                 disabled={!canProceed()}
