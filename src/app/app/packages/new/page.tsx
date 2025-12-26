@@ -162,11 +162,14 @@ export default function NewPackagePage() {
                             <p className="text-sm text-muted-foreground mb-4">
                                 Attach reference files to include in the bundle ({pkg.resources.length} files)
                             </p>
-                            <ResourceManager
-                                resources={pkg.resources}
-                                onAdd={(resource) => addResource(resource)}
-                                onRemove={(id) => removeResource(id)}
-                            />
+                            <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+                                <p className="text-muted-foreground text-sm">
+                                    Resource management for packages coming soon.
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-2">
+                                    Currently supports skills with resources. Create skills in the Builder first.
+                                </p>
+                            </div>
                         </div>
                     )}
 

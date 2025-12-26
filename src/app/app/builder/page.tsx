@@ -236,11 +236,16 @@ function BuilderContent() {
                         </div>
 
                         <div className="border-t border-border pt-4">
-                            <ResourceManager
-                                resources={skill.resources || []}
-                                onAdd={addResource}
-                                onRemove={removeResource}
-                            />
+                            {editId ? (
+                                <ResourceManager
+                                    skillId={editId}
+                                    skillType="user"
+                                />
+                            ) : (
+                                <div className="text-sm text-muted-foreground italic p-4 bg-accent/30 rounded-lg">
+                                    Save your skill first to add resource files (scripts, references, assets)
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

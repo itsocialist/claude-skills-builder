@@ -238,11 +238,15 @@ Structure your response as...`}
                             <p className="text-sm text-muted-foreground">
                                 Attach reference files like templates, examples, or data.
                             </p>
-                            <ResourceManager
-                                resources={skill.resources || []}
-                                onAdd={(resource) => addResource(resource)}
-                                onRemove={(id) => removeResource(id)}
-                            />
+                            <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                                <Paperclip className="h-8 w-8 mx-auto text-muted-foreground mb-3" />
+                                <p className="text-muted-foreground text-sm">
+                                    Resource files (scripts, templates, examples) can be added after saving your skill.
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-2">
+                                    Click "Continue in Builder" below, save your skill, then add resources.
+                                </p>
+                            </div>
 
                             {/* Export Actions */}
                             <div className="pt-6 border-t border-border">
