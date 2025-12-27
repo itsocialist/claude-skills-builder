@@ -45,7 +45,7 @@ function BuilderContent() {
     const [isLoadingSkill, setIsLoadingSkill] = useState(false);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null);
-    const [apiKey, setApiKey] = useState('');
+    const [apiKey, setApiKey] = useState<string | null>(null);
 
     const handleSaveToLibrary = async () => {
         if (!user) return;
@@ -299,7 +299,7 @@ ${skill.instructions}`;
                     </div>
                 )}
                 {activeTab === 'test' && (
-                    <TestConsole skill={skill} />
+                    <TestConsole skill={skill} apiKey={apiKey} onApiKeyChange={setApiKey} />
                 )}
                 {activeTab === 'insights' && editId && (
                     <div className="p-4">
@@ -373,15 +373,6 @@ ${skill.instructions}`;
                                 <><Lightbulb className="w-4 h-4 mr-2" /> Analyze with AI</>
                             )}
                         </Button>
-                        <div className="flex-1 min-w-[200px] max-w-[300px]">
-                            <input
-                                type="password"
-                                value={apiKey}
-                                onChange={(e) => setApiKey(e.target.value)}
-                                placeholder="Claude API Key (for AI features)"
-                                className="w-full px-3 py-1.5 text-sm bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground"
-                            />
-                        </div>
 
                         {/* Analytics Stats for saved skills */}
                         {currentSkillData && (
@@ -423,8 +414,8 @@ ${skill.instructions}`;
                                         <li
                                             key={i}
                                             className={`text-xs pl-3 py-1.5 rounded ${suggestion.type === 'error' ? 'bg-red-500/10 text-red-300 border-l-2 border-red-500' :
-                                                    suggestion.type === 'warning' ? 'bg-yellow-500/10 text-yellow-300 border-l-2 border-yellow-500' :
-                                                        'bg-blue-500/10 text-blue-300 border-l-2 border-blue-500'
+                                                suggestion.type === 'warning' ? 'bg-yellow-500/10 text-yellow-300 border-l-2 border-yellow-500' :
+                                                    'bg-blue-500/10 text-blue-300 border-l-2 border-blue-500'
                                                 }`}
                                         >
                                             <span className="font-medium uppercase text-muted-foreground mr-2">[{suggestion.area}]</span>

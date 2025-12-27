@@ -11,12 +11,13 @@ import { ApiKeySettings } from './ApiKeySettings';
 
 interface TestConsoleProps {
     skill: Skill;
+    apiKey: string | null;
+    onApiKeyChange: (key: string | null) => void;
 }
 
-export function TestConsole({ skill }: TestConsoleProps) {
-    const [apiKey, setApiKey] = useState<string | null>(null);
-    const [apiKeyConfigured, setApiKeyConfigured] = useState(false);
-    const [showApiKeySettings, setShowApiKeySettings] = useState(true);
+export function TestConsole({ skill, apiKey, onApiKeyChange }: TestConsoleProps) {
+    const [apiKeyConfigured, setApiKeyConfigured] = useState(!!apiKey);
+    const [showApiKeySettings, setShowApiKeySettings] = useState(!apiKey);
     const [testInput, setTestInput] = useState('');
     const [isRunning, setIsRunning] = useState(false);
     const [result, setResult] = useState<{
@@ -27,7 +28,7 @@ export function TestConsole({ skill }: TestConsoleProps) {
     const [error, setError] = useState<string | null>(null);
 
     const handleApiKeyChange = (key: string | null) => {
-        setApiKey(key);
+        onApiKeyChange(key);
         if (key) {
             setApiKeyConfigured(true);
             setShowApiKeySettings(false); // Collapse when configured

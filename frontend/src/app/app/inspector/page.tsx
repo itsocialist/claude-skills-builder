@@ -27,6 +27,144 @@ interface ValidationResult {
     };
 }
 
+// Results Panel Component (used in Shell inspector prop)
+function ResultsPanel({ result }: { result: ValidationResult | null }) {
+    if (!result) {
+        return (
+            <div className="h-full flex flex-col items-center justify-center text-center p-8">
+                <Upload className="w-12 h-12 text-muted-foreground/50 mb-4" />
+                <p className="text-muted-foreground">Upload a skill file or paste content to see validation results</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="h-full flex flex-col overflow-hidden">
+            {/* Tabs */}
+            <div className="flex border-b border-border px-4 flex-shrink-0">
+                <button className="px-4 py-2 text-sm font-medium text-primary border-b-2 border-primary">
+                    Validation
+                </button>
+                {result.aiAnalysis && (
+                    <button className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground">
+                        AI Analysis
+                    </button>
+                )}
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-auto p-4 space-y-4">
+                {/* Status Header */}
+                <div className="flex items-center gap-3">
+                    {result.valid ? (
+                        <CheckCircle className="w-6 h-6 text-green-500" />
+                    ) : (
+                        <XCircle className="w-6 h-6 text-red-500" />
+                    )}
+                    <div>
+                        <h3 className="font-semibold text-foreground">
+                            {result.valid ? 'Valid Skill' : 'Invalid Skill'}
+                        </h3>
+                        {result.info.name && (
+                            <p className="text-sm text-muted-foreground">{result.info.name}</p>
+                        )}
+                    </div>
+                </div>
+
+                {/* Errors */}
+                {result.errors.length > 0 && (
+                    <div>
+                        <h4 className="text-sm font-medium text-red-400 mb-2 flex items-center gap-2">
+                            <XCircle className="w-4 h-4" />
+                            Errors ({result.errors.length})
+                        </h4>
+                        <ul className="space-y-1">
+                            {result.errors.map((error, i) => (
+                                <li key={i} className="text-sm text-red-300 pl-4">• {error}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                {/* Warnings */}
+                {result.warnings.length > 0 && (
+                    <div>
+                        <h4 className="text-sm font-medium text-yellow-400 mb-2 flex items-center gap-2">
+                            <AlertTriangle className="w-4 h-4" />
+                            Warnings ({result.warnings.length})
+                        </h4>
+                        <ul className="space-y-1">
+                            {result.warnings.map((warning, i) => (
+                                <li key={i} className="text-sm text-yellow-300 pl-4">• {warning}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                {/* Info */}
+                {result.info.description && (
+                    <div className="pt-3 border-t border-border">
+                        <h4 className="text-sm font-medium text-foreground mb-1">Description</h4>
+                        <p className="text-sm text-muted-foreground">{result.info.description}</p>
+                    </div>
+                )}
+
+                {result.info.triggers && result.info.triggers.length > 0 && (
+                    <div className="pt-3 border-t border-border">
+                        <h4 className="text-sm font-medium text-foreground mb-2">Triggers</h4>
+                        <div className="flex flex-wrap gap-2">
+                            {result.info.triggers.map((trigger, i) => (
+                                <span key={i} className="px-2 py-1 bg-muted text-muted-foreground rounded text-xs">
+                                    {trigger}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* AI Analysis */}
+                {result.aiAnalysis && (
+                    <div className="pt-3 border-t border-[#C15F3C]/30">
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                                <Sparkles className="w-4 h-4 text-[#C15F3C]" />
+                                <h4 className="text-sm font-medium text-foreground">AI Analysis</h4>
+                            </div>
+                            <span className="px-2 py-0.5 bg-[#C15F3C]/10 text-[#C15F3C] rounded-full text-xs font-medium">
+                                {result.aiAnalysis.overallScore}/10
+                            </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-3">{result.aiAnalysis.summary}</p>
+
+                        {result.aiAnalysis.suggestions.length > 0 && (
+                            <div className="space-y-2">
+                                <h5 className="text-xs font-medium text-foreground flex items-center gap-1">
+                                    <Lightbulb className="w-3 h-3" />
+                                    Suggestions ({result.aiAnalysis.suggestions.length})
+                                </h5>
+                                <ul className="space-y-2">
+                                    {result.aiAnalysis.suggestions.map((suggestion, i) => (
+                                        <li
+                                            key={i}
+                                            className={`text-xs pl-3 py-1.5 rounded ${suggestion.type === 'error' ? 'bg-red-500/10 text-red-300 border-l-2 border-red-500' :
+                                                    suggestion.type === 'warning' ? 'bg-yellow-500/10 text-yellow-300 border-l-2 border-yellow-500' :
+                                                        'bg-blue-500/10 text-blue-300 border-l-2 border-blue-500'
+                                                }`}
+                                        >
+                                            <span className="text-[10px] font-medium uppercase text-muted-foreground mr-1">[{suggestion.area}]</span>
+                                            {suggestion.message}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
 export default function InspectorPage() {
     const [file, setFile] = useState<File | null>(null);
     const [skillContent, setSkillContent] = useState('');
@@ -103,17 +241,18 @@ export default function InspectorPage() {
     };
 
     return (
-        <Shell title="Skill Inspector">
-            <div className="max-w-4xl mx-auto">
-                <div className="mb-6">
-                    <h1 className="text-2xl font-bold text-foreground mb-2">Skill Inspector</h1>
+        <Shell title="Skill Inspector" inspector={<ResultsPanel result={result} />}>
+            <div className="p-6 space-y-6">
+                {/* Header */}
+                <div>
+                    <h1 className="text-2xl font-bold text-foreground mb-1">Skill Inspector</h1>
                     <p className="text-muted-foreground">
                         Upload a SKILL.md file or ZIP package to validate and analyze its contents.
                     </p>
                 </div>
 
                 {/* Upload Area */}
-                <Card className="p-6 mb-6">
+                <Card className="p-6">
                     <div
                         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                         onDragLeave={() => setDragOver(false)}
@@ -154,18 +293,18 @@ export default function InspectorPage() {
                 </Card>
 
                 {/* Or Paste Content */}
-                <Card className="p-6 mb-6">
+                <Card className="p-6">
                     <h3 className="text-sm font-medium text-foreground mb-3">Or paste SKILL.md content</h3>
                     <textarea
                         value={skillContent}
                         onChange={(e) => setSkillContent(e.target.value)}
                         placeholder="---&#10;name: My Skill&#10;description: A helpful skill&#10;---&#10;&#10;# Instructions..."
-                        className="w-full h-40 px-3 py-2 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground resize-none font-mono text-sm"
+                        className="w-full h-32 px-3 py-2 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground resize-none font-mono text-sm"
                     />
                 </Card>
 
                 {/* AI Analysis Options */}
-                <Card className="p-6 mb-6 border-l-4 border-l-[#C15F3C]">
+                <Card className="p-6 border-l-4 border-l-[#C15F3C]">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
                             <Sparkles className="w-5 h-5 text-[#C15F3C]" />
@@ -199,7 +338,7 @@ export default function InspectorPage() {
                 <Button
                     onClick={analyzeSkill}
                     disabled={(!file && !skillContent) || analyzing}
-                    className="w-full mb-6"
+                    className="w-full"
                     size="lg"
                 >
                     {analyzing ? (
@@ -211,121 +350,6 @@ export default function InspectorPage() {
                         'Analyze Skill'
                     )}
                 </Button>
-
-                {/* Results */}
-                {result && (
-                    <Card className="p-6">
-                        <div className="flex items-center gap-3 mb-4">
-                            {result.valid ? (
-                                <CheckCircle className="w-8 h-8 text-green-500" />
-                            ) : (
-                                <XCircle className="w-8 h-8 text-red-500" />
-                            )}
-                            <div>
-                                <h3 className="text-lg font-semibold text-foreground">
-                                    {result.valid ? 'Valid Skill' : 'Invalid Skill'}
-                                </h3>
-                                {result.info.name && (
-                                    <p className="text-muted-foreground">{result.info.name}</p>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Errors */}
-                        {result.errors.length > 0 && (
-                            <div className="mb-4">
-                                <h4 className="text-sm font-medium text-red-400 mb-2 flex items-center gap-2">
-                                    <XCircle className="w-4 h-4" />
-                                    Errors ({result.errors.length})
-                                </h4>
-                                <ul className="space-y-1">
-                                    {result.errors.map((error, i) => (
-                                        <li key={i} className="text-sm text-red-300 pl-6">
-                                            • {error}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-
-                        {/* Warnings */}
-                        {result.warnings.length > 0 && (
-                            <div className="mb-4">
-                                <h4 className="text-sm font-medium text-yellow-400 mb-2 flex items-center gap-2">
-                                    <AlertTriangle className="w-4 h-4" />
-                                    Warnings ({result.warnings.length})
-                                </h4>
-                                <ul className="space-y-1">
-                                    {result.warnings.map((warning, i) => (
-                                        <li key={i} className="text-sm text-yellow-300 pl-6">
-                                            • {warning}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-
-                        {/* Info */}
-                        {result.info.description && (
-                            <div className="pt-4 border-t border-border">
-                                <h4 className="text-sm font-medium text-foreground mb-2">Description</h4>
-                                <p className="text-sm text-muted-foreground">{result.info.description}</p>
-                            </div>
-                        )}
-
-                        {result.info.triggers && result.info.triggers.length > 0 && (
-                            <div className="pt-4 border-t border-border mt-4">
-                                <h4 className="text-sm font-medium text-foreground mb-2">Triggers</h4>
-                                <div className="flex flex-wrap gap-2">
-                                    {result.info.triggers.map((trigger, i) => (
-                                        <span key={i} className="px-2 py-1 bg-muted text-muted-foreground rounded text-xs">
-                                            {trigger}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </Card>
-                )}
-
-                {/* AI Suggestions (Show when AI analysis is present) */}
-                {result?.aiAnalysis && (
-                    <Card className="p-6 mt-6 border-l-4 border-l-[#C15F3C]">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-2">
-                                <Sparkles className="w-5 h-5 text-[#C15F3C]" />
-                                <h3 className="text-lg font-semibold text-foreground">AI Analysis</h3>
-                            </div>
-                            <span className="px-3 py-1 bg-[#C15F3C]/10 text-[#C15F3C] rounded-full text-sm font-medium">
-                                Score: {result.aiAnalysis.overallScore}/10
-                            </span>
-                        </div>
-                        <p className="text-muted-foreground mb-4">{result.aiAnalysis.summary}</p>
-
-                        {result.aiAnalysis.suggestions.length > 0 && (
-                            <div className="space-y-3">
-                                <h4 className="text-sm font-medium text-foreground flex items-center gap-2">
-                                    <Lightbulb className="w-4 h-4" />
-                                    Suggestions ({result.aiAnalysis.suggestions.length})
-                                </h4>
-                                <ul className="space-y-2">
-                                    {result.aiAnalysis.suggestions.map((suggestion, i) => (
-                                        <li
-                                            key={i}
-                                            className={`text-sm pl-4 py-2 rounded-lg ${suggestion.type === 'error' ? 'bg-red-500/10 text-red-300 border-l-2 border-red-500' :
-                                                    suggestion.type === 'warning' ? 'bg-yellow-500/10 text-yellow-300 border-l-2 border-yellow-500' :
-                                                        'bg-blue-500/10 text-blue-300 border-l-2 border-blue-500'
-                                                }`}
-                                        >
-                                            <span className="text-xs font-medium uppercase text-muted-foreground mr-2">[{suggestion.area}]</span>
-                                            {suggestion.message}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                    </Card>
-                )}
             </div>
         </Shell>
     );
