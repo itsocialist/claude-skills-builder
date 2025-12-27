@@ -3,7 +3,7 @@
 import { ReactNode, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Library, LogIn, Building2, Menu, PanelRightOpen, Wand2, LayoutTemplate, Package, Hammer, Search, Compass } from 'lucide-react';
+import { Library, LogIn, Building2, Menu, PanelRightOpen, Wand2, LayoutTemplate, Package, Hammer, Search, Compass, GitBranch } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useSiteSettings } from '@/lib/contexts/SiteSettingsContext';
 import { UserMenu } from '@/components/auth/UserMenu';
@@ -191,6 +191,10 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                         <Link href="/app/builder" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/builder' ? 'text-foreground bg-accent' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                             <Hammer className="w-4 h-4" />
                             Skill Builder
+                        </Link>
+                        <Link href="/app/canvas" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/canvas' ? 'text-foreground bg-accent' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                            <GitBranch className="w-4 h-4" />
+                            Visual Canvas
                         </Link>
                         <Link href="/app/templates" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/templates') ? 'text-foreground bg-accent' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                             <LayoutTemplate className="w-4 h-4" />
