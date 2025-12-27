@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" width="800" height="200">
+  <!-- GetClaudeSkills Full Logo - Dark Mode -->
+  <rect width="400" height="100" fill="#1a1a1a"/>
+  
+  <!-- S Icon Mark -->
+  <g fill="none" stroke="#C15F3C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" transform="translate(10, 15)">
+    <polyline points="50,10 20,25 50,40"/>
+    <polyline points="20,40 50,55 20,70"/>
+  </g>
+  
+  <!-- Wordmark -->
+  <text x="80" y="55" font-family="Inter, -apple-system, sans-serif" font-size="32" font-weight="600">
+    <tspan fill="#C15F3C">Get</tspan><tspan fill="#C15F3C">Claude</tspan><tspan fill="#FFFFFF">Skills</tspan>
+  </text>
+  
+  <!-- Tagline -->
+  <text x="80" y="75" font-family="Inter, -apple-system, sans-serif" font-size="12" font-weight="500" fill="#C15F3C" letter-spacing="3">
+    AI SKILL BUILDER PLATFORM
+  </text>
+</svg>

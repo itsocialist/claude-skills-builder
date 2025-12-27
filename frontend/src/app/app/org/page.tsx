@@ -18,7 +18,7 @@ import Link from 'next/link';
 
 export default function OrgPage() {
     const router = useRouter();
-    const { user, loading: authLoading } = useAuth();
+    const { user, loading: authLoading, isConfigured } = useAuth();
     const { tier, loading: tierLoading } = useUserTier();
     const [orgs, setOrgs] = useState<Organization[]>([]);
     const [loading, setLoading] = useState(true);
@@ -27,26 +27,33 @@ export default function OrgPage() {
     const [creating, setCreating] = useState(false);
 
     useEffect(() => {
+        // Don't do anything while auth is loading
+        if (authLoading) return;
+
         async function load() {
             if (!user?.id) return;
             const data = await getUserOrganizations(user.id);
             setOrgs(data);
             setLoading(false);
         }
-        if (!authLoading && user) {
-            load();
-        } else if (!authLoading && !user) {
-            // User not authenticated - redirect to home
-            router.push('/');
-        }
-    }, [user, authLoading, router]);
 
-    // Redirect individual users
+        if (user) {
+            load();
+        } else if (isConfigured) {
+            // Only redirect if Supabase is configured and no user
+            router.push('/');
+        } else {
+            // Dev mode - allow access without auth
+            setLoading(false);
+        }
+    }, [user, authLoading, router, isConfigured]);
+
+    // Redirect individual users (only if tier check is complete)
     useEffect(() => {
-        if (!tierLoading && tier === 'individual') {
+        if (!tierLoading && tier === 'individual' && isConfigured) {
             router.push('/app');
         }
-    }, [tier, tierLoading, router]);
+    }, [tier, tierLoading, router, isConfigured]);
 
     const handleCreate = async () => {
         if (!user?.id || !newOrgName.trim()) return;

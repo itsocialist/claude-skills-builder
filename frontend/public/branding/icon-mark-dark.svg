@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="512" height="512">
+  <!-- GetClaudeSkills "S" Icon Mark - Angular Chevron Style -->
+  <!-- Dark mode version -->
+  <rect width="100" height="100" fill="#1a1a1a"/>
+  
+  <!-- The S is made of two chevron-like shapes stacked -->
+  <g fill="none" stroke="#C15F3C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Upper chevron pointing left -->
+    <polyline points="70,20 30,35 70,50"/>
+    <!-- Lower chevron pointing right -->
+    <polyline points="30,50 70,65 30,80"/>
+  </g>
+</svg>
