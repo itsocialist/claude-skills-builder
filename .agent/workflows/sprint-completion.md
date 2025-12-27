@@ -38,13 +38,23 @@ This workflow defines the standard procedure for closing a sprint or major featu
 *Command:* `gh issue list --state open` to view open issues.
 *Command:* `gh issue close <number> --comment "Completed in Sprint X"`
 
-## 5. End-to-End (E2E) Testing
+## 5. Supabase Migration Sync
+**Goal:** Ensure database schema matches codebase expectations.
+-   Verify all migrations in `supabase/migrations/` are applied to production.
+-   Check for missing tables or columns required by new features.
+-   Confirm RLS policies are properly configured.
+-   Validate env vars (`SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SUPABASE_URL`) are set in Vercel.
+
+*Command:* `npx supabase db diff` to check for schema drift.
+*Command:* `npx supabase db push` to apply pending migrations (if needed).
+
+## 6. End-to-End (E2E) Testing
 **Goal:** Verify system stability.
 -   Run unit tests: `npm run test`
 -   Run build check: `npm run build`
 -   (If available) Run Playwright/E2E suite.
 
-## 6. Final Commit & Push
+## 7. Final Commit & Push
 **Goal:** Persist changes.
 -   Stage changes: `git add .`
 -   Commit with conventional message: `git commit -m "chore: complete Sprint X - [Summary]"`
