@@ -87,7 +87,7 @@ export function UserMenu() {
                         className="flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-[#3a3a3a] transition-colors"
                     >
                         <Library className="w-4 h-4" />
-                        My Library
+                        My Skills
                     </Link>
 
                     {/* Enterprise-only features */}

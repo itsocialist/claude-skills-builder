@@ -6,6 +6,11 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { StarRating } from '@/components/ui/StarRating';
+import { ReviewModal } from '@/components/marketplace/ReviewModal';
+import { MarketplaceListing } from '@/types/marketplace.types';
+import { Profile, SkillReview } from '@/types/community.types';
+import { getProfileByUsername } from '@/lib/profiles';
 import {
     Download,
     BadgeCheck,
@@ -24,20 +29,6 @@ import {
     LinkedinIcon
 } from 'react-share';
 
-interface MarketplaceListing {
-    id: string;
-    slug: string;
-    title: string;
-    description: string | null;
-    category: string | null;
-    is_verified: boolean;
-    is_featured: boolean;
-    install_count: number;
-    created_at: string;
-    creator_id: string;
-    skill_id: string;
-}
-
 interface SkillDetails {
     triggers: string[];
     instructions: string;
@@ -50,7 +41,9 @@ export default function SkillDetailPage() {
     const slug = params.slug as string;
 
     const [listing, setListing] = useState<MarketplaceListing | null>(null);
+    const [creatorProfile, setCreatorProfile] = useState<Profile | null>(null);
     const [skillDetails, setSkillDetails] = useState<SkillDetails | null>(null);
+    const [reviews, setReviews] = useState<SkillReview[]>([]);
     const [loading, setLoading] = useState(true);
     const [installing, setInstalling] = useState(false);
     const [showShareMenu, setShowShareMenu] = useState(false);
@@ -72,23 +65,54 @@ export default function SkillDetailPage() {
             .single();
 
         if (listingData) {
-            setListing(listingData);
-            // Fetch skill details for triggers/instructions preview
+            setListing(listingData as MarketplaceListing);
+
+            // Fetch skill details
             const { data: skillData } = await supabase
                 .from('user_skills')
                 .select('triggers, instructions')
                 .eq('id', listingData.skill_id)
                 .single();
-            if (skillData) {
-                setSkillDetails(skillData);
-            }
+            if (skillData) setSkillDetails(skillData);
+
+            // Fetch creator profile
+            const { data: profileData } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', listingData.creator_id)
+                .single();
+            if (profileData) setCreatorProfile(profileData);
+
+            fetchReviews(listingData.id);
         }
         setLoading(false);
     };
 
+    const fetchReviews = async (listingId: string) => {
+        const { data } = await supabase
+            .from('skill_reviews')
+            .select(`
+                *,
+                profiles:user_id (
+                    username,
+                    avatar_url
+                )
+            `)
+            .eq('skill_id', listingId)
+            .order('created_at', { ascending: false });
+
+        if (data) {
+            // Transform to match SkillReview type structure with nested user
+            const shapedReviews = data.map(r => ({
+                ...r,
+                user: Array.isArray(r.profiles) ? r.profiles[0] : r.profiles
+            }));
+            setReviews(shapedReviews as unknown as SkillReview[]);
+        }
+    };
+
     const handleInstall = async () => {
         if (!user) {
-            // Redirect to sign in with return URL
             router.push(`/app?returnTo=/marketplace/${slug}`);
             return;
         }
@@ -163,10 +187,25 @@ export default function SkillDetailPage() {
                             <BadgeCheck className="w-6 h-6 text-primary" />
                         )}
                     </div>
-                    {listing.category && (
-                        <span className="inline-block px-3 py-1 bg-muted rounded-full text-sm text-muted-foreground">
-                            {listing.category}
-                        </span>
+                    <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mb-3">
+                        {listing.category && (
+                            <span className="inline-block px-3 py-1 bg-muted rounded-full text-foreground/80 font-medium">
+                                {listing.category}
+                            </span>
+                        )}
+                        {creatorProfile?.username && (
+                            <Link href={`/creator/${creatorProfile.username}`} className="flex items-center gap-1 hover:text-primary transition-colors">
+                                <span>by @{creatorProfile.username}</span>
+                            </Link>
+                        )}
+                    </div>
+                    {listing.average_rating !== undefined && listing.average_rating > 0 && (
+                        <div className="flex items-center gap-2 mb-2">
+                            <StarRating rating={listing.average_rating} size={18} readOnly />
+                            <span className="text-sm text-muted-foreground font-medium">
+                                {listing.average_rating} ({listing.review_count || 0} reviews)
+                            </span>
+                        </div>
                     )}
                 </div>
 
@@ -227,7 +266,7 @@ export default function SkillDetailPage() {
             {/* Description */}
             <Card className="p-6 mb-6">
                 <h2 className="text-lg font-semibold text-foreground mb-3">Description</h2>
-                <p className="text-muted-foreground whitespace-pre-wrap">
+                <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
                     {listing.description || 'No description provided.'}
                 </p>
             </Card>
@@ -251,7 +290,7 @@ export default function SkillDetailPage() {
 
             {/* Instructions Preview */}
             {skillDetails?.instructions && (
-                <Card className="p-6">
+                <Card className="p-6 mb-6">
                     <h2 className="text-lg font-semibold text-foreground mb-3">Instructions Preview</h2>
                     <div className="bg-muted rounded-lg p-4 max-h-64 overflow-y-auto">
                         <pre className="text-sm text-muted-foreground whitespace-pre-wrap font-mono">
@@ -261,6 +300,47 @@ export default function SkillDetailPage() {
                     </div>
                 </Card>
             )}
+
+            {/* Reviews Section */}
+            <div className="mt-12">
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold">Reviews</h2>
+                    {user && <ReviewModal skillId={listing.id} onReviewSubmitted={() => fetchListing()} />}
+                </div>
+
+                {reviews.length === 0 ? (
+                    <Card className="p-8 text-center text-muted-foreground bg-muted/20 border-dashed">
+                        No reviews yet. Be the first to share your experience!
+                    </Card>
+                ) : (
+                    <div className="space-y-4">
+                        {reviews.map((review) => (
+                            <Card key={review.id} className="p-6">
+                                <div className="flex items-start justify-between mb-2">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold overflow-hidden">
+                                            {review.user?.avatar_url ? (
+                                                <img src={review.user.avatar_url} alt={review.user.username} className="w-full h-full object-cover" />
+                                            ) : (
+                                                review.user?.username?.[0]?.toUpperCase() || '?'
+                                            )}
+                                        </div>
+                                        <div>
+                                            <span className="font-semibold text-sm">@{review.user?.username || 'user'}</span>
+                                            <div className="text-xs text-muted-foreground">{new Date(review.created_at).toLocaleDateString()}</div>
+                                        </div>
+                                    </div>
+                                    <StarRating rating={review.rating} size={14} readOnly />
+                                </div>
+                                {review.comment && (
+                                    <p className="text-sm text-foreground/90 mt-2">{review.comment}</p>
+                                )}
+                            </Card>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
+

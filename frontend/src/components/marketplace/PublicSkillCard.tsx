@@ -3,19 +3,8 @@
 import Link from 'next/link';
 import { Download, BadgeCheck } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-
-interface MarketplaceListing {
-    id: string;
-    slug: string;
-    title: string;
-    description: string | null;
-    category: string | null;
-    is_verified: boolean;
-    is_featured: boolean;
-    install_count: number;
-    created_at: string;
-    creator_id: string;
-}
+import { MarketplaceListing } from '@/types/marketplace.types';
+import { StarRating } from '@/components/ui/StarRating';
 
 interface PublicSkillCardProps {
     listing: MarketplaceListing;
@@ -24,7 +13,7 @@ interface PublicSkillCardProps {
 export function PublicSkillCard({ listing }: PublicSkillCardProps) {
     return (
         <Link href={`/marketplace/${listing.slug}`}>
-            <Card className="p-5 h-full hover:border-primary/50 transition-colors cursor-pointer group">
+            <Card className="p-5 h-full hover:border-primary/50 transition-colors cursor-pointer group flex flex-col">
                 {/* Header */}
                 <div className="flex items-start justify-between mb-3">
                     <div className="flex-1 min-w-0">
@@ -45,16 +34,25 @@ export function PublicSkillCard({ listing }: PublicSkillCardProps) {
                 </div>
 
                 {/* Description - 2 lines max */}
-                <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                <p className="text-sm text-muted-foreground line-clamp-2 mb-4 flex-1">
                     {listing.description || 'No description provided.'}
                 </p>
 
-                {/* Stats - Icons only */}
-                <div className="flex items-center justify-between pt-3 border-t border-border">
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                        <Download className="w-4 h-4" />
-                        <span className="text-xs">{listing.install_count}</span>
+                {/* Stats */}
+                <div className="flex items-center justify-between pt-3 border-t border-border mt-auto">
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1 text-muted-foreground">
+                            <Download className="w-4 h-4" />
+                            <span className="text-xs">{listing.install_count}</span>
+                        </div>
+                        {listing.average_rating !== undefined && listing.average_rating > 0 && (
+                            <div className="flex items-center gap-1">
+                                <StarRating rating={listing.average_rating} size={12} readOnly />
+                                <span className="text-xs text-muted-foreground">({listing.review_count || 0})</span>
+                            </div>
+                        )}
                     </div>
+
                     {listing.is_featured && (
                         <span className="text-xs font-medium text-primary">Featured</span>
                     )}
@@ -63,3 +61,4 @@ export function PublicSkillCard({ listing }: PublicSkillCardProps) {
         </Link>
     );
 }
+

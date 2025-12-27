@@ -120,7 +120,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                                 {user && (
                                     <Link href="/app/library" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
                                         <Library className="w-4 h-4" />
-                                        My Library
+                                        My Skills
                                     </Link>
                                 )}
                                 {/* Dynamic Custom Menu Items (Mobile) */}
@@ -215,7 +215,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                         {user && (
                             <Link href="/app/library" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
                                 <Library className="w-4 h-4" />
-                                My Library
+                                My Skills
                             </Link>
                         )}
                         {/* Dynamic Custom Menu Items (Desktop) */}

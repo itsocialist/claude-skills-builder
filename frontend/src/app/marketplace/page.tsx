@@ -6,18 +6,7 @@ import { MarketplaceHero } from '@/components/marketplace/MarketplaceHero';
 import { PublicSkillCard } from '@/components/marketplace/PublicSkillCard';
 import { Loader2 } from 'lucide-react';
 
-interface MarketplaceListing {
-    id: string;
-    slug: string;
-    title: string;
-    description: string | null;
-    category: string | null;
-    is_verified: boolean;
-    is_featured: boolean;
-    install_count: number;
-    created_at: string;
-    creator_id: string;
-}
+import { MarketplaceListing } from '@/types/marketplace.types';
 
 export default function MarketplacePage() {
     const [listings, setListings] = useState<MarketplaceListing[]>([]);

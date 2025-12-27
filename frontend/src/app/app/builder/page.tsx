@@ -18,6 +18,7 @@ import { Shell } from '@/components/layout/Shell';
 import { validateSkill, getValidationStatus } from '@/lib/utils/validation';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { saveSkill, getSkillById, updateSkill, trackSkillDownload, trackSkillView, type SavedSkill } from '@/lib/api/skillsApi';
+import { ImportSkillModal } from '@/components/builder/ImportSkillModal';
 import { AISkillGenerator } from '@/components/builder/AISkillGenerator';
 import { InsightsPanel } from '@/components/builder/InsightsPanel';
 import { analyzeSkillContent, AIAnalysisResult } from '@/lib/claude-client';
@@ -422,6 +423,7 @@ ${skill.instructions}`;
             <div className="max-w-3xl mx-auto">
                 <div className="mb-6 space-y-4">
                     <div className="flex flex-wrap items-center gap-3">
+                        <ImportSkillModal />
                         <Button
                             variant="outline"
                             onClick={() => setShowAIGenerator(true)}

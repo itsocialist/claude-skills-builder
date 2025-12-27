@@ -10,7 +10,7 @@ interface SiteSettingsContextType {
 }
 
 const DEFAULT_SETTINGS: SiteSettings = {
-    site_name: 'ClaudeSkillsFacet',
+    site_name: 'GetClaudeSkills',
     primary_color: '#C15F3C',
     categories: ['Marketing', 'HR', 'Engineering', 'Sales', 'Product'],
     menu_items: [],

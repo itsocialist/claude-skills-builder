@@ -50,7 +50,7 @@ export default function MarketplaceLayout({ children }: MarketplaceLayoutProps) 
                                 href="/app/library"
                                 className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
                             >
-                                My Library
+                                My Skills
                             </Link>
                         </div>
                     </div>
