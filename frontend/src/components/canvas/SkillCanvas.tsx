@@ -150,7 +150,10 @@ export function SkillCanvas({ onNodeSelect }: SkillCanvasProps) {
             style: edgeStyle,
         });
 
-        // Instructions -> Examples
+        // Track what connects to Output
+        let lastNodeBeforeOutput = 'instruction-1';
+
+        // Instructions -> Examples (if any)
         if (skill.examples && skill.examples.length > 0) {
             skill.examples.forEach((_, index) => {
                 edges.push({
@@ -161,46 +164,58 @@ export function SkillCanvas({ onNodeSelect }: SkillCanvasProps) {
                     style: edgeStyle,
                 });
             });
+            // Examples feed into next node
+            lastNodeBeforeOutput = `example-${skill.examples.length - 1}`;
         }
 
-        // Any leaf node -> Output
+        // Connect to Resources (if any)
         if (skill.resources && skill.resources.length > 0) {
+            const prevNode = skill.examples?.length ? `example-0` : 'instruction-1';
             edges.push({
-                id: 'e-instruction-resource',
-                source: 'instruction-1',
+                id: 'e-to-resource',
+                source: prevNode,
                 target: 'resource-1',
                 animated: true,
                 style: edgeStyle,
             });
-            edges.push({
-                id: 'e-resource-output',
-                source: 'resource-1',
-                target: 'output-1',
-                animated: true,
-                style: edgeStyle,
-            });
-        } else if (skill.examples && skill.examples.length > 0) {
-            skill.examples.forEach((_, index) => {
-                edges.push({
-                    id: `e-example-${index}-output`,
-                    source: `example-${index}`,
-                    target: 'output-1',
-                    animated: true,
-                    style: edgeStyle,
+            // Also connect remaining examples to resources for visual branching
+            if (skill.examples && skill.examples.length > 1) {
+                skill.examples.slice(1).forEach((_, index) => {
+                    edges.push({
+                        id: `e-example-${index + 1}-resource`,
+                        source: `example-${index + 1}`,
+                        target: 'resource-1',
+                        animated: true,
+                        style: edgeStyle,
+                    });
                 });
-            });
-        } else {
-            edges.push({
-                id: 'e-instruction-output',
-                source: 'instruction-1',
-                target: 'output-1',
-                animated: true,
-                style: edgeStyle,
-            });
+            }
+            lastNodeBeforeOutput = 'resource-1';
         }
 
+        // Connect to OutputFormat (if set)
+        if (skill.output_format) {
+            edges.push({
+                id: 'e-to-outputFormat',
+                source: lastNodeBeforeOutput,
+                target: 'outputFormat-1',
+                animated: true,
+                style: edgeStyle,
+            });
+            lastNodeBeforeOutput = 'outputFormat-1';
+        }
+
+        // Final node -> Output
+        edges.push({
+            id: 'e-to-output',
+            source: lastNodeBeforeOutput,
+            target: 'output-1',
+            animated: true,
+            style: edgeStyle,
+        });
+
         return edges;
-    }, [skill.examples?.length, skill.resources?.length]); // Re-calculate structure only when counts change
+    }, [skill.examples?.length, skill.resources?.length, skill.output_format]); // Re-calculate when structure changes
 
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
