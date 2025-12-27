@@ -348,3 +348,4 @@ Respond ONLY with valid JSON. No markdown code blocks.`;
         throw new Error('Failed to parse refined skill from AI response');
     }
 }
+// Cache bust: 1766820444
