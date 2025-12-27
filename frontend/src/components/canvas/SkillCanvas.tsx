@@ -307,7 +307,12 @@ export function SkillCanvas({ onNodeSelect }: SkillCanvasProps) {
     }, [onNodeSelect]);
 
     return (
-        <div className="w-full h-full" ref={reactFlowWrapper}>
+        <div
+            className="w-full h-full"
+            ref={reactFlowWrapper}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+        >
             <ReactFlow
                 nodes={nodes}
                 edges={edges}

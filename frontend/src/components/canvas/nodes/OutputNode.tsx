@@ -16,7 +16,8 @@ function OutputNodeComponent({ data, selected }: NodeProps<OutputNodeData>) {
             <Handle
                 type="target"
                 position={Position.Top}
-                className="w-3 h-3 !bg-pink-500"
+                className="!w-3 !h-3 !bg-pink-500 !border-0"
+                style={{ background: '#ec4899', border: 'none' }}
             />
 
             <div className="flex items-center gap-2 mb-2">

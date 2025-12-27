@@ -176,3 +176,20 @@
 .animate-float {
   animation: float 10s ease-in-out infinite;
 }
+
+/* ReactFlow Node Styling Overrides */
+.react-flow__node {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.react-flow__handle {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Ensure edges are visible */
+.react-flow__edge-path {
+  stroke-width: 2;
+}
