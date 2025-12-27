@@ -82,7 +82,14 @@ You are an Email Marketing Specialist. Draft a newsletter that drives engagement
 ## Style
 - Conversational and personal.
 - Focus on value to the reader.'
-);
+)
+ON CONFLICT (id) DO UPDATE SET 
+    name = EXCLUDED.name,
+    description = EXCLUDED.description,
+    category = EXCLUDED.category,
+    tags = EXCLUDED.tags,
+    triggers = EXCLUDED.triggers,
+    instructions = EXCLUDED.instructions;
 
 -- Category: Sales
 INSERT INTO templates (id, name, description, category, tags, triggers, instructions) VALUES
@@ -135,7 +142,14 @@ You are a Sales Coach. Provide 3 different ways to handle a specific customer ob
 ## Output
 - Provide script for each approach.
 - Explain WHY it works.'
-);
+)
+ON CONFLICT (id) DO UPDATE SET 
+    name = EXCLUDED.name,
+    description = EXCLUDED.description,
+    category = EXCLUDED.category,
+    tags = EXCLUDED.tags,
+    triggers = EXCLUDED.triggers,
+    instructions = EXCLUDED.instructions;
 
 -- Category: Product
 INSERT INTO templates (id, name, description, category, tags, triggers, instructions) VALUES
@@ -190,7 +204,14 @@ You are a Product Manager. Create a one-page brief for a new feature.
 4. **Scope**: What is IN and OUT.
 5. **Success Metrics**: How we measure impact.
 6. **Risks**: Potential downsides.'
-);
+)
+ON CONFLICT (id) DO UPDATE SET 
+    name = EXCLUDED.name,
+    description = EXCLUDED.description,
+    category = EXCLUDED.category,
+    tags = EXCLUDED.tags,
+    triggers = EXCLUDED.triggers,
+    instructions = EXCLUDED.instructions;
 
 -- Category: Engineering
 INSERT INTO templates (id, name, description, category, tags, triggers, instructions) VALUES
@@ -239,7 +260,14 @@ You are a Senior Software Engineer. Help structure a code review.
 ## Feedback Template
 Provide a template for constructive feedback:
 "I like how you handled [X]. Have you considered [Y] for better scalability?"'
-);
+)
+ON CONFLICT (id) DO UPDATE SET 
+    name = EXCLUDED.name,
+    description = EXCLUDED.description,
+    category = EXCLUDED.category,
+    tags = EXCLUDED.tags,
+    triggers = EXCLUDED.triggers,
+    instructions = EXCLUDED.instructions;
 
 -- Category: General
 INSERT INTO templates (id, name, description, category, tags, triggers, instructions) VALUES
@@ -266,8 +294,7 @@ You are a Chief of Staff. Summarize these meeting notes.
 
 ## Tone
 - Concise, actionable, neutral.'
-);
-
+)
 ON CONFLICT (id) DO UPDATE SET 
     name = EXCLUDED.name,
     description = EXCLUDED.description,

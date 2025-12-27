@@ -35,12 +35,14 @@ CREATE INDEX IF NOT EXISTS idx_market_listings_status ON public.market_listings(
 ALTER TABLE public.market_listings ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policy: Anyone can read active listings (public marketplace)
+DROP POLICY IF EXISTS "Public can view active listings" ON public.market_listings;
 CREATE POLICY "Public can view active listings"
     ON public.market_listings
     FOR SELECT
     USING (listing_status = 'active');
 
 -- RLS Policy: Creators can view all their own listings (including archived)
+DROP POLICY IF EXISTS "Creators can view own listings" ON public.market_listings;
 CREATE POLICY "Creators can view own listings"
     ON public.market_listings
     FOR SELECT
@@ -48,6 +50,7 @@ CREATE POLICY "Creators can view own listings"
     USING (auth.uid() = creator_id);
 
 -- RLS Policy: Only creators can insert their own listings
+DROP POLICY IF EXISTS "Creators can insert listings" ON public.market_listings;
 CREATE POLICY "Creators can insert listings"
     ON public.market_listings
     FOR INSERT
@@ -55,6 +58,7 @@ CREATE POLICY "Creators can insert listings"
     WITH CHECK (auth.uid() = creator_id);
 
 -- RLS Policy: Only creators can update their own listings
+DROP POLICY IF EXISTS "Creators can update own listings" ON public.market_listings;
 CREATE POLICY "Creators can update own listings"
     ON public.market_listings
     FOR UPDATE
@@ -63,6 +67,7 @@ CREATE POLICY "Creators can update own listings"
     WITH CHECK (auth.uid() = creator_id);
 
 -- RLS Policy: Only creators can delete their own listings
+DROP POLICY IF EXISTS "Creators can delete own listings" ON public.market_listings;
 CREATE POLICY "Creators can delete own listings"
     ON public.market_listings
     FOR DELETE

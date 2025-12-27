@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS site_settings (
 ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
 
 -- Allow public read access (for site title, theme, etc.)
+-- Allow public read access (for site title, theme, etc.)
+DROP POLICY IF EXISTS "Public read access" ON site_settings;
 CREATE POLICY "Public read access" ON site_settings
     FOR SELECT USING (true);
 

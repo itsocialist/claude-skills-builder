@@ -2,11 +2,13 @@
 -- Description: Adds tables for tracking skill views, downloads, and usage events.
 
 -- 1. Raw Events Table (Immutable Log)
--- Ensure type doesn't exist before creating (for idempotency in loose script running)
-drop type if exists analytics_event_type;
-create type analytics_event_type as enum ('view', 'download', 'copy', 'edit');
+DO $$ BEGIN
+    CREATE TYPE analytics_event_type AS ENUM ('view', 'download', 'copy', 'edit');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
-create table public.skill_analytics_events (
+create table if not exists public.skill_analytics_events (
   id uuid primary key default gen_random_uuid(),
   skill_id uuid references public.user_skills(id) on delete cascade not null,
   event_type analytics_event_type not null,
@@ -15,11 +17,11 @@ create table public.skill_analytics_events (
   created_at timestamptz default now() not null
 );
 
--- Index for time-series queries
-create index idx_analytics_skill_date on public.skill_analytics_events(skill_id, created_at desc);
+-- Index for time-series queries (safe check)
+create index if not exists idx_analytics_skill_date on public.skill_analytics_events(skill_id, created_at desc);
 
 -- 2. Aggregated Stats Table (Fast Read)
-create table public.skill_stats (
+create table if not exists public.skill_stats (
   skill_id uuid primary key references public.user_skills(id) on delete cascade,
   view_count int default 0 not null,
   download_count int default 0 not null,
@@ -27,7 +29,7 @@ create table public.skill_stats (
   updated_at timestamptz default now() not null
 );
 
--- 3. Trigger Usage: Auto-increment stats on INSERT
+-- 4. Trigger Usage: Auto-increment stats on INSERT
 create or replace function public.handle_analytics_event()
 returns trigger as $$
 begin
@@ -48,24 +50,26 @@ begin
 end;
 $$ language plpgsql security definer;
 
+-- Safe Trigger Creation
+drop trigger if exists on_analytics_event on public.skill_analytics_events;
 create trigger on_analytics_event
   after insert on public.skill_analytics_events
   for each row execute procedure public.handle_analytics_event();
 
--- 4. RLS Policies
+-- 5. RLS Policies
 
--- Enable RLS
+-- Enable RLS (safe to run multiple times)
 alter table public.skill_analytics_events enable row level security;
 alter table public.skill_stats enable row level security;
 
 -- Policy: Events (INSERT)
--- Anyone (anon or auth) can log an event (viewing a public skill)
+drop policy if exists "Anyone can insert events" on public.skill_analytics_events;
 create policy "Anyone can insert events"
   on public.skill_analytics_events for insert
   with check (true);
 
 -- Policy: Events (SELECT)
--- Only the skill owner can see raw event logs
+drop policy if exists "Owners view their own skill events" on public.skill_analytics_events;
 create policy "Owners view their own skill events"
   on public.skill_analytics_events for select
   using (
@@ -77,7 +81,7 @@ create policy "Owners view their own skill events"
   );
 
 -- Policy: Stats (SELECT)
--- Public read access for stats (popular skills need to be visible)
+drop policy if exists "Anyone can view skill stats" on public.skill_stats;
 create policy "Anyone can view skill stats"
   on public.skill_stats for select
   using (true);

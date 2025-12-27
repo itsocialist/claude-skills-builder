@@ -11,7 +11,7 @@ ALTER TABLE user_skills ADD COLUMN IF NOT EXISTS full_instructions TEXT;
 CREATE TABLE IF NOT EXISTS skill_resources (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     -- Links to either templates (system) or user_skills (user-created)
-    template_id UUID REFERENCES templates(id) ON DELETE CASCADE,
+    template_id TEXT REFERENCES templates(id) ON DELETE CASCADE,
     user_skill_id UUID REFERENCES user_skills(id) ON DELETE CASCADE,
     -- Folder type per Agent Skills spec
     folder TEXT NOT NULL CHECK (folder IN ('scripts', 'references', 'assets', 'templates', 'examples')),
@@ -43,16 +43,22 @@ CREATE INDEX IF NOT EXISTS idx_skill_resources_folder ON skill_resources(folder)
 ALTER TABLE skill_resources ENABLE ROW LEVEL SECURITY;
 
 -- Public read for template resources (system skills are public)
+-- Public read for template resources (system skills are public)
+DROP POLICY IF EXISTS "Template resources are publicly readable" ON skill_resources;
 CREATE POLICY "Template resources are publicly readable"
 ON skill_resources FOR SELECT
 USING (template_id IS NOT NULL);
 
 -- Users can manage their own skill resources
+-- Users can manage their own skill resources
+DROP POLICY IF EXISTS "Users can CRUD own skill resources" ON skill_resources;
 CREATE POLICY "Users can CRUD own skill resources"
 ON skill_resources FOR ALL
 USING (user_skill_id IN (SELECT id FROM user_skills WHERE user_id = auth.uid()));
 
 -- Service role bypass for admin operations
+-- Service role bypass for admin operations
+DROP POLICY IF EXISTS "Service role has full access" ON skill_resources;
 CREATE POLICY "Service role has full access"
 ON skill_resources FOR ALL
 USING (auth.role() = 'service_role');
