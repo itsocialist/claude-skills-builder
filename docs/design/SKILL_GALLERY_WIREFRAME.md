@@ -7,7 +7,7 @@
 ## Visual Concept
 The core pivot is shifting the user's mental model from "choosing a tool" to "choosing an outcome".
 
-![Skill Gallery Mockup](/Users/briandawson/.gemini/antigravity/brain/29874c0a-640d-4ab2-8c1b-02cb68fbd8a2/gallery_mockup_v1_1766858161684.png)
+![Skill Gallery Mockup](gallery_mockup_v1.png)
 
 ## Component Breakdown
 
