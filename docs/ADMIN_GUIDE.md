@@ -90,6 +90,43 @@ NEXT_PUBLIC_APP_URL=https://your-domain.com
 
 ---
 
+## Marketplace Management (Sprint 13)
+
+The Marketplace enables skill sharing and discovery.
+
+### Database: `market_listings` Table
+
+Skills are published to the marketplace via the `market_listings` table:
+- `skill_id` - References the source skill
+- `creator_id` - The user who published it
+- `slug` - URL-friendly identifier
+- `listing_status` - `active`, `pending`, or `removed`
+- `is_verified` - Admin-verified badge
+
+### Publishing Skills
+
+Users can publish skills from the Builder:
+1. Save skill to Library
+2. Click "Publish to Marketplace" in Export tab
+3. Skill appears in `/marketplace`
+
+### Moderation
+
+To remove inappropriate listings, update `listing_status`:
+```sql
+UPDATE market_listings 
+SET listing_status = 'removed' 
+WHERE slug = 'skill-slug';
+```
+
+### RLS Policies
+
+- **SELECT**: Public (anyone can browse)
+- **INSERT**: Authenticated users (own skills only)
+- **UPDATE/DELETE**: Owner or admin only
+
+---
+
 ## Troubleshooting
 
 ### User Invitation Fails
@@ -103,3 +140,4 @@ NEXT_PUBLIC_APP_URL=https://your-domain.com
 1. Verify your email is in `NEXT_PUBLIC_ADMIN_EMAILS`
 2. Sign out and sign back in
 3. Check for typos in the email list
+
