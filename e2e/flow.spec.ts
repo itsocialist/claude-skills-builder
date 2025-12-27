@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test('complete user flow', async ({ page }) => {
     // 1. Start at Marketing Page
     await page.goto('/');
-    await expect(page).toHaveTitle(/ClaudeSkillsFacet/);
+    await expect(page).toHaveTitle(/Claude Skills Builder/);
     await expect(page.getByText('Build Claude Skills')).toBeVisible();
 
     // 2. Navigate to Templates page
@@ -23,7 +23,7 @@ test('complete user flow', async ({ page }) => {
     // 5. Generate Skill
     // Setup download listener
     const downloadPromise = page.waitForEvent('download');
-    await page.click('text=Generate Skill');
+    await page.click('text=Download Skill ZIP');
     const download = await downloadPromise;
 
     // 6. Verify Download - filename should be slugified
