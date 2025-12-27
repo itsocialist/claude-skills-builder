@@ -21,7 +21,8 @@ import { saveSkill, getSkillById, updateSkill, trackSkillDownload, trackSkillVie
 import { AISkillGenerator } from '@/components/builder/AISkillGenerator';
 import { InsightsPanel } from '@/components/builder/InsightsPanel';
 import { analyzeSkillContent, AIAnalysisResult } from '@/lib/claude-client';
-import { Save, Loader2, Sparkles, Eye, Download, Lightbulb, X } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { Save, Loader2, Sparkles, Eye, Download, Lightbulb, X, Globe } from 'lucide-react';
 
 export default function BuilderPage() {
     return (
@@ -46,6 +47,9 @@ function BuilderContent() {
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null);
     const [apiKey, setApiKey] = useState<string | null>(null);
+    const [isPublishing, setIsPublishing] = useState(false);
+    const [publishSuccess, setPublishSuccess] = useState(false);
+    const [isPublished, setIsPublished] = useState(false);
 
     const handleSaveToLibrary = async () => {
         if (!user) return;
@@ -173,6 +177,54 @@ function BuilderContent() {
         }
     };
 
+    const handlePublish = async () => {
+        if (!user || !editId) {
+            alert('Please save your skill first before publishing.');
+            return;
+        }
+        if (!supabase) {
+            alert('Database connection not available.');
+            return;
+        }
+        setIsPublishing(true);
+        try {
+            // Generate slug from skill name
+            const slug = skill.name
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '') + '-' + Date.now().toString(36);
+
+            const { error } = await supabase
+                .from('market_listings')
+                .insert({
+                    skill_id: editId,
+                    creator_id: user.id,
+                    slug,
+                    title: skill.name,
+                    description: skill.description || '',
+                    category: skill.category || 'general',
+                    listing_status: 'active',
+                });
+
+            if (error) {
+                if (error.code === '23505') {
+                    alert('This skill is already published to the marketplace.');
+                } else {
+                    throw error;
+                }
+            } else {
+                setPublishSuccess(true);
+                setIsPublished(true);
+                setTimeout(() => setPublishSuccess(false), 3000);
+            }
+        } catch (error) {
+            console.error('Publish failed:', error);
+            alert('Failed to publish skill. Please try again.');
+        } finally {
+            setIsPublishing(false);
+        }
+    };
+
     const handleAnalyzeWithAI = async () => {
         if (!apiKey) {
             alert('Please enter your Claude API key to analyze.');
@@ -260,14 +312,31 @@ ${skill.instructions}`;
                     <div className="flex flex-col h-full">
                         <SkillPreview skill={skill} />
                         {/* Generate Button in Export tab */}
-                        <div className="p-4 border-t border-border bg-card mt-auto">
+                        <div className="p-4 border-t border-border bg-card mt-auto space-y-2">
                             <Button
                                 onClick={handleGenerate}
                                 disabled={!skill.name || !skill.instructions || isGenerating}
                                 className="w-full font-medium"
                             >
+                                <Download className="w-4 h-4 mr-2" />
                                 {isGenerating ? 'Generating...' : 'Download Skill ZIP'}
                             </Button>
+                            {editId && (
+                                <Button
+                                    onClick={handlePublish}
+                                    disabled={isPublishing || isPublished}
+                                    variant="outline"
+                                    className="w-full font-medium border-primary/50 text-primary hover:bg-primary/10"
+                                >
+                                    <Globe className="w-4 h-4 mr-2" />
+                                    {isPublishing ? 'Publishing...' : isPublished || publishSuccess ? 'Published!' : 'Publish to Marketplace'}
+                                </Button>
+                            )}
+                            {!editId && (
+                                <p className="text-xs text-muted-foreground text-center">
+                                    Save to Library first to publish to Marketplace
+                                </p>
+                            )}
                         </div>
                     </div>
                 )}
