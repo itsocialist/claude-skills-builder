@@ -14,9 +14,8 @@ const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').toLowerCase().
 
 export default function AdminPage() {
     const router = useRouter();
-    const { user, loading, isConfigured } = useAuth();
+    const { user, loading } = useAuth();
     const [isAdmin, setIsAdmin] = useState(false);
-    const [isChecked, setIsChecked] = useState(false);
     const [stats, setStats] = useState({
         totalUsers: 0,
         totalSkills: 0,
@@ -25,33 +24,20 @@ export default function AdminPage() {
     });
 
     useEffect(() => {
-        // Don't do anything while still loading
-        if (loading) return;
-
-        // If Supabase isn't configured, show the page anyway (dev mode)
-        if (!isConfigured) {
-            setIsChecked(true);
-            return;
-        }
-
-        if (user) {
+        if (!loading && user) {
             // Check admin status (case-insensitive)
             const adminCheck = ADMIN_EMAILS.includes((user.email || '').toLowerCase());
             setIsAdmin(adminCheck);
-            setIsChecked(true);
 
             if (!adminCheck) {
                 router.push('/app');
             }
-        } else {
-            // Only redirect if we're sure there's no user after loading completes
-            setIsChecked(true);
+        } else if (!loading && !user) {
             router.push('/');
         }
-    }, [user, loading, router, isConfigured]);
+    }, [user, loading, router]);
 
-    // Show spinner while loading OR before check completes
-    if (loading || !isChecked) {
+    if (loading || !isAdmin) {
         return (
             <Shell>
                 <div className="flex items-center justify-center h-[60vh]">
@@ -59,11 +45,6 @@ export default function AdminPage() {
                 </div>
             </Shell>
         );
-    }
-
-    // If checked and not admin, show nothing (redirect is happening)
-    if (!isAdmin && isConfigured) {
-        return null;
     }
 
     const statCards = [
