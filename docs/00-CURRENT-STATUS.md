@@ -1,6 +1,6 @@
 # ClaudeSkillsFacet - Current Project Status
 
-**Last Updated:** 2025-12-26 (Sprint 13 Complete)  
+**Last Updated:** 2025-12-27 (Sprint 15 Complete)  
 **Brand Name:** ClaudeSkillsFacet  
 **Tagline:** "Claude Skills: Find, Build and Bundle"
 **Production URL:** https://getclaudeskills.ai
@@ -28,6 +28,8 @@ This project began as a weekend MVP but has evolved into a comprehensive enterpr
 | Sprint 11 | Skill Analytics | ✅ Complete |
 | Sprint 12 | AI Builder Enhancements | ✅ Complete |
 | Sprint 13 | Marketplace MVP | ✅ Complete |
+| Sprint 14 | GTM & Marketing | ✅ Complete |
+| Sprint 15 | Visual Canvas | ✅ Complete |
 
 ## Completed Features
 
@@ -133,6 +135,25 @@ This project began as a weekend MVP but has evolved into a comprehensive enterpr
 - ✅ Inspector V2 (compact dropzone, Config tab with API key)
 - ✅ Builder API key consolidation (single source of truth)
 
+### Sprint 14: GTM & Marketing
+- ✅ Marketing Landing Page redesign
+- ✅ Visual Identity establishment (Orange/Teal/Purple palette)
+- ✅ "Show the Cake" strategy implementation
+- ✅ Interactive Onboarding Flow wireframes
+- ✅ Skill Gallery wireframes (cake-first design)
+- ✅ Style Guide documentation
+
+### Sprint 15: Visual Canvas
+- ✅ ReactFlow-based visual node graph builder (`/app/canvas`)
+- ✅ Custom node components: Metadata, Trigger, Instruction, Example, Resource, Output, OutputFormat
+- ✅ Node standardization (280px width, consistent styling)
+- ✅ MetadataNode with orange brand color
+- ✅ Tabbed inspector with Details and Test tabs
+- ✅ Save to Library and Download ZIP functionality
+- ✅ TestConsole integration for skill testing
+- ✅ MiniMap and Controls for navigation
+- ✅ Drag-and-drop from palette to canvas
+
 ## Technology Stack
 
 ### Frontend
@@ -162,6 +183,7 @@ This project began as a weekend MVP but has evolved into a comprehensive enterpr
 | `/` | Corporate landing page |
 | `/app` | App dashboard |
 | `/app/builder` | Individual skill builder |
+| `/app/canvas` | Visual node-based skill builder |
 | `/app/templates` | Searchable template library |
 | `/app/templates/[slug]` | Template detail page |
 | `/app/packages/new` | Multi-skill package wizard |

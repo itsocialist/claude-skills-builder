@@ -14,7 +14,7 @@ const MetadataNodeComponent = ({ data, selected }: NodeProps<MetadataNodeData>) 
     return (
         <div
             className={`
-                min-w-[280px] bg-gradient-to-br from-primary/30 to-primary/10
+                min-w-[280px] max-w-[320px] bg-gradient-to-br from-primary/30 to-primary/10
                 rounded-xl border-2 transition-all duration-200
                 ${selected ? 'border-primary shadow-lg shadow-primary/20' : 'border-primary/50'}
             `}
@@ -31,7 +31,7 @@ const MetadataNodeComponent = ({ data, selected }: NodeProps<MetadataNodeData>) 
                 <h3 className="text-lg font-semibold text-foreground truncate">
                     {data.name || 'Untitled Skill'}
                 </h3>
-                <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                <p className="text-sm text-muted-foreground line-clamp-2 mt-1" title={data.description}>
                     {data.description || 'Click to add description...'}
                 </p>
                 {data.category && (
