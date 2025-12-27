@@ -50,8 +50,8 @@ export function SkillCard({ skill, onEdit, onDelete, onDuplicate, onExport }: Sk
                     <button
                         onClick={handleShare}
                         className={`p-1.5 rounded-lg transition-colors opacity-0 group-hover:opacity-100 ${copied
-                                ? 'text-green-400 bg-green-400/10'
-                                : 'text-gray-400 hover:text-white hover:bg-[#3a3a3a]'
+                            ? 'text-green-400 bg-green-400/10'
+                            : 'text-gray-400 hover:text-white hover:bg-[#3a3a3a]'
                             }`}
                         title={copied ? 'Copied!' : 'Copy share link'}
                     >
@@ -142,16 +142,16 @@ export function SkillCard({ skill, onEdit, onDelete, onDuplicate, onExport }: Sk
             <div className="flex items-center justify-between text-xs text-gray-500">
                 <div className="flex items-center gap-3">
                     <span>{skill.triggers.length} trigger{skill.triggers.length !== 1 ? 's' : ''}</span>
-                    {(skill.view_count ?? 0) > 0 && (
-                        <span className="flex items-center gap-1">
+                    {(skill.stats?.view_count ?? 0) >= 0 && (
+                        <span className="flex items-center gap-1" title="Total Views">
                             <Eye className="w-3 h-3" />
-                            {skill.view_count}
+                            {skill.stats?.view_count}
                         </span>
                     )}
-                    {(skill.download_count ?? 0) > 0 && (
-                        <span className="flex items-center gap-1">
+                    {(skill.stats?.download_count ?? 0) >= 0 && (
+                        <span className="flex items-center gap-1" title="Total Downloads">
                             <Download className="w-3 h-3" />
-                            {skill.download_count}
+                            {skill.stats?.download_count}
                         </span>
                     )}
                 </div>

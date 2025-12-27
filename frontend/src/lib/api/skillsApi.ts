@@ -20,7 +20,10 @@ export async function fetchUserSkills(userId: string): Promise<SavedSkill[]> {
 
     const { data, error } = await supabase
         .from('user_skills')
-        .select('*')
+        .select(`
+            *,
+            stats:skill_stats(view_count, download_count, copy_count, updated_at)
+        `)
         .eq('user_id', userId)
         .order('updated_at', { ascending: false });
 
@@ -40,7 +43,10 @@ export async function getSkillById(skillId: string): Promise<SavedSkill | null> 
 
     const { data, error } = await supabase
         .from('user_skills')
-        .select('*')
+        .select(`
+            *,
+            stats:skill_stats(view_count, download_count, copy_count, updated_at)
+        `)
         .eq('id', skillId)
         .single();
 

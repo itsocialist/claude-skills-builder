@@ -19,6 +19,7 @@ import { validateSkill, getValidationStatus } from '@/lib/utils/validation';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { saveSkill, getSkillById, updateSkill, trackSkillDownload, trackSkillView, type SavedSkill } from '@/lib/api/skillsApi';
 import { AISkillGenerator } from '@/components/builder/AISkillGenerator';
+import { InsightsPanel } from '@/components/builder/InsightsPanel';
 import { Save, Loader2, Sparkles, Eye, Download } from 'lucide-react';
 
 export default function BuilderPage() {
@@ -37,7 +38,7 @@ function BuilderContent() {
     const [isSaving, setIsSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [showAIGenerator, setShowAIGenerator] = useState(false);
-    const [activeTab, setActiveTab] = useState<'preview' | 'config' | 'resources' | 'test'>('preview');
+    const [activeTab, setActiveTab] = useState<'preview' | 'config' | 'resources' | 'test' | 'insights'>('preview');
     const [editId, setEditId] = useState<string | null>(null);
     const [currentSkillData, setCurrentSkillData] = useState<SavedSkill | null>(null);
     const [isLoadingSkill, setIsLoadingSkill] = useState(false);
@@ -208,6 +209,17 @@ function BuilderContent() {
                 >
                     Resources
                 </button>
+                {editId && (
+                    <button
+                        onClick={() => setActiveTab('insights')}
+                        className={`px-4 py-2 text-sm font-medium ${activeTab === 'insights'
+                            ? 'text-[#C15F3C] border-b-2 border-[#C15F3C]'
+                            : 'text-muted-foreground hover:text-foreground'
+                            }`}
+                    >
+                        Insights
+                    </button>
+                )}
             </div>
 
             {/* Tab Content - Flex grow to fill available space */}
@@ -256,6 +268,11 @@ function BuilderContent() {
                 )}
                 {activeTab === 'test' && (
                     <TestConsole skill={skill} />
+                )}
+                {activeTab === 'insights' && editId && (
+                    <div className="p-4">
+                        <InsightsPanel skillId={editId} stats={currentSkillData?.stats} />
+                    </div>
                 )}
             </div>
 

@@ -103,3 +103,21 @@ skill-name.zip
 ├── SKILL.md        # Skill definition
 └── resources/      # Any attached files
 ```
+
+---
+
+## Analytics & Insights
+
+View performance metrics for your skills to understand usage patterns.
+
+### Skill Stats
+In the **Library** view, each skill card displays:
+- **Views**: Total number of times the skill has been viewed or opened.
+- **Downloads**: Total number of times the ZIP has been downloaded.
+
+### Detailed Insights
+1. Open a skill in the **Builder** (`/app/builder?edit=...`).
+2. Click the **Insights** tab in the right-hand Inspector panel.
+3. View the **30-Day Trend** chart to see usage over time.
+4. Click **Export usage data to CSV** to download a detailed report.
+

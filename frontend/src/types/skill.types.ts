@@ -19,6 +19,25 @@ export interface Skill {
     instructions: string;
     examples?: Example[];
     resources?: SkillResource[];
+    // Analytics (Joined from skill_stats)
+    stats?: SkillStats;
+}
+
+export interface SkillStats {
+    view_count: number;
+    download_count: number;
+    copy_count: number;
+    updated_at: string;
+}
+
+export type AnalyticsEventType = 'view' | 'download' | 'copy' | 'edit';
+
+export interface AnalyticsEvent {
+    id: string;
+    skill_id: string;
+    event_type: AnalyticsEventType;
+    metadata?: Record<string, any>;
+    created_at: string;
 }
 
 export interface Example {
