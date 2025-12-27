@@ -14,8 +14,9 @@ if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KE
 // GET: Publicly accessible settings (site name, colors, etc.)
 export async function GET(request: NextRequest) {
     try {
+        // Return empty settings if Supabase not configured (graceful fallback)
         if (!supabaseAdmin) {
-            return NextResponse.json({ error: 'Service not configured' }, { status: 503 });
+            return NextResponse.json({});
         }
 
         const { data, error } = await supabaseAdmin
@@ -24,7 +25,8 @@ export async function GET(request: NextRequest) {
 
         if (error) {
             console.error('Error fetching settings:', error);
-            return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 });
+            // Return empty settings on error to prevent site breakage
+            return NextResponse.json({});
         }
 
         // Convert array to object
@@ -36,7 +38,8 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(settings);
     } catch (error) {
         console.error('Settings API error:', error);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        // Return empty settings on error to prevent site breakage
+        return NextResponse.json({});
     }
 }
 
