@@ -14,17 +14,17 @@ const MetadataNodeComponent = ({ data, selected }: NodeProps<MetadataNodeData>) 
     return (
         <div
             className={`
-                min-w-[280px] bg-gradient-to-br from-violet-900/80 to-violet-950/80
+                min-w-[280px] bg-gradient-to-br from-primary/30 to-primary/10
                 rounded-xl border-2 transition-all duration-200
-                ${selected ? 'border-violet-400 shadow-lg shadow-violet-500/20' : 'border-violet-700/50'}
+                ${selected ? 'border-primary shadow-lg shadow-primary/20' : 'border-primary/50'}
             `}
         >
             <div className="p-4">
                 <div className="flex items-center gap-2 mb-2">
-                    <div className="p-1.5 rounded bg-violet-500/20">
-                        <FileText className="w-4 h-4 text-violet-400" />
+                    <div className="p-1.5 rounded bg-primary/20">
+                        <FileText className="w-4 h-4 text-primary" />
                     </div>
-                    <span className="text-xs font-medium text-violet-300 uppercase tracking-wider">
+                    <span className="text-xs font-medium text-primary uppercase tracking-wider">
                         Skill Metadata
                     </span>
                 </div>
@@ -35,7 +35,7 @@ const MetadataNodeComponent = ({ data, selected }: NodeProps<MetadataNodeData>) 
                     {data.description || 'Click to add description...'}
                 </p>
                 {data.category && (
-                    <span className="inline-block mt-2 px-2 py-0.5 bg-violet-500/20 text-violet-300 rounded text-xs">
+                    <span className="inline-block mt-2 px-2 py-0.5 bg-primary/20 text-primary rounded text-xs">
                         {data.category}
                     </span>
                 )}
@@ -43,7 +43,7 @@ const MetadataNodeComponent = ({ data, selected }: NodeProps<MetadataNodeData>) 
             <Handle
                 type="source"
                 position={Position.Bottom}
-                className="w-3 h-3 !bg-violet-500"
+                className="w-3 h-3 !bg-primary"
             />
         </div>
     );

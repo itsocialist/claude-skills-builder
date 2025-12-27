@@ -13,7 +13,7 @@ function InstructionNodeComponent({ data, selected }: NodeProps<InstructionNodeD
     const preview = data.content?.slice(0, 100) || '';
 
     return (
-        <div className={`px-4 py-3 rounded-lg border-2 bg-card min-w-[250px] max-w-[300px] ${selected ? 'border-green-500 shadow-lg' : 'border-border'
+        <div className={`px-4 py-3 rounded-lg border-2 bg-card min-w-[280px] ${selected ? 'border-green-500 shadow-lg' : 'border-border'
             }`}>
             <Handle
                 type="target"

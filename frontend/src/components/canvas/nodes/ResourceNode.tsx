@@ -11,7 +11,7 @@ export interface ResourceNodeData {
 
 function ResourceNodeComponent({ data, selected }: NodeProps<ResourceNodeData>) {
     return (
-        <div className={`px-4 py-3 rounded-lg border-2 bg-card min-w-[180px] ${selected ? 'border-amber-500 shadow-lg' : 'border-border'
+        <div className={`px-4 py-3 rounded-lg border-2 bg-card min-w-[280px] ${selected ? 'border-amber-500 shadow-lg' : 'border-border'
             }`}>
             <Handle
                 type="target"

@@ -11,7 +11,7 @@ export interface TriggerNodeData {
 
 function TriggerNodeComponent({ data, selected }: NodeProps<TriggerNodeData>) {
     return (
-        <div className={`px-4 py-3 rounded-lg border-2 bg-card min-w-[200px] ${selected ? 'border-primary shadow-lg' : 'border-border'
+        <div className={`px-4 py-3 rounded-lg border-2 bg-card min-w-[280px] ${selected ? 'border-primary shadow-lg' : 'border-border'
             }`}>
             <Handle
                 type="source"

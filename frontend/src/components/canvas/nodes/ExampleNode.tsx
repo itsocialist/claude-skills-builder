@@ -12,7 +12,7 @@ export interface ExampleNodeData {
 
 function ExampleNodeComponent({ data, selected }: NodeProps<ExampleNodeData>) {
     return (
-        <div className={`px-4 py-3 rounded-lg border-2 bg-card min-w-[280px] max-w-[320px] ${selected ? 'border-indigo-500 shadow-lg' : 'border-border'
+        <div className={`px-4 py-3 rounded-lg border-2 bg-card min-w-[280px] ${selected ? 'border-indigo-500 shadow-lg' : 'border-border'
             }`}>
             <Handle
                 type="target"
