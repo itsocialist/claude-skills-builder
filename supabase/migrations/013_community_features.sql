@@ -16,7 +16,7 @@ CREATE INDEX IF NOT EXISTS idx_profiles_username ON public.profiles(username);
 
 -- 2. Create SKILL_REVIEWS table
 CREATE TABLE IF NOT EXISTS public.skill_reviews (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  id UUID DEFAULT extensions.uuid_generate_v4() PRIMARY KEY,
   skill_id UUID REFERENCES public.market_listings(id) ON DELETE CASCADE NOT NULL,
   user_id UUID REFERENCES auth.users(id) NOT NULL,
   rating INTEGER CHECK (rating >= 1 AND rating <= 5) NOT NULL,

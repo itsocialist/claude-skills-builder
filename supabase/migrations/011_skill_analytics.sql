@@ -9,7 +9,7 @@ EXCEPTION
 END $$;
 
 create table if not exists public.skill_analytics_events (
-  id uuid primary key default gen_random_uuid(),
+  id uuid primary key default extensions.uuid_generate_v4(),
   skill_id uuid references public.user_skills(id) on delete cascade not null,
   event_type analytics_event_type not null,
   user_id uuid references auth.users(id) on delete set null, -- Nullable for anon visitors

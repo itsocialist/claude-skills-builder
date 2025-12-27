@@ -3,7 +3,7 @@
 
 -- Organizations table
 CREATE TABLE IF NOT EXISTS organizations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     name TEXT NOT NULL,
     slug TEXT UNIQUE NOT NULL,
     owner_id UUID REFERENCES auth.users(id) NOT NULL,
@@ -18,7 +18,7 @@ ALTER TABLE teams ADD COLUMN IF NOT EXISTS org_id UUID REFERENCES organizations(
 
 -- Organization members (org-level roles)
 CREATE TABLE IF NOT EXISTS org_members (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     org_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     role TEXT DEFAULT 'member' CHECK (role IN ('owner', 'admin', 'member')),
@@ -33,7 +33,7 @@ ALTER TABLE team_members ADD CONSTRAINT team_members_role_check
 
 -- Audit log (org-scoped)
 CREATE TABLE IF NOT EXISTS audit_log (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     org_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
     team_id UUID REFERENCES teams(id) ON DELETE SET NULL,
     user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,

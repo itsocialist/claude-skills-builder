@@ -9,7 +9,7 @@ ALTER TABLE user_skills ADD COLUMN IF NOT EXISTS full_instructions TEXT;
 
 -- Create skill_resources table for scripts/, references/, assets/ folders
 CREATE TABLE IF NOT EXISTS skill_resources (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    id UUID DEFAULT extensions.uuid_generate_v4() PRIMARY KEY,
     -- Links to either templates (system) or user_skills (user-created)
     template_id TEXT REFERENCES templates(id) ON DELETE CASCADE,
     user_skill_id UUID REFERENCES user_skills(id) ON DELETE CASCADE,

@@ -1,9 +1,13 @@
 -- Sprint 9: Team Sharing + Site Admin
 -- Run this migration in Supabase SQL Editor
 
+-- Enable required extensions
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- Teams table
 CREATE TABLE IF NOT EXISTS teams (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     name TEXT NOT NULL,
     slug TEXT UNIQUE NOT NULL,
     owner_id UUID REFERENCES auth.users(id) NOT NULL,
@@ -13,7 +17,7 @@ CREATE TABLE IF NOT EXISTS teams (
 
 -- Team members
 CREATE TABLE IF NOT EXISTS team_members (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     role TEXT DEFAULT 'member' CHECK (role IN ('owner', 'admin', 'member')),
@@ -24,17 +28,22 @@ CREATE TABLE IF NOT EXISTS team_members (
 
 -- Team invites
 CREATE TABLE IF NOT EXISTS team_invites (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
     email TEXT NOT NULL,
     invited_by UUID REFERENCES auth.users(id),
-    token TEXT UNIQUE DEFAULT encode(gen_random_bytes(32), 'hex'),
+    token TEXT UNIQUE DEFAULT encode(extensions.gen_random_bytes(32), 'hex'),
     expires_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '7 days'),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Add team_id to user_skills for sharing
-ALTER TABLE user_skills ADD COLUMN IF NOT EXISTS team_id UUID REFERENCES teams(id);
+-- Add team_id to user_skills for sharing (if table exists)
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_skills') THEN
+        ALTER TABLE user_skills ADD COLUMN IF NOT EXISTS team_id UUID REFERENCES teams(id);
+    END IF;
+END $$;
 
 -- Site settings table (for admin)
 CREATE TABLE IF NOT EXISTS site_settings (
@@ -98,12 +107,17 @@ CREATE POLICY "Team admin can add members" ON team_members
         )
     );
 
--- User skills: add policy for team access
-CREATE POLICY "Team members can view team skills" ON user_skills
-    FOR SELECT USING (
-        user_id = auth.uid()
-        OR team_id IN (SELECT team_id FROM team_members WHERE user_id = auth.uid())
-    );
+-- User skills: add policy for team access (if table exists)
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_skills') THEN
+        CREATE POLICY "Team members can view team skills" ON user_skills
+            FOR SELECT USING (
+                user_id = auth.uid()
+                OR team_id IN (SELECT team_id FROM team_members WHERE user_id = auth.uid())
+            );
+    END IF;
+END $$;
 
 -- Site settings: only admins can view/modify
 CREATE POLICY "Admins can view settings" ON site_settings

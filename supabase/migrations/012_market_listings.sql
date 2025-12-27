@@ -4,7 +4,7 @@
 
 -- Create market_listings table
 CREATE TABLE IF NOT EXISTS public.market_listings (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     skill_id UUID NOT NULL REFERENCES public.user_skills(id) ON DELETE CASCADE,
     creator_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     slug TEXT NOT NULL UNIQUE,

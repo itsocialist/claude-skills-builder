@@ -1,6 +1,6 @@
 -- User Skills table for storing saved skills
 CREATE TABLE IF NOT EXISTS user_skills (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    id UUID DEFAULT extensions.uuid_generate_v4() PRIMARY KEY,
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
     name TEXT NOT NULL,
     description TEXT,

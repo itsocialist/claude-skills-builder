@@ -1,11 +1,11 @@
 -- Create org_invites table
 CREATE TABLE IF NOT EXISTS org_invites (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     org_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
     email TEXT NOT NULL,
     role TEXT DEFAULT 'member' CHECK (role IN ('admin', 'member')),
     invited_by UUID REFERENCES auth.users(id),
-    token TEXT UNIQUE DEFAULT encode(gen_random_bytes(32), 'hex'),
+    token TEXT UNIQUE DEFAULT encode(extensions.gen_random_bytes(32), 'hex'),
     expires_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '7 days'),
     created_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(org_id, email)
