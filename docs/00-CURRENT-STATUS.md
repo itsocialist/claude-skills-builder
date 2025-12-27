@@ -1,6 +1,6 @@
 # ClaudeSkillsFacet - Current Project Status
 
-**Last Updated:** 2025-12-26  
+**Last Updated:** 2025-12-26 (Sprint 13 Complete)  
 **Brand Name:** ClaudeSkillsFacet  
 **Tagline:** "Claude Skills: Find, Build and Bundle"
 **Production URL:** https://getclaudeskills.ai
@@ -27,7 +27,7 @@ This project began as a weekend MVP but has evolved into a comprehensive enterpr
 | Sprint 10.5 | Architecture Polish & Reliability | ✅ Complete |
 | Sprint 11 | Skill Analytics | ✅ Complete |
 | Sprint 12 | AI Builder Enhancements | ✅ Complete |
-| Sprint 13 | Marketplace MVP | 🔜 Planned |
+| Sprint 13 | Marketplace MVP | ✅ Complete |
 
 ## Completed Features
 
@@ -122,6 +122,17 @@ This project began as a weekend MVP but has evolved into a comprehensive enterpr
 - ✅ "Iterate with AI" Flow (Refine generated skills with feedback)
 - ✅ `analyzeSkillContent` and `refineSkillWithFeedback` functions
 
+### Sprint 13: Marketplace MVP
+- ✅ `/marketplace` route (public skill discovery)
+- ✅ `/marketplace/[slug]` (skill detail + social sharing)
+- ✅ `market_listings` table with RLS (012_market_listings.sql)
+- ✅ MarketplaceHero component (command-bar search style)
+- ✅ PublicSkillCard (minimalist Anti-Vibe design)
+- ✅ One-Click Install via Supabase RPC function
+- ✅ "Publish to Marketplace" button in Builder Export tab
+- ✅ Inspector V2 (compact dropzone, Config tab with API key)
+- ✅ Builder API key consolidation (single source of truth)
+
 ## Technology Stack
 
 ### Frontend
@@ -157,6 +168,8 @@ This project began as a weekend MVP but has evolved into a comprehensive enterpr
 | `/library` | User skill library (auth required) |
 | `/app/org` | Organization dashboard |
 | `/app/admin` | Site admin dashboard |
+| `/marketplace` | Public skill discovery |
+| `/marketplace/[slug]` | Skill detail page |
 
 ## Repository
 
