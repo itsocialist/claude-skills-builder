@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Shell } from '@/components/layout/Shell';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, FileText, CheckCircle, XCircle, AlertTriangle, Loader2, Sparkles, Lightbulb } from 'lucide-react';
+import { Upload, FileText, CheckCircle, XCircle, AlertTriangle, Loader2, Sparkles, Lightbulb, Settings, ChevronDown, ChevronRight, Key } from 'lucide-react';
 
 interface ValidationResult {
     valid: boolean;
@@ -27,139 +27,243 @@ interface ValidationResult {
     };
 }
 
-// Results Panel Component (used in Shell inspector prop)
-function ResultsPanel({ result }: { result: ValidationResult | null }) {
-    if (!result) {
-        return (
-            <div className="h-full flex flex-col items-center justify-center text-center p-8">
-                <Upload className="w-12 h-12 text-muted-foreground/50 mb-4" />
-                <p className="text-muted-foreground">Upload a skill file or paste content to see validation results</p>
-            </div>
-        );
-    }
+interface InspectorPanelProps {
+    result: ValidationResult | null;
+    analyzing: boolean;
+    onAnalyze: () => void;
+    canAnalyze: boolean;
+    useAI: boolean;
+    setUseAI: (val: boolean) => void;
+    apiKey: string;
+    setApiKey: (val: string) => void;
+}
+
+// Inspector Panel Component with tabs
+function InspectorPanel({
+    result,
+    analyzing,
+    onAnalyze,
+    canAnalyze,
+    useAI,
+    setUseAI,
+    apiKey,
+    setApiKey
+}: InspectorPanelProps) {
+    const [activeTab, setActiveTab] = useState<'results' | 'config'>('results');
+    const [showApiKey, setShowApiKey] = useState(true);
 
     return (
         <div className="h-full flex flex-col overflow-hidden">
             {/* Tabs */}
             <div className="flex border-b border-border px-4 flex-shrink-0">
-                <button className="px-4 py-2 text-sm font-medium text-primary border-b-2 border-primary">
-                    Validation
+                <button
+                    onClick={() => setActiveTab('results')}
+                    className={`px-4 py-2 text-sm font-medium ${activeTab === 'results' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                    Results
                 </button>
-                {result.aiAnalysis && (
-                    <button className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground">
-                        AI Analysis
-                    </button>
+                <button
+                    onClick={() => setActiveTab('config')}
+                    className={`px-4 py-2 text-sm font-medium ${activeTab === 'config' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                    Config
+                </button>
+            </div>
+
+            {/* Tab Content */}
+            <div className="flex-1 overflow-auto">
+                {activeTab === 'config' && (
+                    <div className="p-4 space-y-4">
+                        {/* API Key Section */}
+                        <div className="border border-border rounded-md">
+                            <button
+                                onClick={() => setShowApiKey(!showApiKey)}
+                                className="w-full flex items-center justify-between p-3 text-sm font-medium text-foreground hover:bg-accent/50 rounded-md transition-colors"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <Key className="w-4 h-4 text-primary" />
+                                    <span>API Key</span>
+                                    {apiKey && (
+                                        <span className="text-xs text-green-500 flex items-center gap-1">
+                                            <CheckCircle className="w-3 h-3" /> Configured
+                                        </span>
+                                    )}
+                                </div>
+                                {showApiKey ? (
+                                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                                ) : (
+                                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                                )}
+                            </button>
+                            {showApiKey && (
+                                <div className="px-3 pb-3 space-y-2">
+                                    <input
+                                        type="password"
+                                        value={apiKey}
+                                        onChange={(e) => setApiKey(e.target.value)}
+                                        placeholder="sk-ant-..."
+                                        className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground text-sm"
+                                    />
+                                    <p className="text-xs text-muted-foreground">
+                                        Your Claude API key for AI-powered analysis
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* AI Toggle */}
+                        <div className="flex items-center justify-between p-3 border border-border rounded-md">
+                            <div className="flex items-center gap-2">
+                                <Sparkles className="w-4 h-4 text-[#C15F3C]" />
+                                <span className="text-sm font-medium text-foreground">AI Analysis</span>
+                            </div>
+                            <button
+                                onClick={() => setUseAI(!useAI)}
+                                className={`w-10 h-5 rounded-full transition-colors ${useAI ? 'bg-[#C15F3C]' : 'bg-muted'}`}
+                            >
+                                <span className={`block w-4 h-4 rounded-full bg-white shadow transform transition-transform ${useAI ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'results' && (
+                    <div className="p-4 space-y-4">
+                        {!result ? (
+                            <div className="flex flex-col items-center justify-center text-center py-12">
+                                <FileText className="w-10 h-10 text-muted-foreground/50 mb-3" />
+                                <p className="text-sm text-muted-foreground">Upload or paste content, then click Analyze</p>
+                            </div>
+                        ) : (
+                            <>
+                                {/* Status Header */}
+                                <div className="flex items-center gap-3">
+                                    {result.valid ? (
+                                        <CheckCircle className="w-6 h-6 text-green-500" />
+                                    ) : (
+                                        <XCircle className="w-6 h-6 text-red-500" />
+                                    )}
+                                    <div>
+                                        <h3 className="font-semibold text-foreground">
+                                            {result.valid ? 'Valid Skill' : 'Invalid Skill'}
+                                        </h3>
+                                        {result.info.name && (
+                                            <p className="text-sm text-muted-foreground">{result.info.name}</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Errors */}
+                                {result.errors.length > 0 && (
+                                    <div>
+                                        <h4 className="text-sm font-medium text-red-400 mb-2 flex items-center gap-2">
+                                            <XCircle className="w-4 h-4" />
+                                            Errors ({result.errors.length})
+                                        </h4>
+                                        <ul className="space-y-1">
+                                            {result.errors.map((error, i) => (
+                                                <li key={i} className="text-sm text-red-300 pl-4">• {error}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                {/* Warnings */}
+                                {result.warnings.length > 0 && (
+                                    <div>
+                                        <h4 className="text-sm font-medium text-yellow-400 mb-2 flex items-center gap-2">
+                                            <AlertTriangle className="w-4 h-4" />
+                                            Warnings ({result.warnings.length})
+                                        </h4>
+                                        <ul className="space-y-1">
+                                            {result.warnings.map((warning, i) => (
+                                                <li key={i} className="text-sm text-yellow-300 pl-4">• {warning}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                {/* Info */}
+                                {result.info.description && (
+                                    <div className="pt-3 border-t border-border">
+                                        <h4 className="text-sm font-medium text-foreground mb-1">Description</h4>
+                                        <p className="text-sm text-muted-foreground">{result.info.description}</p>
+                                    </div>
+                                )}
+
+                                {result.info.triggers && result.info.triggers.length > 0 && (
+                                    <div className="pt-3 border-t border-border">
+                                        <h4 className="text-sm font-medium text-foreground mb-2">Triggers</h4>
+                                        <div className="flex flex-wrap gap-2">
+                                            {result.info.triggers.map((trigger, i) => (
+                                                <span key={i} className="px-2 py-1 bg-muted text-muted-foreground rounded text-xs">
+                                                    {trigger}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* AI Analysis */}
+                                {result.aiAnalysis && (
+                                    <div className="pt-3 border-t border-[#C15F3C]/30">
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center gap-2">
+                                                <Sparkles className="w-4 h-4 text-[#C15F3C]" />
+                                                <h4 className="text-sm font-medium text-foreground">AI Analysis</h4>
+                                            </div>
+                                            <span className="px-2 py-0.5 bg-[#C15F3C]/10 text-[#C15F3C] rounded-full text-xs font-medium">
+                                                {result.aiAnalysis.overallScore}/10
+                                            </span>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground mb-3">{result.aiAnalysis.summary}</p>
+
+                                        {result.aiAnalysis.suggestions.length > 0 && (
+                                            <div className="space-y-2">
+                                                <h5 className="text-xs font-medium text-foreground flex items-center gap-1">
+                                                    <Lightbulb className="w-3 h-3" />
+                                                    Suggestions ({result.aiAnalysis.suggestions.length})
+                                                </h5>
+                                                <ul className="space-y-2">
+                                                    {result.aiAnalysis.suggestions.map((suggestion, i) => (
+                                                        <li
+                                                            key={i}
+                                                            className={`text-xs pl-3 py-1.5 rounded ${suggestion.type === 'error' ? 'bg-red-500/10 text-red-300 border-l-2 border-red-500' :
+                                                                    suggestion.type === 'warning' ? 'bg-yellow-500/10 text-yellow-300 border-l-2 border-yellow-500' :
+                                                                        'bg-blue-500/10 text-blue-300 border-l-2 border-blue-500'
+                                                                }`}
+                                                        >
+                                                            <span className="text-[10px] font-medium uppercase text-muted-foreground mr-1">[{suggestion.area}]</span>
+                                                            {suggestion.message}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
                 )}
             </div>
 
-            {/* Content */}
-            <div className="flex-1 overflow-auto p-4 space-y-4">
-                {/* Status Header */}
-                <div className="flex items-center gap-3">
-                    {result.valid ? (
-                        <CheckCircle className="w-6 h-6 text-green-500" />
+            {/* Analyze Button - Fixed at bottom */}
+            <div className="p-4 border-t border-border flex-shrink-0">
+                <Button
+                    onClick={onAnalyze}
+                    disabled={!canAnalyze || analyzing}
+                    className="w-full"
+                >
+                    {analyzing ? (
+                        <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Analyzing...
+                        </>
                     ) : (
-                        <XCircle className="w-6 h-6 text-red-500" />
+                        'Analyze Skill'
                     )}
-                    <div>
-                        <h3 className="font-semibold text-foreground">
-                            {result.valid ? 'Valid Skill' : 'Invalid Skill'}
-                        </h3>
-                        {result.info.name && (
-                            <p className="text-sm text-muted-foreground">{result.info.name}</p>
-                        )}
-                    </div>
-                </div>
-
-                {/* Errors */}
-                {result.errors.length > 0 && (
-                    <div>
-                        <h4 className="text-sm font-medium text-red-400 mb-2 flex items-center gap-2">
-                            <XCircle className="w-4 h-4" />
-                            Errors ({result.errors.length})
-                        </h4>
-                        <ul className="space-y-1">
-                            {result.errors.map((error, i) => (
-                                <li key={i} className="text-sm text-red-300 pl-4">• {error}</li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-
-                {/* Warnings */}
-                {result.warnings.length > 0 && (
-                    <div>
-                        <h4 className="text-sm font-medium text-yellow-400 mb-2 flex items-center gap-2">
-                            <AlertTriangle className="w-4 h-4" />
-                            Warnings ({result.warnings.length})
-                        </h4>
-                        <ul className="space-y-1">
-                            {result.warnings.map((warning, i) => (
-                                <li key={i} className="text-sm text-yellow-300 pl-4">• {warning}</li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-
-                {/* Info */}
-                {result.info.description && (
-                    <div className="pt-3 border-t border-border">
-                        <h4 className="text-sm font-medium text-foreground mb-1">Description</h4>
-                        <p className="text-sm text-muted-foreground">{result.info.description}</p>
-                    </div>
-                )}
-
-                {result.info.triggers && result.info.triggers.length > 0 && (
-                    <div className="pt-3 border-t border-border">
-                        <h4 className="text-sm font-medium text-foreground mb-2">Triggers</h4>
-                        <div className="flex flex-wrap gap-2">
-                            {result.info.triggers.map((trigger, i) => (
-                                <span key={i} className="px-2 py-1 bg-muted text-muted-foreground rounded text-xs">
-                                    {trigger}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* AI Analysis */}
-                {result.aiAnalysis && (
-                    <div className="pt-3 border-t border-[#C15F3C]/30">
-                        <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-2">
-                                <Sparkles className="w-4 h-4 text-[#C15F3C]" />
-                                <h4 className="text-sm font-medium text-foreground">AI Analysis</h4>
-                            </div>
-                            <span className="px-2 py-0.5 bg-[#C15F3C]/10 text-[#C15F3C] rounded-full text-xs font-medium">
-                                {result.aiAnalysis.overallScore}/10
-                            </span>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-3">{result.aiAnalysis.summary}</p>
-
-                        {result.aiAnalysis.suggestions.length > 0 && (
-                            <div className="space-y-2">
-                                <h5 className="text-xs font-medium text-foreground flex items-center gap-1">
-                                    <Lightbulb className="w-3 h-3" />
-                                    Suggestions ({result.aiAnalysis.suggestions.length})
-                                </h5>
-                                <ul className="space-y-2">
-                                    {result.aiAnalysis.suggestions.map((suggestion, i) => (
-                                        <li
-                                            key={i}
-                                            className={`text-xs pl-3 py-1.5 rounded ${suggestion.type === 'error' ? 'bg-red-500/10 text-red-300 border-l-2 border-red-500' :
-                                                    suggestion.type === 'warning' ? 'bg-yellow-500/10 text-yellow-300 border-l-2 border-yellow-500' :
-                                                        'bg-blue-500/10 text-blue-300 border-l-2 border-blue-500'
-                                                }`}
-                                        >
-                                            <span className="text-[10px] font-medium uppercase text-muted-foreground mr-1">[{suggestion.area}]</span>
-                                            {suggestion.message}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                    </div>
-                )}
+                </Button>
             </div>
         </div>
     );
@@ -240,33 +344,51 @@ export default function InspectorPage() {
         }
     };
 
+    const canAnalyze = !!(file || skillContent);
+
+    const inspectorPanel = (
+        <InspectorPanel
+            result={result}
+            analyzing={analyzing}
+            onAnalyze={analyzeSkill}
+            canAnalyze={canAnalyze}
+            useAI={useAI}
+            setUseAI={setUseAI}
+            apiKey={apiKey}
+            setApiKey={setApiKey}
+        />
+    );
+
     return (
-        <Shell title="Skill Inspector" inspector={<ResultsPanel result={result} />}>
-            <div className="p-6 space-y-6">
-                {/* Header */}
-                <div>
-                    <h1 className="text-2xl font-bold text-foreground mb-1">Skill Inspector</h1>
-                    <p className="text-muted-foreground">
-                        Upload a SKILL.md file or ZIP package to validate and analyze its contents.
+        <Shell title="Skill Inspector" inspector={inspectorPanel}>
+            <div className="p-6 space-y-4">
+                {/* Header - Compact */}
+                <div className="mb-2">
+                    <h1 className="text-xl font-bold text-foreground">Skill Inspector</h1>
+                    <p className="text-sm text-muted-foreground">
+                        Validate and analyze SKILL.md files or ZIP packages
                     </p>
                 </div>
 
-                {/* Upload Area */}
-                <Card className="p-6">
-                    <div
-                        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-                        onDragLeave={() => setDragOver(false)}
-                        onDrop={handleFileDrop}
-                        className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${dragOver ? 'border-primary bg-primary/5' : 'border-border'
-                            }`}
-                    >
-                        <Upload className="w-10 h-10 mx-auto mb-4 text-muted-foreground" />
-                        <p className="text-foreground mb-2">
-                            Drag and drop a SKILL.md or ZIP file here
-                        </p>
-                        <p className="text-muted-foreground text-sm mb-4">
-                            or click to select a file
-                        </p>
+                {/* Compact Upload Area */}
+                <div
+                    onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                    onDragLeave={() => setDragOver(false)}
+                    onDrop={handleFileDrop}
+                    className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${dragOver ? 'border-primary bg-primary/5' : 'border-border'
+                        }`}
+                >
+                    <div className="flex items-center justify-center gap-4">
+                        <Upload className="w-6 h-6 text-muted-foreground" />
+                        <div className="text-left">
+                            <p className="text-sm text-foreground">
+                                Drop a file here or{' '}
+                                <label htmlFor="file-input" className="text-primary cursor-pointer hover:underline">
+                                    browse
+                                </label>
+                            </p>
+                            <p className="text-xs text-muted-foreground">SKILL.md or ZIP</p>
+                        </div>
                         <input
                             type="file"
                             accept=".md,.zip"
@@ -274,82 +396,34 @@ export default function InspectorPage() {
                             className="hidden"
                             id="file-input"
                         />
-                        <label htmlFor="file-input">
-                            <Button variant="outline" className="cursor-pointer" asChild>
-                                <span>Select File</span>
-                            </Button>
-                        </label>
                     </div>
-
                     {file && (
-                        <div className="mt-4 flex items-center gap-2 text-sm">
-                            <FileText className="w-4 h-4 text-muted-foreground" />
+                        <div className="mt-3 pt-3 border-t border-border flex items-center justify-center gap-2 text-sm">
+                            <FileText className="w-4 h-4 text-primary" />
                             <span className="text-foreground">{file.name}</span>
-                            <span className="text-muted-foreground">
-                                ({(file.size / 1024).toFixed(1)} KB)
-                            </span>
+                            <span className="text-muted-foreground">({(file.size / 1024).toFixed(1)} KB)</span>
+                            <button
+                                onClick={() => { setFile(null); setSkillContent(''); }}
+                                className="ml-2 text-xs text-muted-foreground hover:text-foreground"
+                            >
+                                Clear
+                            </button>
                         </div>
                     )}
-                </Card>
+                </div>
 
-                {/* Or Paste Content */}
-                <Card className="p-6">
-                    <h3 className="text-sm font-medium text-foreground mb-3">Or paste SKILL.md content</h3>
+                {/* Paste Content Area - More compact */}
+                <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                        Or paste SKILL.md content
+                    </label>
                     <textarea
                         value={skillContent}
                         onChange={(e) => setSkillContent(e.target.value)}
                         placeholder="---&#10;name: My Skill&#10;description: A helpful skill&#10;---&#10;&#10;# Instructions..."
-                        className="w-full h-32 px-3 py-2 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground resize-none font-mono text-sm"
+                        className="w-full h-48 px-3 py-2 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground resize-none font-mono text-sm"
                     />
-                </Card>
-
-                {/* AI Analysis Options */}
-                <Card className="p-6 border-l-4 border-l-[#C15F3C]">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2">
-                            <Sparkles className="w-5 h-5 text-[#C15F3C]" />
-                            <h3 className="text-sm font-medium text-foreground">AI-Powered Analysis</h3>
-                        </div>
-                        <button
-                            onClick={() => setUseAI(!useAI)}
-                            className={`w-10 h-5 rounded-full transition-colors ${useAI ? 'bg-[#C15F3C]' : 'bg-muted'}`}
-                        >
-                            <span className={`block w-4 h-4 rounded-full bg-white shadow transform transition-transform ${useAI ? 'translate-x-5' : 'translate-x-0.5'}`} />
-                        </button>
-                    </div>
-                    {useAI && (
-                        <div>
-                            <label className="block text-xs text-muted-foreground mb-1">Claude API Key (BYOK)</label>
-                            <input
-                                type="password"
-                                value={apiKey}
-                                onChange={(e) => setApiKey(e.target.value)}
-                                placeholder="sk-ant-..."
-                                className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground text-sm"
-                            />
-                            <p className="text-xs text-muted-foreground mt-2">
-                                Get deep AI-powered suggestions for improving your skill.
-                            </p>
-                        </div>
-                    )}
-                </Card>
-
-                {/* Analyze Button */}
-                <Button
-                    onClick={analyzeSkill}
-                    disabled={(!file && !skillContent) || analyzing}
-                    className="w-full"
-                    size="lg"
-                >
-                    {analyzing ? (
-                        <>
-                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                            Analyzing...
-                        </>
-                    ) : (
-                        'Analyze Skill'
-                    )}
-                </Button>
+                </div>
             </div>
         </Shell>
     );
