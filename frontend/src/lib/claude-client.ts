@@ -209,3 +209,142 @@ Respond ONLY with valid JSON. No markdown code blocks.`;
         throw new Error('Failed to parse skill from AI response');
     }
 }
+
+/**
+ * AI Analysis result structure
+ */
+export interface AIAnalysisResult {
+    overallScore: number; // 1-10
+    summary: string;
+    suggestions: {
+        type: 'error' | 'warning' | 'suggestion';
+        area: 'triggers' | 'instructions' | 'structure' | 'clarity' | 'security';
+        message: string;
+    }[];
+}
+
+/**
+ * Analyze a skill's content using Claude AI
+ */
+export async function analyzeSkillContent(
+    apiKey: string,
+    skillContent: string
+): Promise<{ analysis: AIAnalysisResult; tokensUsed: number }> {
+    const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
+
+    const systemPrompt = `You are a Claude Skills expert and code reviewer. Analyze the provided skill content and provide actionable feedback.
+
+Output a JSON object with this exact structure:
+{
+  "overallScore": 7,
+  "summary": "Brief 1-2 sentence overall assessment",
+  "suggestions": [
+    {
+      "type": "warning",
+      "area": "triggers",
+      "message": "Consider adding more specific trigger phrases to reduce false positives"
+    }
+  ]
+}
+
+Evaluation criteria:
+- **Triggers (triggers):** Are they specific enough? Too generic? Missing common variations?
+- **Instructions (instructions):** Clear? Has examples? Proper formatting?
+- **Structure (structure):** Valid YAML? Correct frontmatter? Well-organized?
+- **Clarity (clarity):** Easy to understand? Ambiguous wording?
+- **Security (security):** Any risky patterns (eval, external URLs, credential requests)?
+
+Types:
+- "error": Critical issues that must be fixed
+- "warning": Issues that should be addressed
+- "suggestion": Optional improvements
+
+Respond ONLY with valid JSON. No markdown code blocks.`;
+
+    const response = await client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1024,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: `Analyze this Claude Skill:\n\n${skillContent}` }],
+    });
+
+    const responseText = response.content[0].type === 'text'
+        ? response.content[0].text
+        : '';
+
+    const tokensUsed = (response.usage?.input_tokens || 0) + (response.usage?.output_tokens || 0);
+
+    try {
+        const analysis = JSON.parse(responseText) as AIAnalysisResult;
+        return { analysis, tokensUsed };
+    } catch {
+        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            const analysis = JSON.parse(jsonMatch[0]) as AIAnalysisResult;
+            return { analysis, tokensUsed };
+        }
+        throw new Error('Failed to parse AI analysis response');
+    }
+}
+
+/**
+ * Refine a generated skill based on user feedback
+ */
+export async function refineSkillWithFeedback(
+    apiKey: string,
+    currentSkill: {
+        name: string;
+        description: string;
+        category: string;
+        triggers: string[];
+        instructions: string;
+    },
+    feedback: string
+): Promise<{ skill: GeneratedSkill; tokensUsed: number }> {
+    const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
+
+    const systemPrompt = `You are a Claude Skills expert. The user has generated a skill but wants changes.
+Apply their feedback to refine the skill.
+
+Current Skill:
+${JSON.stringify(currentSkill, null, 2)}
+
+User Feedback:
+${feedback}
+
+Output a JSON object with this exact structure:
+{
+  "name": "skill-name-slug",
+  "description": "Updated description",
+  "category": "Category name",
+  "triggers": ["updated trigger 1", "updated trigger 2"],
+  "instructions": "Refined markdown instructions..."
+}
+
+Respond ONLY with valid JSON. No markdown code blocks.`;
+
+    const response = await client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2048,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: 'Refine this skill based on my feedback.' }],
+    });
+
+    const responseText = response.content[0].type === 'text'
+        ? response.content[0].text
+        : '';
+
+    const tokensUsed = (response.usage?.input_tokens || 0) + (response.usage?.output_tokens || 0);
+
+    try {
+        const skill = JSON.parse(responseText) as GeneratedSkill;
+        return { skill, tokensUsed };
+    } catch {
+        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            const skill = JSON.parse(jsonMatch[0]) as GeneratedSkill;
+            return { skill, tokensUsed };
+        }
+        throw new Error('Failed to parse refined skill from AI response');
+    }
+}

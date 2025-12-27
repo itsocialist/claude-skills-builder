@@ -20,7 +20,8 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import { saveSkill, getSkillById, updateSkill, trackSkillDownload, trackSkillView, type SavedSkill } from '@/lib/api/skillsApi';
 import { AISkillGenerator } from '@/components/builder/AISkillGenerator';
 import { InsightsPanel } from '@/components/builder/InsightsPanel';
-import { Save, Loader2, Sparkles, Eye, Download } from 'lucide-react';
+import { analyzeSkillContent, AIAnalysisResult } from '@/lib/claude-client';
+import { Save, Loader2, Sparkles, Eye, Download, Lightbulb, X } from 'lucide-react';
 
 export default function BuilderPage() {
     return (
@@ -42,6 +43,9 @@ function BuilderContent() {
     const [editId, setEditId] = useState<string | null>(null);
     const [currentSkillData, setCurrentSkillData] = useState<SavedSkill | null>(null);
     const [isLoadingSkill, setIsLoadingSkill] = useState(false);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null);
+    const [apiKey, setApiKey] = useState('');
 
     const handleSaveToLibrary = async () => {
         if (!user) return;
@@ -166,6 +170,34 @@ function BuilderContent() {
             alert('Failed to generate skill. Please try again.');
         } finally {
             setIsGenerating(false);
+        }
+    };
+
+    const handleAnalyzeWithAI = async () => {
+        if (!apiKey) {
+            alert('Please enter your Claude API key to analyze.');
+            return;
+        }
+        setIsAnalyzing(true);
+        try {
+            // Build skill content as markdown
+            const skillContent = `---
+name: ${skill.name}
+description: ${skill.description}
+category: ${skill.category}
+triggers:
+${skill.triggers.map(t => `  - "${t}"`).join('\n')}
+---
+
+${skill.instructions}`;
+
+            const { analysis } = await analyzeSkillContent(apiKey, skillContent);
+            setAnalysisResult(analysis);
+        } catch (error) {
+            console.error('Analysis failed:', error);
+            alert('AI analysis failed. Check your API key.');
+        } finally {
+            setIsAnalyzing(false);
         }
     };
 
@@ -319,28 +351,89 @@ function BuilderContent() {
             }}
         >
             <div className="max-w-3xl mx-auto">
-                <div className="mb-6">
-                    <Button
-                        variant="outline"
-                        onClick={() => setShowAIGenerator(true)}
-                        className="border-primary/50 text-primary hover:bg-primary/10"
-                    >
-                        <Sparkles className="w-4 h-4 mr-2" />
-                        Create with AI
-                    </Button>
-
-                    {/* Analytics Stats for saved skills */}
-                    {currentSkillData && (
-                        <div className="inline-flex items-center gap-4 ml-4 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                                <Eye className="w-4 h-4" />
-                                {currentSkillData.view_count ?? 0} views
-                            </span>
-                            <span className="flex items-center gap-1">
-                                <Download className="w-4 h-4" />
-                                {currentSkillData.download_count ?? 0} downloads
-                            </span>
+                <div className="mb-6 space-y-4">
+                    <div className="flex flex-wrap items-center gap-3">
+                        <Button
+                            variant="outline"
+                            onClick={() => setShowAIGenerator(true)}
+                            className="border-primary/50 text-primary hover:bg-primary/10"
+                        >
+                            <Sparkles className="w-4 h-4 mr-2" />
+                            Create with AI
+                        </Button>
+                        <Button
+                            variant="outline"
+                            onClick={handleAnalyzeWithAI}
+                            disabled={!skill.name || !skill.instructions || isAnalyzing}
+                            className="border-[#C15F3C]/50 text-[#C15F3C] hover:bg-[#C15F3C]/10"
+                        >
+                            {isAnalyzing ? (
+                                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Analyzing...</>
+                            ) : (
+                                <><Lightbulb className="w-4 h-4 mr-2" /> Analyze with AI</>
+                            )}
+                        </Button>
+                        <div className="flex-1 min-w-[200px] max-w-[300px]">
+                            <input
+                                type="password"
+                                value={apiKey}
+                                onChange={(e) => setApiKey(e.target.value)}
+                                placeholder="Claude API Key (for AI features)"
+                                className="w-full px-3 py-1.5 text-sm bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground"
+                            />
                         </div>
+
+                        {/* Analytics Stats for saved skills */}
+                        {currentSkillData && (
+                            <div className="inline-flex items-center gap-4 text-sm text-muted-foreground">
+                                <span className="flex items-center gap-1">
+                                    <Eye className="w-4 h-4" />
+                                    {currentSkillData.view_count ?? 0} views
+                                </span>
+                                <span className="flex items-center gap-1">
+                                    <Download className="w-4 h-4" />
+                                    {currentSkillData.download_count ?? 0} downloads
+                                </span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* AI Analysis Results Panel */}
+                    {analysisResult && (
+                        <Card className="p-4 border-l-4 border-l-[#C15F3C] bg-card/50">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                    <Sparkles className="w-4 h-4 text-[#C15F3C]" />
+                                    <span className="text-sm font-medium text-foreground">AI Analysis</span>
+                                    <span className="px-2 py-0.5 bg-[#C15F3C]/10 text-[#C15F3C] rounded-full text-xs font-medium">
+                                        Score: {analysisResult.overallScore}/10
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={() => setAnalysisResult(null)}
+                                    className="text-muted-foreground hover:text-foreground"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-3">{analysisResult.summary}</p>
+                            {analysisResult.suggestions.length > 0 && (
+                                <ul className="space-y-2">
+                                    {analysisResult.suggestions.map((suggestion, i) => (
+                                        <li
+                                            key={i}
+                                            className={`text-xs pl-3 py-1.5 rounded ${suggestion.type === 'error' ? 'bg-red-500/10 text-red-300 border-l-2 border-red-500' :
+                                                    suggestion.type === 'warning' ? 'bg-yellow-500/10 text-yellow-300 border-l-2 border-yellow-500' :
+                                                        'bg-blue-500/10 text-blue-300 border-l-2 border-blue-500'
+                                                }`}
+                                        >
+                                            <span className="font-medium uppercase text-muted-foreground mr-2">[{suggestion.area}]</span>
+                                            {suggestion.message}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </Card>
                     )}
                 </div>
 

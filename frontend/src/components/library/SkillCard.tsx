@@ -139,23 +139,20 @@ export function SkillCard({ skill, onEdit, onDelete, onDuplicate, onExport }: Sk
             </p>
 
             {/* Footer with Analytics */}
-            <div className="flex items-center justify-between text-xs text-gray-500">
-                <div className="flex items-center gap-3">
-                    <span>{skill.triggers.length} trigger{skill.triggers.length !== 1 ? 's' : ''}</span>
-                    {(skill.stats?.view_count ?? 0) >= 0 && (
-                        <span className="flex items-center gap-1" title="Total Views">
-                            <Eye className="w-3 h-3" />
-                            {skill.stats?.view_count}
-                        </span>
-                    )}
-                    {(skill.stats?.download_count ?? 0) >= 0 && (
-                        <span className="flex items-center gap-1" title="Total Downloads">
-                            <Download className="w-3 h-3" />
-                            {skill.stats?.download_count}
-                        </span>
-                    )}
+            <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#3a3a3a]/50">
+                <div className="flex items-center gap-4 text-xs text-gray-400">
+                    <span className="flex items-center gap-1.5" title="Total Views">
+                        <Eye className="w-3.5 h-3.5" />
+                        <span className="font-medium text-gray-300">{skill.stats?.view_count ?? 0}</span>
+                    </span>
+                    <span className="flex items-center gap-1.5" title="Total Downloads">
+                        <Download className="w-3.5 h-3.5" />
+                        <span className="font-medium text-gray-300">{skill.stats?.download_count ?? 0}</span>
+                    </span>
                 </div>
-                <span>Updated {formatDate(skill.updated_at)}</span>
+                <span className="text-[10px] text-gray-600 uppercase tracking-wider font-medium">
+                    {formatDate(skill.updated_at)}
+                </span>
             </div>
         </div>
     );

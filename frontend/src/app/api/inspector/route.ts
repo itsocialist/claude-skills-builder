@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { analyzeSkillContent } from '@/lib/claude-client';
 
 interface ValidationResult {
     valid: boolean;
@@ -9,6 +10,15 @@ interface ValidationResult {
         description?: string;
         triggers?: string[];
         resourceCount?: number;
+    };
+    aiAnalysis?: {
+        overallScore: number;
+        summary: string;
+        suggestions: {
+            type: 'error' | 'warning' | 'suggestion';
+            area: string;
+            message: string;
+        }[];
     };
 }
 
@@ -97,6 +107,8 @@ export async function POST(request: NextRequest) {
         const formData = await request.formData();
         const file = formData.get('file') as File | null;
         const content = formData.get('content') as string | null;
+        const apiKey = formData.get('apiKey') as string | null;
+        const useAI = formData.get('useAI') === 'true';
 
         let skillContent = '';
 
@@ -104,8 +116,6 @@ export async function POST(request: NextRequest) {
             if (file.name.endsWith('.md')) {
                 skillContent = await file.text();
             } else if (file.name.endsWith('.zip')) {
-                // For ZIP files, we'd need to extract and find SKILL.md
-                // For now, return a placeholder response
                 return NextResponse.json({
                     valid: false,
                     errors: ['ZIP file analysis coming soon. Please upload SKILL.md directly for now.'],
@@ -132,6 +142,18 @@ export async function POST(request: NextRequest) {
         }
 
         const result = parseSkillContent(skillContent);
+
+        // If AI analysis requested and API key provided
+        if (useAI && apiKey) {
+            try {
+                const { analysis } = await analyzeSkillContent(apiKey, skillContent);
+                result.aiAnalysis = analysis;
+            } catch (aiError) {
+                console.error('AI analysis error:', aiError);
+                result.warnings.push('AI analysis failed. Check your API key.');
+            }
+        }
+
         return NextResponse.json(result);
     } catch (error) {
         console.error('Inspector error:', error);
@@ -143,3 +165,4 @@ export async function POST(request: NextRequest) {
         }, { status: 500 });
     }
 }
+

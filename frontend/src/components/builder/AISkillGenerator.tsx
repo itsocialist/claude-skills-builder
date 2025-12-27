@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import {
     generateSkillFromDescription,
+    refineSkillWithFeedback,
     INDUSTRY_PRESETS,
     IndustryPreset
 } from '@/lib/claude-client';
@@ -20,7 +21,9 @@ import {
     Briefcase,
     X,
     Check,
-    AlertCircle
+    AlertCircle,
+    RefreshCw,
+    MessageSquare
 } from 'lucide-react';
 
 interface AISkillGeneratorProps {
@@ -57,6 +60,9 @@ export function AISkillGenerator({ isOpen, onClose, onAccept }: AISkillGenerator
     } | null>(null);
     const [tokensUsed, setTokensUsed] = useState(0);
     const [apiKey, setApiKey] = useState<string | null>(null);
+    const [refineFeedback, setRefineFeedback] = useState('');
+    const [isRefining, setIsRefining] = useState(false);
+    const [showRefineInput, setShowRefineInput] = useState(false);
 
     // Load API key from localStorage
     useEffect(() => {
@@ -109,7 +115,31 @@ export function AISkillGenerator({ isOpen, onClose, onAccept }: AISkillGenerator
 
     const handleRegenerate = () => {
         setGeneratedSkill(null);
+        setShowRefineInput(false);
+        setRefineFeedback('');
         handleGenerate();
+    };
+
+    const handleRefine = async () => {
+        if (!apiKey || !generatedSkill || !refineFeedback.trim()) return;
+
+        setIsRefining(true);
+        setError(null);
+        try {
+            const result = await refineSkillWithFeedback(
+                apiKey,
+                generatedSkill,
+                refineFeedback
+            );
+            setGeneratedSkill(result.skill);
+            setTokensUsed(prev => prev + result.tokensUsed);
+            setRefineFeedback('');
+            setShowRefineInput(false);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to refine skill');
+        } finally {
+            setIsRefining(false);
+        }
     };
 
     if (!isOpen) return null;
@@ -266,24 +296,68 @@ export function AISkillGenerator({ isOpen, onClose, onAccept }: AISkillGenerator
                             )}
                         </Button>
                     ) : (
-                        <div className="flex gap-3">
-                            <Button
-                                variant="outline"
-                                onClick={handleRegenerate}
-                                disabled={isGenerating}
-                                className="flex-1"
-                            >
-                                {isGenerating ? (
-                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                ) : (
-                                    <Sparkles className="w-4 h-4 mr-2" />
-                                )}
-                                Regenerate
-                            </Button>
-                            <Button onClick={handleAccept} className="flex-1">
-                                <Check className="w-4 h-4 mr-2" />
-                                Use This Skill
-                            </Button>
+                        <div className="space-y-3">
+                            {/* Refine Feedback Input */}
+                            {showRefineInput && (
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={refineFeedback}
+                                        onChange={(e) => setRefineFeedback(e.target.value)}
+                                        placeholder="e.g., Make triggers shorter, add more examples..."
+                                        className="flex-1 px-3 py-2 text-sm bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground"
+                                        onKeyDown={(e) => e.key === 'Enter' && refineFeedback.trim() && handleRefine()}
+                                    />
+                                    <Button
+                                        onClick={handleRefine}
+                                        disabled={isRefining || !refineFeedback.trim()}
+                                        size="sm"
+                                    >
+                                        {isRefining ? (
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                        ) : (
+                                            <Check className="w-4 h-4" />
+                                        )}
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => { setShowRefineInput(false); setRefineFeedback(''); }}
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            )}
+
+                            {/* Action Buttons */}
+                            <div className="flex gap-3">
+                                <Button
+                                    variant="outline"
+                                    onClick={handleRegenerate}
+                                    disabled={isGenerating || isRefining}
+                                    className="flex-1"
+                                >
+                                    {isGenerating ? (
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    ) : (
+                                        <RefreshCw className="w-4 h-4 mr-2" />
+                                    )}
+                                    Regenerate
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setShowRefineInput(true)}
+                                    disabled={isRefining || showRefineInput}
+                                    className="flex-1 border-[#C15F3C]/50 text-[#C15F3C] hover:bg-[#C15F3C]/10"
+                                >
+                                    <MessageSquare className="w-4 h-4 mr-2" />
+                                    Refine
+                                </Button>
+                                <Button onClick={handleAccept} disabled={isRefining} className="flex-1">
+                                    <Check className="w-4 h-4 mr-2" />
+                                    Use This Skill
+                                </Button>
+                            </div>
                         </div>
                     )}
                 </div>

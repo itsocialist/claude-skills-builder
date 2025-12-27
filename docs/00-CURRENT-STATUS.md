@@ -26,7 +26,8 @@ This project began as a weekend MVP but has evolved into a comprehensive enterpr
 | Sprint 10 | Enterprise RBAC & Orgs | ✅ Complete |
 | Sprint 10.5 | Architecture Polish & Reliability | ✅ Complete |
 | Sprint 11 | Skill Analytics | ✅ Complete |
-| Sprint 12 | Marketplace MVP | 🔜 Planned |
+| Sprint 12 | AI Builder Enhancements | ✅ Complete |
+| Sprint 13 | Marketplace MVP | 🔜 Planned |
 
 ## Completed Features
 
@@ -114,6 +115,12 @@ This project began as a weekend MVP but has evolved into a comprehensive enterpr
 - ✅ Skill Card Visualization (Views/Downloads)
 - ✅ Inspector Insights Panel (30-day Trend)
 - ✅ Client-Side CSV Export
+
+### Sprint 12: AI Builder Enhancements
+- ✅ Inspector AI Ingress (Upload skill → Claude validates → Suggestions)
+- ✅ "Analyze with AI" Button (DIY Builder feedback)
+- ✅ "Iterate with AI" Flow (Refine generated skills with feedback)
+- ✅ `analyzeSkillContent` and `refineSkillWithFeedback` functions
 
 ## Technology Stack
 

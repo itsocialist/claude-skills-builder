@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Shell } from '@/components/layout/Shell';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, FileText, CheckCircle, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
+import { Upload, FileText, CheckCircle, XCircle, AlertTriangle, Loader2, Sparkles, Lightbulb } from 'lucide-react';
 
 interface ValidationResult {
     valid: boolean;
@@ -16,6 +16,15 @@ interface ValidationResult {
         triggers?: string[];
         resourceCount?: number;
     };
+    aiAnalysis?: {
+        overallScore: number;
+        summary: string;
+        suggestions: {
+            type: 'error' | 'warning' | 'suggestion';
+            area: string;
+            message: string;
+        }[];
+    };
 }
 
 export default function InspectorPage() {
@@ -24,6 +33,8 @@ export default function InspectorPage() {
     const [analyzing, setAnalyzing] = useState(false);
     const [result, setResult] = useState<ValidationResult | null>(null);
     const [dragOver, setDragOver] = useState(false);
+    const [useAI, setUseAI] = useState(false);
+    const [apiKey, setApiKey] = useState('');
 
     const handleFileDrop = (e: React.DragEvent) => {
         e.preventDefault();
@@ -65,6 +76,10 @@ export default function InspectorPage() {
                 formData.append('file', file);
             } else if (skillContent) {
                 formData.append('content', skillContent);
+            }
+            if (useAI && apiKey) {
+                formData.append('useAI', 'true');
+                formData.append('apiKey', apiKey);
             }
 
             const response = await fetch('/api/inspector', {
@@ -147,6 +162,37 @@ export default function InspectorPage() {
                         placeholder="---&#10;name: My Skill&#10;description: A helpful skill&#10;---&#10;&#10;# Instructions..."
                         className="w-full h-40 px-3 py-2 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground resize-none font-mono text-sm"
                     />
+                </Card>
+
+                {/* AI Analysis Options */}
+                <Card className="p-6 mb-6 border-l-4 border-l-[#C15F3C]">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                            <Sparkles className="w-5 h-5 text-[#C15F3C]" />
+                            <h3 className="text-sm font-medium text-foreground">AI-Powered Analysis</h3>
+                        </div>
+                        <button
+                            onClick={() => setUseAI(!useAI)}
+                            className={`w-10 h-5 rounded-full transition-colors ${useAI ? 'bg-[#C15F3C]' : 'bg-muted'}`}
+                        >
+                            <span className={`block w-4 h-4 rounded-full bg-white shadow transform transition-transform ${useAI ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                        </button>
+                    </div>
+                    {useAI && (
+                        <div>
+                            <label className="block text-xs text-muted-foreground mb-1">Claude API Key (BYOK)</label>
+                            <input
+                                type="password"
+                                value={apiKey}
+                                onChange={(e) => setApiKey(e.target.value)}
+                                placeholder="sk-ant-..."
+                                className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground text-sm"
+                            />
+                            <p className="text-xs text-muted-foreground mt-2">
+                                Get deep AI-powered suggestions for improving your skill.
+                            </p>
+                        </div>
+                    )}
                 </Card>
 
                 {/* Analyze Button */}
@@ -242,26 +288,42 @@ export default function InspectorPage() {
                     </Card>
                 )}
 
-                {/* Analytics Insights (Only show if valid skill known) */}
-                {result?.valid && result.info.name && (
+                {/* AI Suggestions (Show when AI analysis is present) */}
+                {result?.aiAnalysis && (
                     <Card className="p-6 mt-6 border-l-4 border-l-[#C15F3C]">
-                        <h3 className="text-lg font-semibold text-foreground mb-4">Analytics Insights</h3>
-                        {/* Note: In a real app we'd need the Skill ID here. 
-                            For the Inspector (which validates files), we might not have a database ID 
-                            unless we matched it by name or hash. 
-                            For this MVP Sprint, we'll assume we can't show real DB stats for an uploaded file
-                            unless it matches a known user skill. 
-                            
-                            However, to satisfy the requirement, let's render the panel in "Mock Mode" 
-                            or require the user to select a deployed skill to inspect. 
-                            
-                            Actually, the prompt said "Inspector panel in Detail Drawer" (which is /app/app/templates/[slug] or /app/builder).
-                            But strictly following the instruction to add it to THIS page:
-                        */}
-                        <div className="text-sm text-yellow-500 mb-4 bg-yellow-500/10 p-3 rounded-lg">
-                            Note: Analytics are only available for skills deployed to the platform.
-                            Upload match not implemented in MVP.
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <Sparkles className="w-5 h-5 text-[#C15F3C]" />
+                                <h3 className="text-lg font-semibold text-foreground">AI Analysis</h3>
+                            </div>
+                            <span className="px-3 py-1 bg-[#C15F3C]/10 text-[#C15F3C] rounded-full text-sm font-medium">
+                                Score: {result.aiAnalysis.overallScore}/10
+                            </span>
                         </div>
+                        <p className="text-muted-foreground mb-4">{result.aiAnalysis.summary}</p>
+
+                        {result.aiAnalysis.suggestions.length > 0 && (
+                            <div className="space-y-3">
+                                <h4 className="text-sm font-medium text-foreground flex items-center gap-2">
+                                    <Lightbulb className="w-4 h-4" />
+                                    Suggestions ({result.aiAnalysis.suggestions.length})
+                                </h4>
+                                <ul className="space-y-2">
+                                    {result.aiAnalysis.suggestions.map((suggestion, i) => (
+                                        <li
+                                            key={i}
+                                            className={`text-sm pl-4 py-2 rounded-lg ${suggestion.type === 'error' ? 'bg-red-500/10 text-red-300 border-l-2 border-red-500' :
+                                                    suggestion.type === 'warning' ? 'bg-yellow-500/10 text-yellow-300 border-l-2 border-yellow-500' :
+                                                        'bg-blue-500/10 text-blue-300 border-l-2 border-blue-500'
+                                                }`}
+                                        >
+                                            <span className="text-xs font-medium uppercase text-muted-foreground mr-2">[{suggestion.area}]</span>
+                                            {suggestion.message}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                     </Card>
                 )}
             </div>
