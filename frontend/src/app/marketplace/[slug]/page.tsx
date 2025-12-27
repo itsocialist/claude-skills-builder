@@ -89,6 +89,7 @@ export default function SkillDetailPage() {
     };
 
     const fetchReviews = async (listingId: string) => {
+        if (!supabase) return;
         const { data } = await supabase
             .from('skill_reviews')
             .select(`

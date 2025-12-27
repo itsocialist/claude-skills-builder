@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { MarketplaceHero } from '@/components/marketplace/MarketplaceHero';
 import { PublicSkillCard } from '@/components/marketplace/PublicSkillCard';
-import { Loader2 } from 'lucide-react';
+import { Loader2, BadgeCheck } from 'lucide-react';
 
 import { MarketplaceListing } from '@/types/marketplace.types';
 

@@ -23,6 +23,12 @@ export function ReviewModal({ skillId, onReviewSubmitted }: ReviewModalProps) {
         if (rating === 0) return;
         setSubmitting(true);
 
+        if (!supabase) {
+            alert('Database not configured');
+            setSubmitting(false);
+            return;
+        }
+
         try {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error('Not authenticated');

@@ -3,6 +3,7 @@ import { Profile } from '@/types/community.types';
 import { MarketplaceListing } from '@/types/marketplace.types';
 
 export async function getProfileByUsername(username: string): Promise<Profile | null> {
+    if (!supabase) return null;
     const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -17,6 +18,7 @@ export async function getProfileByUsername(username: string): Promise<Profile | 
 }
 
 export async function getProfileListings(userId: string): Promise<MarketplaceListing[]> {
+    if (!supabase) return [];
     const { data, error } = await supabase
         .from('market_listings')
         .select('*')
@@ -32,6 +34,7 @@ export async function getProfileListings(userId: string): Promise<MarketplaceLis
 }
 
 export async function updateProfile(userId: string, updates: Partial<Profile>) {
+    if (!supabase) throw new Error('Database not configured');
     const { error } = await supabase
         .from('profiles')
         .update(updates)
