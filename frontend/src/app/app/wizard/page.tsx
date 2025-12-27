@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { Shell } from '@/components/layout/Shell';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -35,9 +35,22 @@ const TRIGGER_EXAMPLES = [
 
 export default function WizardPage() {
     const router = useRouter();
+    const pathname = usePathname();
     const { skill, updateField, addTrigger, removeTrigger, addResource, removeResource, reset } = useSkillStore();
     const [step, setStep] = useState(0);
     const [triggerInput, setTriggerInput] = useState('');
+    // Track the last pathname to detect navigation TO this page
+    const lastPathnameRef = useRef<string | null>(null);
+
+    // Reset skill state when wizard mounts OR when navigating here via SPA
+    useEffect(() => {
+        // Only reset if this is a new navigation to this page
+        if (lastPathnameRef.current !== pathname) {
+            lastPathnameRef.current = pathname;
+            reset();
+            setStep(0);
+        }
+    }, [pathname, reset]);
 
     const handleAddTrigger = () => {
         if (triggerInput.trim()) {
@@ -216,16 +229,20 @@ export default function WizardPage() {
                             <Textarea
                                 value={skill.instructions}
                                 onChange={(e) => updateField('instructions', e.target.value)}
-                                placeholder={`# ${skill.name || 'My Skill'}
+                                placeholder={`Write instructions for how Claude should perform this task.
 
-When the user asks you to ${skill.triggers[0] || 'perform this task'}...
+Example:
+# ${skill.name || 'My Skill'}
+
+When the user asks you to ${skill.triggers[0] || 'perform this task'}, follow these steps:
 
 ## Required Information
-- Field 1
-- Field 2
+Ask the user for:
+- [Key information needed]
+- [Additional context]
 
-## Output Format
-Structure your response as...`}
+## How to Respond
+[Describe the output format and style]`}
                                 rows={12}
                                 className="font-mono text-sm"
                             />
