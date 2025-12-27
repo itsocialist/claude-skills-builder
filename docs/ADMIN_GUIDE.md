@@ -52,6 +52,23 @@ View skill usage data from the database:
 
 ---
 
+## AI Features (Sprint 12)
+
+AI features use a **Bring Your Own Key (BYOK)** model:
+- Users provide their own Claude API keys
+- No server-side secrets required for AI
+- Costs are borne by the user
+
+### Features
+- **Inspector AI Analysis**: Validate uploaded skills with AI feedback
+- **Builder "Analyze with AI"**: Get improvement suggestions for skills
+- **Generator "Iterate with AI"**: Refine AI-generated skills with feedback
+
+### Cost Estimate
+- ~$0.02-$0.05 per AI analysis/refine call (user's Anthropic budget)
+
+---
+
 ## Environment Configuration
 
 ### Required Admin Variables

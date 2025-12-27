@@ -25,6 +25,19 @@ Access your saved skills at **Library** (`/app/library`)
 4. Write instructions for Claude
 5. Click **Save to Library**
 
+### AI-Assisted Building
+
+**Create with AI:** Click to open the AI generator modal:
+1. Select an industry (optional)
+2. Describe what you want your skill to do
+3. Claude generates name, triggers, and instructions
+4. Click **Refine** to iterate with feedback, or **Use This Skill** to accept
+
+**Analyze with AI:** Get feedback on manually-created skills:
+1. Enter your Claude API Key in the toolbar
+2. Click **Analyze with AI**
+3. View your score and improvement suggestions
+
 ### Managing Skills
 
 From the Library, hover over any skill card to:
@@ -84,6 +97,15 @@ Validate skill files at **Inspector** (`/app/inspector`)
 - Green checkmarks = valid sections
 - Red errors = issues requiring fixes
 - Warnings = optional improvements
+
+### AI-Powered Analysis
+
+For deeper feedback powered by Claude:
+
+1. Toggle **AI-Powered Analysis** switch ON
+2. Enter your Claude API Key (BYOK)
+3. Click **Analyze Skill**
+4. View AI suggestions with score (1-10), summary, and actionable recommendations
 
 ---
 
