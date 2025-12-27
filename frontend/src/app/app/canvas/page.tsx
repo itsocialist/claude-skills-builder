@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Shell } from '@/components/layout/Shell';
 import { SkillCanvas } from '@/components/canvas/SkillCanvas';
 import { Card } from '@/components/ui/card';
@@ -14,118 +14,112 @@ import {
     FileText,
     Paperclip,
     Maximize2,
-    Minimize2
+    Minimize2,
+    Library,
+    LogOut,
+    Save
 } from 'lucide-react';
+import { ReactFlowProvider } from 'reactflow';
+import { NodePalette } from '@/components/canvas/NodePalette';
+import { TriggerEditor } from '@/components/canvas/editors/TriggerEditor';
+import { InstructionEditor } from '@/components/canvas/editors/InstructionEditor';
+import { ExampleEditor } from '@/components/canvas/editors/ExampleEditor';
+import { ResourceManager } from '@/components/builder/ResourceManager';
+import 'reactflow/dist/style.css';
 
 export default function CanvasPage() {
     const router = useRouter();
-    const { skill } = useSkillStore();
+    const { skill, setSkill } = useSkillStore();
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
 
-    // Inspector content based on selected node
-    const getInspectorContent = () => {
+    // Inspector content based on selection
+    const inspectorContent = useMemo(() => {
         if (!selectedNodeId) {
             return (
                 <div className="p-4 space-y-4">
-                    <div className="text-center text-muted-foreground py-8">
-                        <p className="text-sm">Select a node to view details</p>
-                    </div>
-
-                    <Card className="p-4">
-                        <h4 className="font-semibold text-sm mb-3 text-foreground">Skill Overview</h4>
-                        <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Name</span>
-                                <span className="text-foreground truncate max-w-[120px]">{skill.name || 'Untitled'}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Triggers</span>
-                                <span className="text-foreground">{skill.triggers?.length || 0}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Resources</span>
-                                <span className="text-foreground">{skill.resources?.length || 0}</span>
+                    <h3 className="font-semibold text-lg">Skill Overview</h3>
+                    <div className="space-y-4">
+                        <div>
+                            <label className="text-sm font-medium text-muted-foreground">Name</label>
+                            <p className="text-foreground font-medium">{skill.name || 'Untitled Skill'}</p>
+                        </div>
+                        <div>
+                            <label className="text-sm font-medium text-muted-foreground">Description</label>
+                            <p className="text-sm text-foreground">{skill.description || 'No description'}</p>
+                        </div>
+                        <div className="pt-4 border-t border-border">
+                            <p className="text-xs text-muted-foreground mb-2">Structure</p>
+                            <div className="space-y-2">
+                                <div className="text-sm flex justify-between">
+                                    <span>Triggers</span>
+                                    <span className="font-mono bg-muted px-2 rounded">{skill.triggers?.length || 0}</span>
+                                </div>
+                                <div className="text-sm flex justify-between">
+                                    <span>Resources</span>
+                                    <span className="font-mono bg-muted px-2 rounded">{skill.resources?.length || 0}</span>
+                                </div>
+                                <div className="text-sm flex justify-between">
+                                    <span>Examples</span>
+                                    <span className="font-mono bg-muted px-2 rounded">{skill.examples?.length || 0}</span>
+                                </div>
                             </div>
                         </div>
-                    </Card>
-
-                    <div className="space-y-2">
-                        <Button
-                            variant="outline"
-                            className="w-full justify-start"
-                            onClick={() => router.push('/app/builder')}
-                        >
-                            <FileText className="w-4 h-4 mr-2" />
-                            Edit in Builder
-                        </Button>
                     </div>
                 </div>
             );
         }
 
-        // Show node-specific details based on selection
         if (selectedNodeId.startsWith('trigger')) {
-            return (
-                <div className="p-4 space-y-4">
-                    <div className="flex items-center gap-2">
-                        <div className="p-2 rounded bg-primary/20">
-                            <MessageSquare className="w-5 h-5 text-primary" />
-                        </div>
-                        <h4 className="font-semibold text-foreground">Triggers</h4>
-                    </div>
-                    <div className="space-y-2">
-                        {skill.triggers?.map((trigger, i) => (
-                            <div key={i} className="text-sm bg-muted px-3 py-2 rounded">
-                                "{trigger}"
-                            </div>
-                        )) || <p className="text-sm text-muted-foreground">No triggers defined</p>}
-                    </div>
-                </div>
-            );
+            return <TriggerEditor />;
         }
 
         if (selectedNodeId.startsWith('instruction')) {
-            return (
-                <div className="p-4 space-y-4">
-                    <div className="flex items-center gap-2">
-                        <div className="p-2 rounded bg-green-500/20">
-                            <FileText className="w-5 h-5 text-green-500" />
-                        </div>
-                        <h4 className="font-semibold text-foreground">Instructions</h4>
-                    </div>
-                    <div className="bg-muted p-3 rounded text-sm font-mono max-h-[300px] overflow-y-auto whitespace-pre-wrap">
-                        {skill.instructions || 'No instructions defined'}
-                    </div>
-                </div>
-            );
+            return <InstructionEditor />;
+        }
+
+        if (selectedNodeId.startsWith('example')) {
+            return <ExampleEditor />;
         }
 
         if (selectedNodeId.startsWith('resource')) {
             return (
-                <div className="p-4 space-y-4">
-                    <div className="flex items-center gap-2">
-                        <div className="p-2 rounded bg-amber-500/20">
-                            <Paperclip className="w-5 h-5 text-amber-500" />
-                        </div>
-                        <h4 className="font-semibold text-foreground">Resources</h4>
+                <div className="h-full flex flex-col">
+                    <div className="p-4 border-b border-border">
+                        <h4 className="font-semibold">Resources</h4>
+                        <p className="text-xs text-muted-foreground">Manage attachments</p>
                     </div>
-                    <div className="space-y-2">
-                        {skill.resources?.map((resource, i) => (
-                            <div key={i} className="text-sm bg-muted px-3 py-2 rounded flex items-center gap-2">
-                                <Paperclip className="w-3 h-3" />
-                                {resource.filename}
-                            </div>
-                        )) || <p className="text-sm text-muted-foreground">No resources attached</p>}
+                    <div className="flex-1 overflow-y-auto p-4">
+                        <ResourceManager
+                            resources={skill.resources || []}
+                            onAdd={(r) => setSkill({ ...skill, resources: [...(skill.resources || []), { ...r, id: crypto.randomUUID() }] })}
+                            onRemove={(id) => setSkill({ ...skill, resources: (skill.resources || []).filter(r => r.id !== id) })}
+                        />
                     </div>
                 </div>
             );
         }
 
-        return null;
-    };
+        if (selectedNodeId.startsWith('output')) {
+            return (
+                <div className="p-4 space-y-4">
+                    <h4 className="font-semibold">Expected Output</h4>
+                    <p className="text-sm text-muted-foreground">
+                        This node visualizes the final response from the model based on your instructions and examples.
+                    </p>
+                    <div className="bg-muted p-3 rounded-md text-xs font-mono">
+                        Output will appear here during testing.
+                    </div>
+                </div>
+            );
+        }
 
-    const inspectorContent = getInspectorContent();
+        return (
+            <div className="p-4">
+                <p className="text-muted-foreground">Select a node to edit properties</p>
+            </div>
+        );
+    }, [selectedNodeId, skill, setSkill]);
 
     if (isFullscreen) {
         return (
@@ -146,34 +140,34 @@ export default function CanvasPage() {
 
     return (
         <Shell title={skill.name || 'Visual Canvas'} inspector={inspectorContent}>
-            <div className="h-[calc(100vh-180px)] flex flex-col">
-                {/* Toolbar */}
-                <div className="flex items-center justify-between mb-4">
-                    <Button
-                        variant="ghost"
-                        onClick={() => router.push('/app/builder')}
-                    >
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Back to Builder
-                    </Button>
-                    <div className="flex gap-2">
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => setIsFullscreen(true)}
-                        >
-                            <Maximize2 className="w-4 h-4" />
+            <div className="h-full flex relative">
+                {/* Node Palette Sidebar */}
+                <NodePalette />
+
+                {/* Main Canvas Area */}
+                <div className="flex-1 h-full relative">
+                    {/* Toolbar overlay */}
+                    <div className="absolute top-4 left-4 z-10 flex gap-2 bg-background/80 backdrop-blur border border-border p-1 rounded-lg">
+                        <Button variant="ghost" size="icon" title="Save">
+                            <Save className="w-4 h-4" />
                         </Button>
-                        <Button>
-                            <Download className="w-4 h-4 mr-2" />
-                            Export
+                        <Button variant="ghost" size="icon" title="Export">
+                            <Download className="w-4 h-4" />
+                        </Button>
+                        <div className="w-px bg-border mx-1" />
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setIsFullscreen(!isFullscreen)}
+                            title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+                        >
+                            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                         </Button>
                     </div>
-                </div>
 
-                {/* Canvas */}
-                <div className="flex-1 border border-border rounded-lg overflow-hidden">
-                    <SkillCanvas onNodeSelect={setSelectedNodeId} />
+                    <ReactFlowProvider>
+                        <SkillCanvas onNodeSelect={setSelectedNodeId} />
+                    </ReactFlowProvider>
                 </div>
             </div>
         </Shell>
