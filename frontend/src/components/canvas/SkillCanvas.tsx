@@ -24,10 +24,12 @@ import { ResourceNode } from './nodes/ResourceNode';
 import { ExampleNode } from './nodes/ExampleNode';
 import { OutputNode } from './nodes/OutputNode';
 import { OutputFormatNode } from './nodes/OutputFormatNode';
+import { MetadataNode } from './nodes/MetadataNode';
 import { useSkillStore } from '@/lib/store/skillStore';
 import { Skill } from '@/types/skill.types';
 
 const nodeTypes = {
+    metadata: MetadataNode,
     trigger: TriggerNode,
     instruction: InstructionNode,
     resource: ResourceNode,
@@ -41,6 +43,19 @@ const nodeTypes = {
 function createNodesFromSkill(skill: Skill): Node[] {
     const nodes: Node[] = [];
     let yOffset = 50;
+
+    // Metadata node (always first)
+    nodes.push({
+        id: 'metadata-1',
+        type: 'metadata',
+        position: { x: 250, y: yOffset },
+        data: {
+            name: skill.name,
+            description: skill.description,
+            category: skill.category,
+        },
+    });
+    yOffset += 150;
 
     // Trigger node
     nodes.push({
@@ -141,7 +156,16 @@ export function SkillCanvas({ onNodeSelect }: SkillCanvasProps) {
         const edges: Edge[] = [];
         const edgeStyle = { stroke: '#f97316', strokeWidth: 2 }; // Orange, visible
 
-        // Basic flow: Trigger -> Instruction
+        // Metadata -> Trigger
+        edges.push({
+            id: 'e-metadata-trigger',
+            source: 'metadata-1',
+            target: 'trigger-1',
+            animated: true,
+            style: edgeStyle,
+        });
+
+        // Trigger -> Instruction
         edges.push({
             id: 'e-trigger-instruction',
             source: 'trigger-1',

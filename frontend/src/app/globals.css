@@ -49,6 +49,8 @@
   --color-primary-500: #C15F3C;
   --color-primary-600: #E55A2B;
   --color-secondary-500: #5B4CFF;
+  --color-accent-500: #14B8A6;
+  /* Teal - dark mode accent */
 
   /* Gray Scale */
   --color-gray-50: #F9FAFB;
@@ -111,8 +113,8 @@
   --popover-foreground: #e5e5e5;
   --primary: #C15F3C;
   --primary-foreground: #FFFFFF;
-  --secondary: #3f3f3f;
-  --secondary-foreground: #e5e5e5;
+  --secondary: #14B8A6;
+  --secondary-foreground: #FFFFFF;
   --muted: #3f3f3f;
   --muted-foreground: #a3a3a3;
   --accent: #3f3f3f;
