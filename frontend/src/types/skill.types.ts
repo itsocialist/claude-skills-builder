@@ -19,6 +19,7 @@ export interface Skill {
     instructions: string;
     examples?: Example[];
     resources?: SkillResource[];
+    output_format?: string; // Format specification for AI output (markdown, json, bullet_points, etc.)
     // Analytics (Joined from skill_stats)
     stats?: SkillStats;
 }

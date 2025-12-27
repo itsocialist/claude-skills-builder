@@ -23,6 +23,7 @@ import { InstructionNode } from './nodes/InstructionNode';
 import { ResourceNode } from './nodes/ResourceNode';
 import { ExampleNode } from './nodes/ExampleNode';
 import { OutputNode } from './nodes/OutputNode';
+import { OutputFormatNode } from './nodes/OutputFormatNode';
 import { useSkillStore } from '@/lib/store/skillStore';
 import { Skill } from '@/types/skill.types';
 
@@ -32,6 +33,7 @@ const nodeTypes = {
     resource: ResourceNode,
     example: ExampleNode,
     output: OutputNode,
+    outputFormat: OutputFormatNode,
 };
 
 // Helper to generate nodes from skill data
@@ -90,6 +92,20 @@ function createNodesFromSkill(skill: Skill): Node[] {
             data: {
                 label: 'Attached Resources',
                 resources: skill.resources.map(r => ({ name: r.filename, type: r.mime_type || 'file' })),
+            },
+        });
+        yOffset += 150;
+    }
+
+    // Output Format node (if format is specified)
+    if (skill.output_format) {
+        nodes.push({
+            id: 'outputFormat-1',
+            type: 'outputFormat',
+            position: { x: 225, y: yOffset },
+            data: {
+                label: 'Output Formatting',
+                format: skill.output_format,
             },
         });
         yOffset += 150;
@@ -244,52 +260,59 @@ export function SkillCanvas({ onNodeSelect }: SkillCanvasProps) {
                 y: event.clientY,
             });
 
-            // Update Skill Store
+            // Handle different node types
             if (type === 'example') {
+                // Add new example to skill store
                 useSkillStore.getState().setSkill({
                     ...skill,
                     examples: [...(skill.examples || []), { input: '', output: '' }]
                 });
+
+                // Add visual node at drop position
+                if (position) {
+                    const newId = `example-${skill.examples?.length || 0}`;
+                    const newNode: Node = {
+                        id: newId,
+                        type: 'example',
+                        position,
+                        data: { label: `Example ${(skill.examples?.length || 0) + 1}`, input: '', output: '' }
+                    };
+                    setNodes(nds => nds.concat(newNode));
+                }
             } else if (type === 'trigger') {
+                // Triggers are consolidated in one node - add new trigger phrase
                 useSkillStore.getState().setSkill({
                     ...skill,
-                    triggers: [...(skill.triggers || []), 'New Trigger']
+                    triggers: [...(skill.triggers || []), 'New trigger phrase']
                 });
-            }
-            // For other types, maybe alert "Only one allowed" or similar
-            // But for now we just handle Example/Trigger
-
-            // We do NOT manually add to 'nodes' here. 
-            // The useEffect above will detect the change in 'skill', generate the new node, 
-            // and because it's NEW (ID doesn't exist in currentNodes), it will use the default position from createNodesFromSkill.
-            // PROBLEM: We want it at 'position' (drop location).
-
-            // Workaround: We CAN optimistically add it to 'nodes' with the correct ID.
-            // But we need to know the ID deterministically.
-            let nextId = '';
-            if (type === 'example') nextId = `example-${skill.examples?.length || 0}`;
-            if (type === 'trigger') return; // Triggers are inside TriggerNode, not separate nodes in this visual model (except strictly separate ones? No, TriggerNode handles list)
-
-            // Wait, looking at createNodesFromSkill:
-            // Trigger is ONE node 'trigger-1'.
-            // Instruction is ONE node.
-            // Example is MULTIPLE nodes.
-
-            // So dragging "Example" makes sense. Dragging "Trigger" appends to triggers list inside 'trigger-1'? 
-            // No, user expects a visual node. But our visual model collapses triggers.
-            // Let's assume 'Trigger' drag adds to the list.
-
-            // If type == 'example', we have a specific ID.
-            if (type === 'example' && position) {
-                // Add temporary node with Drop position
-                const newId = `example-${skill.examples?.length || 0}`;
-                const newNode: Node = {
-                    id: newId,
-                    type,
-                    position,
-                    data: { label: `Example ${(skill.examples?.length || 0) + 1}`, input: '', output: '' }
+                // The trigger node will update via useEffect sync
+            } else if (type === 'resource') {
+                // Add placeholder resource to skill store
+                const newResource = {
+                    id: crypto.randomUUID(),
+                    folder: 'references' as const,
+                    filename: 'New Resource',
+                    content: '',
+                    mime_type: 'text/plain'
                 };
-                setNodes(nds => nds.concat(newNode));
+                useSkillStore.getState().setSkill({
+                    ...skill,
+                    resources: [...(skill.resources || []), newResource]
+                });
+                // Resource node will update via useEffect sync
+            } else if (type === 'outputFormat') {
+                // Set default output format if not already set
+                if (!skill.output_format) {
+                    useSkillStore.getState().setSkill({
+                        ...skill,
+                        output_format: 'markdown'
+                    });
+                } else {
+                    console.log('Output format already set. Edit it in the inspector.');
+                }
+            } else if (type === 'instruction' || type === 'output') {
+                // These are singleton nodes - show alert
+                console.log(`Only one ${type} node is allowed per skill`);
             }
         },
         [reactFlowInstance, skill, setNodes]

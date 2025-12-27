@@ -6,7 +6,8 @@ import {
     Paperclip,
     Sparkles,
     Bot,
-    GripVertical
+    GripVertical,
+    ListOrdered
 } from 'lucide-react';
 
 export const NodePalette = () => {
@@ -80,6 +81,18 @@ export const NodePalette = () => {
                         <Paperclip className="w-4 h-4 text-amber-500" />
                     </div>
                     <span className="text-sm font-medium">Resource</span>
+                    <GripVertical className="w-3 h-3 text-muted-foreground ml-auto" />
+                </div>
+
+                <div
+                    className="flex items-center gap-3 p-3 rounded-lg border border-border bg-background cursor-grab hover:border-cyan-500 transition-colors"
+                    onDragStart={(event) => onDragStart(event, 'outputFormat')}
+                    draggable
+                >
+                    <div className="p-1.5 rounded bg-cyan-500/20">
+                        <ListOrdered className="w-4 h-4 text-cyan-500" />
+                    </div>
+                    <span className="text-sm font-medium">Format</span>
                     <GripVertical className="w-3 h-3 text-muted-foreground ml-auto" />
                 </div>
             </div>
