@@ -28,13 +28,23 @@ This workflow defines the standard procedure for closing a sprint or major featu
 -   **docs/ADMIN_GUIDE.md:** Update configuration or troubleshooting steps.
 -   **docs/00-CURRENT-STATUS.md:** Mark current sprint as Complete and update "Last Updated".
 
-## 4. End-to-End (E2E) Testing
+## 4. GitHub Issues Update
+**Goal:** Keep project management in sync with reality.
+-   Close completed issues with a comment summarizing work done.
+-   Update in-progress issues with current status.
+-   Create new issues for bugs discovered or deferred work.
+-   Link related PRs to issues.
+
+*Command:* `gh issue list --state open` to view open issues.
+*Command:* `gh issue close <number> --comment "Completed in Sprint X"`
+
+## 5. End-to-End (E2E) Testing
 **Goal:** Verify system stability.
 -   Run unit tests: `npm run test`
 -   Run build check: `npm run build`
 -   (If available) Run Playwright/E2E suite.
 
-## 5. Final Commit & Push
+## 6. Final Commit & Push
 **Goal:** Persist changes.
 -   Stage changes: `git add .`
 -   Commit with conventional message: `git commit -m "chore: complete Sprint X - [Summary]"`
