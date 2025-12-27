@@ -11,6 +11,7 @@ export interface MarketplaceListing {
     created_at: string;
     creator_id: string;
     listing_status: 'active' | 'archived' | 'pending';
+    featured: boolean; // Mapped from DB "featured"
 
     // Optional joined fields (for UI)
     average_rating?: number;

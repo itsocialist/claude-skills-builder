@@ -53,8 +53,11 @@ export function PublicSkillCard({ listing }: PublicSkillCardProps) {
                         )}
                     </div>
 
-                    {listing.is_featured && (
-                        <span className="text-xs font-medium text-primary">Featured</span>
+                    {listing.featured && (
+                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-primary/10 rounded-full">
+                            <BadgeCheck className="w-3 h-3 text-primary" />
+                            <span className="text-[10px] font-semibold text-primary">Staff Pick</span>
+                        </div>
                     )}
                 </div>
             </Card>

@@ -80,8 +80,32 @@ export default function MarketplacePage() {
                 </div>
             </div>
 
+            {/* Featured Section */}
+            {!searchQuery && !selectedCategory && listings.some(l => l.featured) && (
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+                    <div className="flex items-center gap-2 mb-4">
+                        <BadgeCheck className="w-5 h-5 text-primary" />
+                        <h2 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                            Staff Picks
+                        </h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {listings.filter(l => l.featured).map(listing => (
+                            <PublicSkillCard key={listing.id} listing={listing} />
+                        ))}
+                    </div>
+                    <div className="h-px bg-border my-8" />
+                </div>
+            )}
+
             {/* Skills Grid */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold text-foreground">
+                        {searchQuery ? 'Search Results' : 'All Skills'}
+                    </h2>
+                </div>
+
                 {loading ? (
                     <div className="flex items-center justify-center py-16">
                         <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
