@@ -130,9 +130,68 @@ ${template.instructions}
 
     const benefits = generateBenefits(template);
 
+    // Inspector panel content (sidebar)
+    const inspectorContent = (
+        <div className="p-4 space-y-4 h-full overflow-y-auto">
+            {/* Primary CTA */}
+            <div className="space-y-3">
+                <Button onClick={handleUseTemplate} size="lg" className="w-full">
+                    Use This Template
+                </Button>
+                <Button variant="outline" className="w-full" onClick={handleDownloadZip}>
+                    <Download className="w-4 h-4 mr-2" />
+                    Download ZIP
+                </Button>
+            </div>
+
+            {/* Template Info */}
+            <Card className="p-4">
+                <h4 className="font-semibold mb-3 text-foreground text-sm">Template Info</h4>
+                <div className="space-y-2 text-sm">
+                    <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Category</span>
+                        <Badge variant="secondary">{template.category}</Badge>
+                    </div>
+                    <div className="flex justify-between">
+                        <span className="text-muted-foreground">Prompts</span>
+                        <span className="text-foreground">{template.triggers.length}</span>
+                    </div>
+                    {template.tags.length > 0 && (
+                        <div>
+                            <span className="text-muted-foreground block mb-2">Tags</span>
+                            <div className="flex flex-wrap gap-1">
+                                {template.tags.map((tag, i) => (
+                                    <Badge key={i} variant="outline" className="text-xs">
+                                        {tag}
+                                    </Badge>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </Card>
+
+            {/* Example Prompts */}
+            {template.triggers.length > 0 && (
+                <Card className="p-4">
+                    <h4 className="font-semibold mb-3 text-foreground text-sm">
+                        Example Prompts
+                    </h4>
+                    <div className="space-y-2">
+                        {template.triggers.map((trigger, i) => (
+                            <div key={i} className="text-xs bg-muted px-2 py-1.5 rounded text-foreground">
+                                "{trigger}"
+                            </div>
+                        ))}
+                    </div>
+                </Card>
+            )}
+        </div>
+    );
+
     return (
-        <Shell title={template?.name || 'Template Details'}>
-            <div className="container max-w-6xl mx-auto py-8 px-4">
+        <Shell title={template?.name || 'Template Details'} inspector={inspectorContent}>
+            <div className="max-w-3xl">
                 {/* Breadcrumb */}
                 <Button
                     variant="ghost"
@@ -143,137 +202,77 @@ ${template.instructions}
                     Templates
                 </Button>
 
-                {/* Two-Column Layout */}
-                <div className="grid lg:grid-cols-3 gap-8">
-                    {/* Main Content - Left Column */}
-                    <div className="lg:col-span-2 space-y-6">
-                        {/* Header */}
-                        <div>
-                            <p className="text-sm text-muted-foreground mb-2">{template.category}</p>
-                            <h1 className="text-3xl font-bold text-foreground mb-3">{template.name}</h1>
-                            <p className="text-lg text-muted-foreground leading-relaxed">
-                                {template.description}
-                            </p>
-                        </div>
+                {/* Main Content */}
+                <div className="space-y-6">
+                    {/* Header */}
+                    <div>
+                        <p className="text-sm text-muted-foreground mb-2">{template.category}</p>
+                        <h1 className="text-3xl font-bold text-foreground mb-3">{template.name}</h1>
+                        <p className="text-lg text-muted-foreground leading-relaxed">
+                            {template.description}
+                        </p>
+                    </div>
 
-                        {/* What You Get */}
-                        <Card className="p-6">
-                            <h3 className="font-semibold text-lg mb-4 text-foreground">
-                                What You Get
-                            </h3>
-                            <ul className="space-y-3">
-                                {benefits.map((benefit, i) => (
-                                    <li key={i} className="flex items-start gap-3">
-                                        <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                                        <span className="text-foreground">{benefit}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </Card>
+                    {/* What You Get */}
+                    <Card className="p-6">
+                        <h3 className="font-semibold text-lg mb-4 text-foreground">
+                            What You Get
+                        </h3>
+                        <ul className="space-y-3">
+                            {benefits.map((benefit, i) => (
+                                <li key={i} className="flex items-start gap-3">
+                                    <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                                    <span className="text-foreground">{benefit}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </Card>
 
-                        {/* Sample Output (if available) */}
-                        {template.sampleOutput && (
-                            <Card className="p-6">
-                                <button
-                                    onClick={() => setShowSampleOutput(!showSampleOutput)}
-                                    className="w-full flex items-center justify-between text-left"
-                                >
-                                    <h3 className="font-semibold text-lg text-foreground">
-                                        Sample Output
-                                    </h3>
-                                    {showSampleOutput ? (
-                                        <ChevronUp className="w-5 h-5 text-muted-foreground" />
-                                    ) : (
-                                        <ChevronDown className="w-5 h-5 text-muted-foreground" />
-                                    )}
-                                </button>
-                                {showSampleOutput && (
-                                    <div className="mt-4 prose prose-sm prose-invert max-w-none">
-                                        <ReactMarkdown>{template.sampleOutput}</ReactMarkdown>
-                                    </div>
-                                )}
-                            </Card>
-                        )}
-
-                        {/* Instructions (Collapsible) - Code Editor Format */}
+                    {/* Sample Output (if available) */}
+                    {template.sampleOutput && (
                         <Card className="p-6">
                             <button
-                                onClick={() => setShowInstructions(!showInstructions)}
+                                onClick={() => setShowSampleOutput(!showSampleOutput)}
                                 className="w-full flex items-center justify-between text-left"
                             >
                                 <h3 className="font-semibold text-lg text-foreground">
-                                    Full Instructions
+                                    Sample Output
                                 </h3>
-                                {showInstructions ? (
+                                {showSampleOutput ? (
                                     <ChevronUp className="w-5 h-5 text-muted-foreground" />
                                 ) : (
                                     <ChevronDown className="w-5 h-5 text-muted-foreground" />
                                 )}
                             </button>
-                            {showInstructions && (
-                                <div className="mt-4 bg-zinc-900 border border-zinc-700 rounded-lg p-4 overflow-x-auto max-h-[500px] overflow-y-auto">
-                                    <pre className="text-sm font-mono text-zinc-300 whitespace-pre-wrap">{template.instructions}</pre>
+                            {showSampleOutput && (
+                                <div className="mt-4 prose prose-sm prose-invert max-w-none">
+                                    <ReactMarkdown>{template.sampleOutput}</ReactMarkdown>
                                 </div>
                             )}
                         </Card>
-                    </div>
+                    )}
 
-                    {/* Sidebar - Right Column */}
-                    <div className="space-y-6">
-                        {/* Primary CTA */}
-                        <Card className="p-6">
-                            <Button onClick={handleUseTemplate} size="lg" className="w-full mb-3">
-                                Use This Template
-                            </Button>
-                            <Button variant="outline" className="w-full" onClick={handleDownloadZip}>
-                                <Download className="w-4 h-4 mr-2" />
-                                Download ZIP
-                            </Button>
-                        </Card>
-
-                        {/* Template Info */}
-                        <Card className="p-6">
-                            <h4 className="font-semibold mb-4 text-foreground">Template Info</h4>
-                            <div className="space-y-3 text-sm">
-                                <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Category</span>
-                                    <Badge variant="secondary">{template.category}</Badge>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Prompts</span>
-                                    <span className="text-foreground">{template.triggers.length}</span>
-                                </div>
-                                {template.tags.length > 0 && (
-                                    <div>
-                                        <span className="text-muted-foreground block mb-2">Tags</span>
-                                        <div className="flex flex-wrap gap-1.5">
-                                            {template.tags.map((tag, i) => (
-                                                <Badge key={i} variant="outline" className="text-xs">
-                                                    {tag}
-                                                </Badge>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
+                    {/* Instructions (Collapsible) - Code Editor Format */}
+                    <Card className="p-6">
+                        <button
+                            onClick={() => setShowInstructions(!showInstructions)}
+                            className="w-full flex items-center justify-between text-left"
+                        >
+                            <h3 className="font-semibold text-lg text-foreground">
+                                Full Instructions
+                            </h3>
+                            {showInstructions ? (
+                                <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                            ) : (
+                                <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                            )}
+                        </button>
+                        {showInstructions && (
+                            <div className="mt-4 bg-zinc-900 border border-zinc-700 rounded-lg p-4 overflow-x-auto max-h-[500px] overflow-y-auto">
+                                <pre className="text-sm font-mono text-zinc-300 whitespace-pre-wrap">{template.instructions}</pre>
                             </div>
-                        </Card>
-
-                        {/* Example Prompts */}
-                        {template.triggers.length > 0 && (
-                            <Card className="p-6">
-                                <h4 className="font-semibold mb-4 text-foreground">
-                                    Example Prompts
-                                </h4>
-                                <div className="space-y-2">
-                                    {template.triggers.map((trigger, i) => (
-                                        <div key={i} className="text-sm bg-muted px-3 py-2 rounded-lg text-foreground">
-                                            "{trigger}"
-                                        </div>
-                                    ))}
-                                </div>
-                            </Card>
                         )}
-                    </div>
+                    </Card>
                 </div>
             </div>
         </Shell>
