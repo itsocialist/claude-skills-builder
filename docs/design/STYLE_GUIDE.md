@@ -132,7 +132,16 @@
 
 ## Image Assets
 
-### Hero Images
+### Hero Banner (Standard)
+![Hero Banner](../../frontend/public/hero-banner.png)
+
+### Hero Banner (Wide - Open Graph)
+![Hero Banner Wide](../../frontend/public/hero-banner-wide.png)
+
+### LinkedIn Banner
+![LinkedIn Banner](../../frontend/public/social/linkedin-banner.png)
+
+### Hero Image Table
 
 | File | Dimensions | Usage |
 |------|------------|-------|
