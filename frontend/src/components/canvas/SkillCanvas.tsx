@@ -123,6 +123,7 @@ export function SkillCanvas({ onNodeSelect }: SkillCanvasProps) {
     // Build initial edges connecting nodes
     const initialEdges: Edge[] = useMemo(() => {
         const edges: Edge[] = [];
+        const edgeStyle = { stroke: '#f97316', strokeWidth: 2 }; // Orange, visible
 
         // Basic flow: Trigger -> Instruction
         edges.push({
@@ -130,7 +131,7 @@ export function SkillCanvas({ onNodeSelect }: SkillCanvasProps) {
             source: 'trigger-1',
             target: 'instruction-1',
             animated: true,
-            style: { stroke: 'hsl(var(--primary))' },
+            style: edgeStyle,
         });
 
         // Instructions -> Examples
@@ -141,7 +142,7 @@ export function SkillCanvas({ onNodeSelect }: SkillCanvasProps) {
                     source: 'instruction-1',
                     target: `example-${index}`,
                     animated: true,
-                    style: { stroke: 'hsl(var(--primary))' },
+                    style: edgeStyle,
                 });
             });
         }
@@ -153,14 +154,14 @@ export function SkillCanvas({ onNodeSelect }: SkillCanvasProps) {
                 source: 'instruction-1',
                 target: 'resource-1',
                 animated: true,
-                style: { stroke: 'hsl(var(--primary))' },
+                style: edgeStyle,
             });
             edges.push({
                 id: 'e-resource-output',
                 source: 'resource-1',
                 target: 'output-1',
                 animated: true,
-                style: { stroke: 'hsl(var(--primary))' },
+                style: edgeStyle,
             });
         } else if (skill.examples && skill.examples.length > 0) {
             skill.examples.forEach((_, index) => {
@@ -169,7 +170,7 @@ export function SkillCanvas({ onNodeSelect }: SkillCanvasProps) {
                     source: `example-${index}`,
                     target: 'output-1',
                     animated: true,
-                    style: { stroke: 'hsl(var(--primary))' },
+                    style: edgeStyle,
                 });
             });
         } else {
@@ -178,7 +179,7 @@ export function SkillCanvas({ onNodeSelect }: SkillCanvasProps) {
                 source: 'instruction-1',
                 target: 'output-1',
                 animated: true,
-                style: { stroke: 'hsl(var(--primary))' },
+                style: edgeStyle,
             });
         }
 
@@ -221,7 +222,7 @@ export function SkillCanvas({ onNodeSelect }: SkillCanvasProps) {
         (params: Connection) => setEdges((eds) => addEdge({
             ...params,
             animated: true,
-            style: { stroke: 'hsl(var(--primary))' },
+            style: { stroke: '#f97316', strokeWidth: 2 },
         }, eds)),
         [setEdges]
     );

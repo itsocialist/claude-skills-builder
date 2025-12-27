@@ -133,7 +133,9 @@ export default function CanvasPage() {
                         <Minimize2 className="w-4 h-4" />
                     </Button>
                 </div>
-                <SkillCanvas onNodeSelect={setSelectedNodeId} />
+                <ReactFlowProvider>
+                    <SkillCanvas onNodeSelect={setSelectedNodeId} />
+                </ReactFlowProvider>
             </div>
         );
     }
@@ -144,8 +146,8 @@ export default function CanvasPage() {
                 {/* Node Palette Sidebar */}
                 <NodePalette />
 
-                {/* Main Canvas Area */}
-                <div className="flex-1 h-full relative">
+                {/* Main Canvas Area - needs explicit height for ReactFlow */}
+                <div className="flex-1 relative" style={{ height: 'calc(100vh - 120px)' }}>
                     {/* Toolbar overlay */}
                     <div className="absolute top-4 left-4 z-10 flex gap-2 bg-background/80 backdrop-blur border border-border p-1 rounded-lg">
                         <Button variant="ghost" size="icon" title="Save">
