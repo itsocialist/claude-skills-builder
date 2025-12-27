@@ -229,8 +229,8 @@ function InspectorPanel({
                                                         <li
                                                             key={i}
                                                             className={`text-xs pl-3 py-1.5 rounded ${suggestion.type === 'error' ? 'bg-red-500/10 text-red-300 border-l-2 border-red-500' :
-                                                                    suggestion.type === 'warning' ? 'bg-yellow-500/10 text-yellow-300 border-l-2 border-yellow-500' :
-                                                                        'bg-blue-500/10 text-blue-300 border-l-2 border-blue-500'
+                                                                suggestion.type === 'warning' ? 'bg-yellow-500/10 text-yellow-300 border-l-2 border-yellow-500' :
+                                                                    'bg-blue-500/10 text-blue-300 border-l-2 border-blue-500'
                                                                 }`}
                                                         >
                                                             <span className="text-[10px] font-medium uppercase text-muted-foreground mr-1">[{suggestion.area}]</span>
@@ -421,7 +421,7 @@ export default function InspectorPage() {
                         value={skillContent}
                         onChange={(e) => setSkillContent(e.target.value)}
                         placeholder="---&#10;name: My Skill&#10;description: A helpful skill&#10;---&#10;&#10;# Instructions..."
-                        className="w-full h-48 px-3 py-2 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground resize-none font-mono text-sm"
+                        className="w-full h-96 px-3 py-2 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground resize-none font-mono text-sm"
                     />
                 </div>
             </div>

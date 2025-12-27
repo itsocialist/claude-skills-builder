@@ -169,7 +169,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
 
                 {/* Inspector Header */}
                 {inspector && (
-                    <div className="hidden lg:flex w-[400px] items-center px-6 border-l border-border flex-shrink-0">
+                    <div className="hidden lg:flex w-[300px] items-center px-6 border-l border-border flex-shrink-0">
                         <span className="text-lg font-medium text-foreground">Inspector</span>
                     </div>
                 )}
@@ -240,7 +240,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
 
                 {/* Inspector Panel */}
                 {inspector && (
-                    <aside className="hidden lg:block w-[400px] bg-card border-l border-border flex-shrink-0 h-[calc(100vh-96px)] overflow-hidden">
+                    <aside className="hidden lg:block w-[300px] bg-card border-l border-border flex-shrink-0 h-[calc(100vh-96px)] overflow-hidden">
                         <div className="h-full">
                             {inspector}
                         </div>
