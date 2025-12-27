@@ -16,6 +16,7 @@ export default function AdminPage() {
     const router = useRouter();
     const { user, loading } = useAuth();
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isChecked, setIsChecked] = useState(false);
     const [stats, setStats] = useState({
         totalUsers: 0,
         totalSkills: 0,
@@ -28,6 +29,7 @@ export default function AdminPage() {
             // Check admin status (case-insensitive)
             const adminCheck = ADMIN_EMAILS.includes((user.email || '').toLowerCase());
             setIsAdmin(adminCheck);
+            setIsChecked(true);
 
             if (!adminCheck) {
                 router.push('/app');
@@ -37,7 +39,8 @@ export default function AdminPage() {
         }
     }, [user, loading, router]);
 
-    if (loading || !isAdmin) {
+    // Show spinner while loading OR while checking admin status
+    if (loading || !isChecked) {
         return (
             <Shell>
                 <div className="flex items-center justify-center h-[60vh]">
@@ -45,6 +48,11 @@ export default function AdminPage() {
                 </div>
             </Shell>
         );
+    }
+
+    // If checked and not admin, show nothing (redirect is happening)
+    if (!isAdmin) {
+        return null;
     }
 
     const statCards = [

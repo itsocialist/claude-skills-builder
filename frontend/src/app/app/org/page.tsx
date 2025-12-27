@@ -35,8 +35,11 @@ export default function OrgPage() {
         }
         if (!authLoading && user) {
             load();
+        } else if (!authLoading && !user) {
+            // User not authenticated - redirect to home
+            router.push('/');
         }
-    }, [user, authLoading]);
+    }, [user, authLoading, router]);
 
     // Redirect individual users
     useEffect(() => {
