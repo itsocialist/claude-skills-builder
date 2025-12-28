@@ -1,0 +1,63 @@
+
+> frontend@0.1.0 dev
+> next dev
+
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/briandawson/package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * /Users/briandawson/workspace/claude-skills-builder/frontend/package-lock.json
+   * /Users/briandawson/workspace/claude-skills-builder/package-lock.json
+
+▲ Next.js 16.1.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.7.80:3000
+- Environments: .env.local
+
+✓ Starting...
+✓ Ready in 1108ms
+ GET /app/admin 200 in 1032ms (compile: 836ms, render: 197ms)
+⨯ ./workspace/claude-skills-builder/frontend/src/app/api/admin/stats/route.ts:1:1
+Module not found: Can't resolve '@/lib/utils/supabase/server'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m { createClient } [36mfrom[39m [32m'@/lib/utils/supabase/server'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { [33mNextRequest[39m[33m,[39m [33mNextResponse[39m } [36mfrom[39m [32m'next/server'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m logger [36mfrom[39m [32m'@/lib/logger'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/lib/utils/supabase/server' inside of [project]/workspace/claude-skills-builder/frontend
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ GET /api/admin/stats 500 in 1088ms (compile: 952ms, render: 136ms)
+[2025-12-27 23:15:38.284 -0800] [32mINFO[39m: [36mFetching admin stats...[39m
+    [35menv[39m: "development"
+    [35mcontext[39m: "admin_stats_api"
+ GET /api/admin/stats 200 in 948ms (compile: 241ms, render: 707ms)
+ GET /app/admin/features 200 in 814ms (compile: 679ms, render: 135ms)
+ GET / 200 in 644ms (compile: 438ms, render: 205ms)
+ GET / 200 in 42ms (compile: 3ms, render: 39ms)
+ GET /app/admin 200 in 597ms (compile: 73ms, render: 524ms)
+ GET / 200 in 722ms (compile: 9ms, render: 713ms)
+⚠ Cross origin request detected from 127.0.0.1 to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ GET / 200 in 544ms (compile: 7ms, render: 537ms)
+ GET / 200 in 56ms (compile: 6ms, render: 50ms)
+ GET /marketplace 200 in 1130ms (compile: 983ms, render: 148ms)
+ GET /api/admin/settings 200 in 17ms (compile: 3ms, render: 14ms)
+ GET /api/admin/settings 200 in 804ms (compile: 424ms, render: 380ms)
+ GET /app/canvas 200 in 1900ms (compile: 1767ms, render: 134ms)
+ GET / 200 in 50ms (compile: 3ms, render: 47ms)
+ GET / 200 in 42ms (compile: 2ms, render: 39ms)
+ GET /app/admin 200 in 91ms (compile: 5ms, render: 86ms)
+ GET /app/canvas 200 in 71ms (compile: 5ms, render: 66ms)
+ GET /marketplace 200 in 201ms (compile: 10ms, render: 191ms)
+ GET / 200 in 305ms (compile: 5ms, render: 300ms)
+ GET / 200 in 305ms (compile: 41ms, render: 264ms)
+ GET /api/admin/settings 200 in 36ms (compile: 7ms, render: 29ms)
+ GET /api/admin/settings 200 in 27ms (compile: 4ms, render: 23ms)
+ GET /api/admin/settings 200 in 186ms (compile: 3ms, render: 183ms)
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy

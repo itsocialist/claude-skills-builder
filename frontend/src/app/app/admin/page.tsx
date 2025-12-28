@@ -126,6 +126,19 @@ export default function AdminPage() {
                             <Button>Configure Settings</Button>
                         </Link>
                     </Card>
+
+                    <Card className="p-6">
+                        <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                            <TrendingUp className="w-5 h-5" />
+                            Feature Flags
+                        </h3>
+                        <p className="text-muted-foreground mb-4">
+                            Manage feature rollouts and system status.
+                        </p>
+                        <Link href="/app/admin/features">
+                            <Button variant="outline">Manage Flags</Button>
+                        </Link>
+                    </Card>
                 </div>
             </div>
         </Shell>

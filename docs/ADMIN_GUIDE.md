@@ -1,148 +1,207 @@
 # Admin Guide
 
-> Last updated: 2024-12-26
+> **Last Updated:** 2025-12-28
+> **Version:** v2.0 (Post-Sprint 17)
 
-## Requirements
-
-Admin access requires your email to be listed in `NEXT_PUBLIC_ADMIN_EMAILS` environment variable.
-
----
-
-## Admin Dashboard
-
-Access admin features at **Admin** (`/app/admin`)
+## Table of Contents
+1. [Configuration](#configuration)
+2. [Feature Flags](#feature-flags-management) (New)
+3. [User Management](#user-management)
+4. [Dashboard Stats](#dashboard-statistics)
+5. [Marketplace Management](#marketplace-management)
 
 ---
 
-## User Management
-
-Manage platform users at **Admin > Users** (`/app/admin/users`)
-
-### Viewing Users
-
-The user management page displays:
-- Email addresses
-- Sign-up dates
-- Last active timestamps
-- Account status (active/inactive)
-
-### Searching Users
-
-Use the search bar to filter users by email address.
-
-### Inviting New Users
-
-1. Click **Add User** button (top right)
-2. Enter the user's email address
-3. Click **Send Invitation**
-4. User receives an email with signup instructions
-
-### Toggling User Status
-
-Click the status toggle to activate or deactivate a user account.
-
----
-
-## Skill Analytics
-
-View skill usage data from the database:
-
-- `view_count` - Times a skill's public page was viewed
-- `download_count` - Times a skill was cloned/downloaded
-
----
-
-## AI Features (Sprint 12)
-
-AI features use a **Bring Your Own Key (BYOK)** model:
-- Users provide their own Claude API keys
-- No server-side secrets required for AI
-- Costs are borne by the user
-
-### Features
-- **Inspector AI Analysis**: Validate uploaded skills with AI feedback
-- **Builder "Analyze with AI"**: Get improvement suggestions for skills
-- **Generator "Iterate with AI"**: Refine AI-generated skills with feedback
-
-### Cost Estimate
-- ~$0.02-$0.05 per AI analysis/refine call (user's Anthropic budget)
-
----
-
-## Environment Configuration
+## Configuration
 
 ### Required Admin Variables
+
+Administrative access is controlled via environment variables. To grant admin privileges, add email addresses to the admin whitelist.
+
+#### Environment Setup
 
 ```env
 # Comma-separated list of admin email addresses
 NEXT_PUBLIC_ADMIN_EMAILS=admin@example.com,admin2@example.com
 
-# Required for user invitations
+# Required for user invitations and backend management
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# Optional: Force specific feature flag states (emergency use only)
+OVERRIDE_FEATURE_FLAGS={"feature_admin":"ADMIN_ONLY"}
 ```
 
-### Public App URL
+#### Security Best Practices
+
+- **Limit Admin Access:** Only add trusted team members to `NEXT_PUBLIC_ADMIN_EMAILS`
+- **Rotate Service Keys:** Change `SUPABASE_SERVICE_ROLE_KEY` quarterly
+- **Use Environment-Specific Keys:** Never share production keys across environments
+- **Audit Admin Actions:** Review admin activity logs monthly
+
+> **⚠️ Warning:** The `SUPABASE_SERVICE_ROLE_KEY` bypasses Row Level Security (RLS). Never expose this key in client-side code or public repositories.
+
+---
+
+## Feature Flags Management
+*Introduced in Sprint 17*
+
+GetClaudeSkills uses a dynamic feature flag system to control feature availability from the Admin Dashboard (`/app/admin/features`).
+
+![Feature Flags Management Interface](./images/admin_features.png)
+
+### Flag States
+
+Each feature can be set to one of three states:
+
+- **🟢 PUBLIC:** Feature is visible and accessible to ALL users (authenticated and anonymous)
+  - **Use case:** Stable, production-ready features ready for general availability
+  - **Example:** Skill Builder, Templates, Marketplace
+
+- **🟡 ADMIN_ONLY:** Feature is visible ONLY to users listed in `NEXT_PUBLIC_ADMIN_EMAILS`
+  - **Use case:** Beta features, internal tools, or features under testing
+  - **Example:** Admin Dashboard, User Management, Advanced Analytics
+  - **Note:** Non-admin users will not see these features in navigation or be able to access routes
+
+- **🔴 DISABLED:** Feature is completely locked and inaccessible to everyone
+  - **Use case:** Features under development, deprecated features, or emergency shutdowns
+  - **Behavior:** Attempts to access disabled features redirect to fallback routes
+  - **Example:** Temporarily disabling a buggy feature during incident response
+
+### Managing Flags
+
+#### Via Admin Dashboard (Recommended)
+1. Navigate to `/app/admin/features`
+2. Locate the feature you want to modify
+3. Click the dropdown to select a new state
+4. Changes take effect immediately (no restart required)
+
+#### Via Database (Advanced)
+1. Access Supabase Dashboard
+2. Navigate to `site_settings` table
+3. Edit the `feature_flags` JSONB column
+4. Update the desired flag key (e.g., `{"feature_builder": "PUBLIC"}`)
+
+### Emergency Override
+
+If you accidentally lock yourself out (e.g., by disabling `feature_admin`), use the server-side environment variable override:
 
 ```env
-# Used for generating share links and email redirects
-NEXT_PUBLIC_APP_URL=https://your-domain.com
+# Force Admin Panel to be accessible (Vercel/Production)
+OVERRIDE_FEATURE_FLAGS={"feature_admin":"ADMIN_ONLY"}
 ```
+
+**Steps to recover:**
+1. Add the override to your hosting environment (Vercel, AWS, etc.)
+2. Redeploy or restart the application
+3. Access `/app/admin/features` to restore proper flag states
+4. Remove the override after recovery
+
+> **💡 Best Practice:** Always test flag changes in a staging environment before applying to production.
 
 ---
 
-## Marketplace Management (Sprint 13)
+## User Management
 
-The Marketplace enables skill sharing and discovery.
+Manage platform users at **Admin > Users** (`/app/admin/users`).
 
-### Database: `market_listings` Table
+![User Management Interface](./images/admin_users.png)
 
-Skills are published to the marketplace via the `market_listings` table:
-- `skill_id` - References the source skill
-- `creator_id` - The user who published it
-- `slug` - URL-friendly identifier
-- `listing_status` - `active`, `pending`, or `removed`
-- `is_verified` - Admin-verified badge
+### User Operations
 
-### Publishing Skills
+#### Viewing Users
+- **User List:** Displays all registered users with email, join date, and skill count
+- **Search:** Filter users by email address or name
+- **Sort:** Click column headers to sort by join date, skill count, or status
+- **Pagination:** Navigate through large user lists (25 users per page)
 
-Users can publish skills from the Builder:
-1. Save skill to Library
-2. Click "Publish to Marketplace" in Export tab
-3. Skill appears in `/marketplace`
+#### Inviting Users
+1. Click **"Invite User"** button
+2. Enter the recipient's email address
+3. Optionally add a custom message
+4. Click **"Send Invitation"**
+5. User receives a magic link via email
+6. Link expires after 24 hours
 
-### Moderation
+**Requirements:**
+- `SUPABASE_SERVICE_ROLE_KEY` must be configured
+- Email service must be enabled in Supabase Auth settings
 
-To remove inappropriate listings, update `listing_status`:
-```sql
-UPDATE market_listings 
-SET listing_status = 'removed' 
-WHERE slug = 'skill-slug';
-```
+#### Managing User Status
 
-### RLS Policies
+**Enable/Disable Accounts:**
+- Click the toggle switch next to any user
+- **Enabled (Green):** User can sign in and access the platform
+- **Disabled (Red):** User is locked out (existing sessions terminated)
+- **Use case:** Temporarily suspend users for policy violations or security concerns
 
-- **SELECT**: Public (anyone can browse)
-- **INSERT**: Authenticated users (own skills only)
-- **UPDATE/DELETE**: Owner or admin only
+**Deleting Users:**
+- Click the **Delete** icon (🗑️) next to a user
+- Confirm the deletion in the modal
+- **Warning:** This action is irreversible and deletes all user data (skills, settings, history)
+
+### Bulk Operations
+
+**Export User List:**
+1. Click **"Export CSV"** button
+2. Download includes: email, join date, skill count, status
+3. Use for reporting, analytics, or backup
+
+> **🔒 Privacy Note:** User management actions are logged for audit purposes. Ensure compliance with your organization's data retention policies.
 
 ---
 
-## Troubleshooting
+## Dashboard Statistics
 
-### User Invitation Fails
+Real-time analytics and platform health metrics are available at `/app/admin`.
 
-1. Verify `SUPABASE_SERVICE_ROLE_KEY` is set correctly in Vercel (Production) or `.env.local`
-2. Check Supabase email settings are configured
-3. Ensure the email address is valid with no trailing spaces
+![Admin Dashboard Overview](./images/admin_dashboard.png)
 
-### Admin Panel Not Visible
+### Key Metrics
 
-1. Verify your email is in `NEXT_PUBLIC_ADMIN_EMAILS`
-2. **Production Note:** Ensure environment variables in Vercel do NOT have trailing newlines/spaces.
-3. Sign out and sign back in to refresh claims.
+#### User Metrics
+- **Total Users:** Cumulative count of registered profiles
+- **Active Users (30d):** Users who logged in within the last 30 days
+- **New Users (7d):** Registrations in the past week
+- **User Growth Rate:** Percentage change month-over-month
 
-### Admin Stats Dashboard
+#### Content Metrics
+- **Total Skills:** All skills created across the platform
+- **Public Skills:** Skills published to the marketplace
+- **Skills Today:** Skills created in the last 24 hours
+- **Average Skills per User:** Total skills ÷ total users
 
-Currently, the stats dashboard uses placeholder data. Real-time analytics are scheduled for Sprint 16 (STORY-041).
+#### Organization Metrics
+- **Active Organizations:** Teams with at least one member
+- **Organization Adoption Rate:** Percentage of users in organizations
+- **Largest Organization:** Team with the most members
 
+### Performance Monitoring
 
+**System Health Indicators:**
+- **API Response Time:** Average latency for API routes
+- **Database Connections:** Active Supabase connections
+- **Error Rate:** Percentage of failed requests (last hour)
+- **Uptime:** Platform availability percentage (30-day rolling)
+
+**Alerts:**
+- 🔴 **Critical:** Error rate > 5% or API latency > 2s
+- 🟡 **Warning:** Error rate > 1% or API latency > 1s
+- 🟢 **Healthy:** All metrics within normal ranges
+
+### Exporting Reports
+
+1. Click **"Export Report"** in the dashboard header
+2. Select date range and metrics to include
+3. Choose format: CSV, JSON, or PDF
+4. Download begins automatically
+
+> **📊 Analytics Tip:** Use the dashboard to identify usage trends, plan capacity, and measure feature adoption.
+
+---
+
+## Marketplace Management
+*Sprint 13*
+
+Skills published to the marketplace are managed via Supabase `market_listings`.
+- **Verified Badge:** Set `is_verified = true` in DB.
+- **Moderation:** Set `listing_status = 'removed'` to hide inappropriate content.

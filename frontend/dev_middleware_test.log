@@ -1,0 +1,71 @@
+
+> frontend@0.1.0 dev
+> next dev
+
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/briandawson/package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * /Users/briandawson/workspace/claude-skills-builder/frontend/package-lock.json
+   * /Users/briandawson/workspace/claude-skills-builder/package-lock.json
+
+▲ Next.js 16.1.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.7.80:3000
+- Environments: .env.local
+
+✓ Starting...
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+✓ Ready in 783ms
+ GET / 200 in 650ms (compile: 306ms, proxy.ts: 66ms, render: 279ms)
+ GET / 200 in 50ms (compile: 3ms, proxy.ts: 4ms, render: 43ms)
+ GET / 200 in 366ms (compile: 6ms, proxy.ts: 6ms, render: 354ms)
+ GET / 200 in 339ms (compile: 18ms, proxy.ts: 20ms, render: 301ms)
+⚠ Cross origin request detected from 127.0.0.1 to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ GET / 200 in 282ms (compile: 34ms, proxy.ts: 5ms, render: 244ms)
+ GET /sign-in 404 in 646ms (compile: 561ms, proxy.ts: 6ms, render: 79ms)
+ GET /sign-in 404 in 678ms (compile: 591ms, proxy.ts: 21ms, render: 66ms)
+ GET /api/admin/settings 200 in 475ms (compile: 79ms, proxy.ts: 7ms, render: 389ms)
+ GET /api/admin/settings 200 in 512ms (compile: 119ms, proxy.ts: 13ms, render: 379ms)
+ GET / 200 in 55ms (compile: 3ms, proxy.ts: 5ms, render: 47ms)
+ GET / 200 in 47ms (compile: 1992µs, proxy.ts: 1984µs, render: 43ms)
+ GET /sign-in 404 in 260ms (compile: 61ms, proxy.ts: 20ms, render: 179ms)
+ GET /sign-in 404 in 240ms (compile: 79ms, proxy.ts: 3ms, render: 158ms)
+ GET / 200 in 798ms (compile: 5ms, proxy.ts: 6ms, render: 788ms)
+ GET / 200 in 905ms (compile: 21ms, proxy.ts: 55ms, render: 828ms)
+ GET /api/admin/settings 200 in 129ms (compile: 86ms, proxy.ts: 19ms, render: 24ms)
+ GET / 200 in 856ms (compile: 13ms, proxy.ts: 21ms, render: 822ms)
+ GET /api/admin/settings 200 in 47ms (compile: 21ms, proxy.ts: 9ms, render: 17ms)
+ GET /api/admin/settings 200 in 258ms (compile: 37ms, proxy.ts: 12ms, render: 209ms)
+ GET / 200 in 41ms (compile: 2ms, proxy.ts: 2ms, render: 37ms)
+ GET / 200 in 44ms (compile: 1900µs, proxy.ts: 1989µs, render: 40ms)
+ GET /sign-in 404 in 267ms (compile: 100ms, proxy.ts: 4ms, render: 162ms)
+ GET /sign-in 404 in 218ms (compile: 64ms, proxy.ts: 19ms, render: 135ms)
+ GET / 200 in 600ms (compile: 14ms, proxy.ts: 14ms, render: 572ms)
+ GET / 200 in 596ms (compile: 14ms, proxy.ts: 5ms, render: 578ms)
+ GET / 200 in 608ms (compile: 47ms, proxy.ts: 4ms, render: 557ms)
+ GET /api/admin/settings 200 in 51ms (compile: 28ms, proxy.ts: 16ms, render: 7ms)
+ GET /api/admin/settings 200 in 175ms (compile: 24ms, proxy.ts: 11ms, render: 139ms)
+ GET /sign-in 404 in 65ms (compile: 25ms, proxy.ts: 7ms, render: 33ms)
+ GET /api/admin/settings 200 in 242ms (compile: 38ms, proxy.ts: 7ms, render: 197ms)
+ GET /api/admin/settings 200 in 101ms (compile: 1706µs, proxy.ts: 2ms, render: 97ms)
+ GET / 200 in 47ms (compile: 3ms, proxy.ts: 3ms, render: 42ms)
+ GET / 200 in 39ms (compile: 1703µs, proxy.ts: 1953µs, render: 35ms)
+ GET /sign-in 404 in 211ms (compile: 62ms, proxy.ts: 7ms, render: 143ms)
+ GET /sign-in 404 in 174ms (compile: 66ms, proxy.ts: 4ms, render: 104ms)
+ GET / 200 in 334ms (compile: 8ms, proxy.ts: 5ms, render: 321ms)
+ GET / 200 in 281ms (compile: 24ms, proxy.ts: 4ms, render: 253ms)
+ GET /api/admin/settings 200 in 45ms (compile: 15ms, proxy.ts: 10ms, render: 20ms)
+ GET /api/admin/settings 200 in 25ms (compile: 9ms, proxy.ts: 3ms, render: 13ms)
+ GET /api/admin/settings 200 in 175ms (compile: 10ms, proxy.ts: 7ms, render: 158ms)
+ GET / 200 in 45ms (compile: 2ms, proxy.ts: 2ms, render: 41ms)
+ GET / 200 in 42ms (compile: 2ms, proxy.ts: 3ms, render: 37ms)
+ GET /sign-in 404 in 203ms (compile: 78ms, proxy.ts: 2ms, render: 122ms)
+ GET /sign-in 404 in 213ms (compile: 65ms, proxy.ts: 35ms, render: 113ms)
+ GET / 200 in 341ms (compile: 10ms, proxy.ts: 3ms, render: 328ms)
+ GET / 200 in 334ms (compile: 40ms, proxy.ts: 4ms, render: 289ms)
+ GET /api/admin/settings 200 in 43ms (compile: 21ms, proxy.ts: 11ms, render: 11ms)
+ GET /sign-in 404 in 69ms (compile: 11ms, proxy.ts: 9ms, render: 50ms)
+ GET /api/admin/settings 200 in 196ms (compile: 5ms, proxy.ts: 6ms, render: 185ms)

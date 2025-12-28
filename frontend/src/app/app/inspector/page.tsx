@@ -5,6 +5,9 @@ import { Shell } from '@/components/layout/Shell';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Upload, FileText, CheckCircle, XCircle, AlertTriangle, Loader2, Sparkles, Lightbulb, Settings, ChevronDown, ChevronRight, Key } from 'lucide-react';
+import { useSiteSettings } from '@/lib/contexts/SiteSettingsContext';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { DEFAULT_FLAGS } from '@/lib/flags';
 
 interface ValidationResult {
     valid: boolean;
@@ -51,6 +54,14 @@ function InspectorPanel({
 }: InspectorPanelProps) {
     const [activeTab, setActiveTab] = useState<'results' | 'config'>('results');
     const [showApiKey, setShowApiKey] = useState(true);
+    const { user } = useAuth();
+    const { settings } = useSiteSettings();
+
+    // Feature Flag Logic for AI
+    const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').toLowerCase().split(',');
+    const isAdmin = user?.email && adminEmails.some(e => e.trim() === user.email?.toLowerCase().trim());
+    const genFlag = settings.feature_flags?.feature_generations || DEFAULT_FLAGS.feature_generations;
+    const canUseAI = genFlag !== 'DISABLED' && (genFlag !== 'ADMIN_ONLY' || isAdmin);
 
     return (
         <div className="h-full flex flex-col overflow-hidden">
@@ -112,18 +123,20 @@ function InspectorPanel({
                         </div>
 
                         {/* AI Toggle */}
-                        <div className="flex items-center justify-between p-3 border border-border rounded-md">
-                            <div className="flex items-center gap-2">
-                                <Sparkles className="w-4 h-4 text-[#C15F3C]" />
-                                <span className="text-sm font-medium text-foreground">AI Analysis</span>
+                        {canUseAI && (
+                            <div className="flex items-center justify-between p-3 border border-border rounded-md">
+                                <div className="flex items-center gap-2">
+                                    <Sparkles className="w-4 h-4 text-[#C15F3C]" />
+                                    <span className="text-sm font-medium text-foreground">AI Analysis</span>
+                                </div>
+                                <button
+                                    onClick={() => setUseAI(!useAI)}
+                                    className={`w-10 h-5 rounded-full transition-colors ${useAI ? 'bg-[#C15F3C]' : 'bg-muted'}`}
+                                >
+                                    <span className={`block w-4 h-4 rounded-full bg-white shadow transform transition-transform ${useAI ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                                </button>
                             </div>
-                            <button
-                                onClick={() => setUseAI(!useAI)}
-                                className={`w-10 h-5 rounded-full transition-colors ${useAI ? 'bg-[#C15F3C]' : 'bg-muted'}`}
-                            >
-                                <span className={`block w-4 h-4 rounded-full bg-white shadow transform transition-transform ${useAI ? 'translate-x-5' : 'translate-x-0.5'}`} />
-                            </button>
-                        </div>
+                        )}
                     </div>
                 )}
 

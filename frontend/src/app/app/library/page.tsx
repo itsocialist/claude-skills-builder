@@ -9,6 +9,8 @@ import { Shell } from '@/components/layout/Shell';
 import { fetchUserSkills, deleteSkill, duplicateSkill, type SavedSkill } from '@/lib/api/skillsApi';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
 import { Search, Plus, Library, Loader2 } from 'lucide-react';
+import { useSiteSettings } from '@/lib/contexts/SiteSettingsContext';
+import { DEFAULT_FLAGS } from '@/lib/flags';
 
 export default function LibraryPage() {
     const router = useRouter();
@@ -17,6 +19,13 @@ export default function LibraryPage() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
+    const { settings } = useSiteSettings();
+
+    // Feature Flag Logic
+    const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').toLowerCase().split(',');
+    const isAdmin = user?.email && adminEmails.some(e => e.trim() === user.email?.toLowerCase().trim());
+    const builderFlag = settings.feature_flags?.feature_builder || DEFAULT_FLAGS.feature_builder;
+    const canUseBuilder = builderFlag !== 'DISABLED' && (builderFlag !== 'ADMIN_ONLY' || isAdmin);
 
     // Fetch skills on mount
     useEffect(() => {
@@ -132,6 +141,8 @@ export default function LibraryPage() {
                             {skills.length} skill{skills.length !== 1 ? 's' : ''} saved
                         </p>
                     </div>
+                </div>
+                {canUseBuilder && (
                     <button
                         onClick={() => router.push('/app/builder')}
                         className="flex items-center gap-2 bg-[#C15F3C] hover:bg-[#a84e31] text-white px-4 py-2.5 rounded-lg font-medium transition-colors"
@@ -139,7 +150,7 @@ export default function LibraryPage() {
                         <Plus className="w-4 h-4" />
                         New Skill
                     </button>
-                </div>
+                )}
 
                 {/* Upload Zone */}
                 <SkillUploader />
@@ -188,12 +199,14 @@ export default function LibraryPage() {
                                 <p className="text-gray-400 mb-6">
                                     Create your first skill to get started!
                                 </p>
-                                <button
-                                    onClick={() => router.push('/app/builder')}
-                                    className="bg-[#C15F3C] hover:bg-[#a84e31] text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
-                                >
-                                    Create Skill
-                                </button>
+                                {canUseBuilder && (
+                                    <button
+                                        onClick={() => router.push('/app/builder')}
+                                        className="bg-[#C15F3C] hover:bg-[#a84e31] text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
+                                    >
+                                        Create Skill
+                                    </button>
+                                )}
                             </>
                         ) : (
                             <>

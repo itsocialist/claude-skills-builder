@@ -24,6 +24,8 @@ import { InsightsPanel } from '@/components/builder/InsightsPanel';
 import { analyzeSkillContent, AIAnalysisResult } from '@/lib/claude-client';
 import { supabase } from '@/lib/supabase';
 import { Save, Loader2, Sparkles, Eye, Download, Lightbulb, X, Globe } from 'lucide-react';
+import { useSiteSettings } from '@/lib/contexts/SiteSettingsContext';
+import { DEFAULT_FLAGS } from '@/lib/flags';
 
 export default function BuilderPage() {
     return (
@@ -36,6 +38,7 @@ export default function BuilderPage() {
 function BuilderContent() {
     const searchParams = useSearchParams();
     const { user, isConfigured } = useAuth();
+    const { settings } = useSiteSettings();
     const { skill, updateField, setSkill, reset, addResource, removeResource } = useSkillStore();
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -51,6 +54,13 @@ function BuilderContent() {
     const [isPublishing, setIsPublishing] = useState(false);
     const [publishSuccess, setPublishSuccess] = useState(false);
     const [isPublished, setIsPublished] = useState(false);
+
+    // Feature Flag Logic
+    const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').toLowerCase().split(',');
+    const isAdmin = user?.email && adminEmails.some(e => e.trim() === user.email?.toLowerCase().trim());
+
+    const genFlag = settings.feature_flags?.feature_generations || DEFAULT_FLAGS.feature_generations;
+    const canUseGenerations = genFlag === 'PUBLIC' || (genFlag === 'ADMIN_ONLY' && !!isAdmin);
 
     const handleSaveToLibrary = async () => {
         if (!user) return;
@@ -294,7 +304,7 @@ ${skill.instructions}`;
                 >
                     Resources
                 </button>
-                {editId && (
+                {editId && canUseGenerations && (
                     <button
                         onClick={() => setActiveTab('insights')}
                         className={`px-4 py-2 text-sm font-medium ${activeTab === 'insights'
@@ -371,7 +381,7 @@ ${skill.instructions}`;
                 {activeTab === 'test' && (
                     <TestConsole skill={skill} apiKey={apiKey} onApiKeyChange={setApiKey} />
                 )}
-                {activeTab === 'insights' && editId && (
+                {activeTab === 'insights' && editId && canUseGenerations && (
                     <div className="p-4">
                         <InsightsPanel skillId={editId} stats={currentSkillData?.stats} />
                     </div>
@@ -424,26 +434,31 @@ ${skill.instructions}`;
                 <div className="mb-6 space-y-4">
                     <div className="flex flex-wrap items-center gap-3">
                         <ImportSkillModal />
-                        <Button
-                            variant="outline"
-                            onClick={() => setShowAIGenerator(true)}
-                            className="border-primary/50 text-primary hover:bg-primary/10"
-                        >
-                            <Sparkles className="w-4 h-4 mr-2" />
-                            Create with AI
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={handleAnalyzeWithAI}
-                            disabled={!skill.name || !skill.instructions || isAnalyzing}
-                            className="border-[#C15F3C]/50 text-[#C15F3C] hover:bg-[#C15F3C]/10"
-                        >
-                            {isAnalyzing ? (
-                                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Analyzing...</>
-                            ) : (
-                                <><Lightbulb className="w-4 h-4 mr-2" /> Analyze with AI</>
-                            )}
-                        </Button>
+
+                        {canUseGenerations && (
+                            <>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setShowAIGenerator(true)}
+                                    className="border-primary/50 text-primary hover:bg-primary/10"
+                                >
+                                    <Sparkles className="w-4 h-4 mr-2" />
+                                    Create with AI
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={handleAnalyzeWithAI}
+                                    disabled={!skill.name || !skill.instructions || isAnalyzing}
+                                    className="border-[#C15F3C]/50 text-[#C15F3C] hover:bg-[#C15F3C]/10"
+                                >
+                                    {isAnalyzing ? (
+                                        <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Analyzing...</>
+                                    ) : (
+                                        <><Lightbulb className="w-4 h-4 mr-2" /> Analyze with AI</>
+                                    )}
+                                </Button>
+                            </>
+                        )}
 
                         {/* Analytics Stats for saved skills */}
                         {currentSkillData && (

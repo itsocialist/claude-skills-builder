@@ -51,14 +51,47 @@ This workflow defines the standard procedure for closing a sprint or major featu
 *Command:* `npx supabase db diff` to check for schema drift.
 *Command:* `npx supabase db push` to apply pending migrations (if needed).
 
-## 6. End-to-End (E2E) Testing
-**Goal:** Verify system stability.
--   Run unit tests: `npm run test`
--   Run build check: `npm run build`
--   (If available) Run Playwright/E2E suite.
+## 6. Staged Deployment Pipeline
+**Goal:** Verify in a production-like environment BEFORE merging to main.
 
-## 7. Final Commit & Push
-**Goal:** Persist changes.
--   Stage changes: `git add .`
--   Commit with conventional message: `git commit -m "chore: complete Sprint X - [Summary]"`
--   Push to remote: `git push`
+### 6.1 Local Validation
+-   Run the app locally: `npm run dev`
+-   Verify changes in browser (`localhost:3000`).
+-   Navigate to related pages (Regression Check).
+-   **Gate:** Do not proceed if local validation fails.
+
+### 6.2 Create Release Candidate & Preview
+-   Create release branch: `git checkout -b release/sprint-X`
+-   Push to remote: `git push origin release/sprint-X`
+-   **Action:** Triggers Vercel **Preview Deployment**.
+
+### 6.3 Automated Verification
+-   Wait for Vercel Preview URL.
+-   Run E2E tests against Preview: `NEXT_PUBLIC_APP_URL=<preview-url> npm run test:e2e`
+
+### 6.4 User Acceptance (UAT)
+### 6.4 User Acceptance (UAT)
+-   **Action:** Share Preview URL with User/Stakeholders.
+-   **Requirement:** Provide a **"User Validation Guide"** in the sprint walkthrough with exact steps/commands for the user to verify features themselves.
+-   **Gate:** **STOP.** Wait for explicit User Approval.
+-   *User must confirm:* "Preview looks good, approve for Prod."
+
+### 6.5 Production Promotion
+-   Merge Pull Request to `main` (only after UAT sign-off).
+-   **Verify:** Check `getclaudeskills.ai` (Production) post-deployment.
+
+## 7. GitHub Issues Sync
+**Goal:** Keep GitHub Issues as single source of truth for backlog.
+-   **Sprint Kickoff:** Create issues for new stories (`gh issue create`)
+-   **Sprint Completion:** Close completed issues (`gh issue close #N`)
+-   **Labels:** Use `sprint-N`, `priority: high/medium/low`, `enhancement/bug`
+-   **Verify:** `gh issue list --state open --label sprint-N` shows only in-progress work
+
+## 8. Architecture & Strategy Sync (CRITICAL)
+**Goal:** Ensure technical documentation evolves with the codebase.
+-   **Architecture Diagrams:** Update `docs/ARCHITECTURE.md` to represent:
+    1.  **Current State:** The actual architecture after sprint changes.
+    2.  **Target State:** The planned architecture for the next sprint/phase.
+-   **Review:** Ensure diagrams match the implementation in `src/`.
+-   **Verify:** Check that no "ghost components" (planned but likely abandoned) remain in diagrams.
+

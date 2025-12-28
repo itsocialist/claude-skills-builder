@@ -17,7 +17,7 @@ export default function MarketingPage() {
             <Link href="/app/templates" className="text-sm text-foreground hover:text-primary hidden sm:block">
               Templates
             </Link>
-            <Link href="/app/builder">
+            <Link href="/app/wizard">
               <Button size="sm" variant="default">
                 Start Building <ArrowRight className="ml-1 h-3 w-3" />
               </Button>
@@ -52,7 +52,7 @@ export default function MarketingPage() {
                 No coding. No account. Just build and download.
               </p>
               <div className="flex gap-3 flex-wrap mb-4">
-                <Link href="/app/builder">
+                <Link href="/app/wizard">
                   <Button size="lg">
                     Start Building – Free <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -231,7 +231,7 @@ export default function MarketingPage() {
           <p className="text-muted-foreground mb-5">
             Takes about 2 minutes. Free forever.
           </p>
-          <Link href="/app/builder">
+          <Link href="/app/wizard">
             <Button size="lg">
               Start Building <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

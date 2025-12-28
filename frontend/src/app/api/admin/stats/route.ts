@@ -1,11 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
+import logger from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
     try {
-        console.log('[AdminStats] Fetching admin stats...');
+        logger.info({ context: 'admin_stats_api' }, 'Fetching admin stats...');
 
         // 1. Admin Authorization Guard
         const authHeader = request.headers.get('Authorization');
@@ -73,7 +74,7 @@ export async function GET(request: NextRequest) {
         });
 
     } catch (error) {
-        console.error('[AdminStats] Unexpected error:', error);
+        logger.error({ err: error, context: 'admin_stats_api' }, 'Failed to fetch admin stats');
         // Default to zero rather than 500 to keep UI stable
         return NextResponse.json({
             users: 0,

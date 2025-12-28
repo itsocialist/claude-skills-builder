@@ -1,0 +1,30 @@
+
+> frontend@0.1.0 dev
+> next dev
+
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/briandawson/package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * /Users/briandawson/workspace/claude-skills-builder/frontend/package-lock.json
+   * /Users/briandawson/workspace/claude-skills-builder/package-lock.json
+
+▲ Next.js 16.1.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.7.80:3000
+- Environments: .env.local
+
+✓ Starting...
+✓ Ready in 551ms
+ GET /login 404 in 1569ms (compile: 1237ms, render: 332ms)
+ GET /auth/login 404 in 1529ms (compile: 1305ms, render: 224ms)
+ GET / 200 in 1567ms (compile: 1384ms, render: 183ms)
+ GET /api/admin/settings 200 in 827ms (compile: 373ms, render: 454ms)
+ GET /api/admin/settings 200 in 140ms (compile: 2ms, render: 138ms)
+ GET /api/admin/settings 200 in 144ms (compile: 1948µs, render: 142ms)
+Persisting failed: Unable to write SST file 00000024.sst
+
+Caused by:
+    No such file or directory (os error 2)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)

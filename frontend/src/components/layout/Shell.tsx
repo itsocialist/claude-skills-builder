@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useState, useEffect } from 'react';
+import { ReactNode, useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Library, LogIn, Building2, Menu, PanelRightOpen, Wand2, LayoutTemplate, Package, Hammer, Search, Compass, GitBranch } from 'lucide-react';
@@ -10,6 +10,7 @@ import { UserMenu } from '@/components/auth/UserMenu';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { RecentSkills } from '@/components/library/RecentSkills';
 import { Button } from '@/components/ui/button';
+import { DEFAULT_FLAGS, FlagKey } from '@/lib/flags';
 import {
     Sheet,
     SheetContent,
@@ -32,10 +33,25 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
     const { settings } = useSiteSettings();
     const pathname = usePathname();
     const [isEditing, setIsEditing] = useState(false);
+    // Calculate Admin Status - Memoized
+    const isAdmin = useMemo(() => {
+        if (!user?.email) return false;
+        const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').toLowerCase().split(',').map(e => e.trim());
+        return adminEmails.includes(user.email.toLowerCase());
+    }, [user?.email]);
+
     const [editedTitle, setEditedTitle] = useState(title || 'New Skill');
     const [saveStatus, setSaveStatus] = useState<'saved' | 'editing'>('saved');
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [mobileInspectorOpen, setMobileInspectorOpen] = useState(false);
+
+    // Feature Flag Check Helper
+    const shouldShow = (key: FlagKey): boolean => {
+        const flagState = settings.feature_flags?.[key] || DEFAULT_FLAGS[key];
+        if (flagState === 'DISABLED') return false;
+        if (flagState === 'ADMIN_ONLY') return isAdmin;
+        return true;
+    };
 
     useEffect(() => {
         setEditedTitle(title || 'New Skill');
@@ -85,31 +101,43 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                                 </Link>
                             </div>
                             <nav className="p-4 space-y-1">
-                                <Link href="/marketplace" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/marketplace') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                                    <Compass className="w-4 h-4" />
-                                    Discover
-                                </Link>
-                                <Link href="/app/wizard" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/wizard' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                                    <Wand2 className="w-4 h-4" />
-                                    Quick Start
-                                </Link>
-                                <Link href="/app/builder" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/builder' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                                    <Hammer className="w-4 h-4" />
-                                    Skill Builder
-                                </Link>
-                                <Link href="/app/templates" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/templates') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                                    <LayoutTemplate className="w-4 h-4" />
-                                    Templates
-                                </Link>
-                                <Link href="/app/packages" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/packages') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                                    <Package className="w-4 h-4" />
-                                    Packages
-                                </Link>
-                                <Link href="/app/inspector" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/inspector' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                                    <Search className="w-4 h-4" />
-                                    Inspector
-                                </Link>
-                                {user && (
+                                {shouldShow('feature_marketplace') && (
+                                    <Link href="/marketplace" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/marketplace') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                                        <Compass className="w-4 h-4" />
+                                        Discover
+                                    </Link>
+                                )}
+                                {shouldShow('feature_generations') && (
+                                    <Link href="/app/wizard" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/wizard' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                                        <Wand2 className="w-4 h-4" />
+                                        Quick Start
+                                    </Link>
+                                )}
+                                {shouldShow('feature_builder') && (
+                                    <Link href="/app/builder" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/builder' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                                        <Hammer className="w-4 h-4" />
+                                        Skill Builder
+                                    </Link>
+                                )}
+                                {shouldShow('feature_templates') && (
+                                    <Link href="/app/templates" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/templates') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                                        <LayoutTemplate className="w-4 h-4" />
+                                        Templates
+                                    </Link>
+                                )}
+                                {shouldShow('feature_packages') && (
+                                    <Link href="/app/packages" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/packages') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                                        <Package className="w-4 h-4" />
+                                        Packages
+                                    </Link>
+                                )}
+                                {shouldShow('feature_inspector') && (
+                                    <Link href="/app/inspector" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/inspector' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                                        <Search className="w-4 h-4" />
+                                        Inspector
+                                    </Link>
+                                )}
+                                {user && shouldShow('feature_organization') && (
                                     <Link href="/app/org" className="block px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
                                         <span className="flex items-center gap-2">
                                             <Building2 className="w-4 h-4" />
@@ -117,7 +145,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                                         </span>
                                     </Link>
                                 )}
-                                {user && (
+                                {user && shouldShow('feature_myskills') && (
                                     <Link href="/app/library" className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground rounded-md">
                                         <Library className="w-4 h-4" />
                                         My Skills
@@ -180,35 +208,49 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                 {/* Sidebar Navigation (Desktop) */}
                 <aside className="hidden lg:block w-64 bg-card border-r border-border flex-shrink-0">
                     <nav className="p-4 space-y-1">
-                        <Link href="/marketplace" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/marketplace') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                            <Compass className="w-4 h-4" />
-                            Discover
-                        </Link>
-                        <Link href="/app/wizard" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/wizard' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                            <Wand2 className="w-4 h-4" />
-                            Quick Start
-                        </Link>
-                        <Link href="/app/builder" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/builder' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                            <Hammer className="w-4 h-4" />
-                            Skill Builder
-                        </Link>
-                        <Link href="/app/canvas" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/canvas' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                            <GitBranch className="w-4 h-4" />
-                            Visual Canvas
-                        </Link>
-                        <Link href="/app/templates" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/templates') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                            <LayoutTemplate className="w-4 h-4" />
-                            Templates
-                        </Link>
-                        <Link href="/app/packages" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/packages') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                            <Package className="w-4 h-4" />
-                            Packages
-                        </Link>
-                        <Link href="/app/inspector" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/inspector' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                            <Search className="w-4 h-4" />
-                            Inspector
-                        </Link>
-                        {user && (
+                        {shouldShow('feature_marketplace') && (
+                            <Link href="/marketplace" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/marketplace') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                                <Compass className="w-4 h-4" />
+                                Discover
+                            </Link>
+                        )}
+                        {shouldShow('feature_generations') && (
+                            <Link href="/app/wizard" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/wizard' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                                <Wand2 className="w-4 h-4" />
+                                Quick Start
+                            </Link>
+                        )}
+                        {shouldShow('feature_builder') && (
+                            <Link href="/app/builder" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/builder' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                                <Hammer className="w-4 h-4" />
+                                Skill Builder
+                            </Link>
+                        )}
+                        {shouldShow('feature_canvas') && (
+                            <Link href="/app/canvas" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/canvas' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                                <GitBranch className="w-4 h-4" />
+                                Visual Canvas
+                            </Link>
+                        )}
+                        {shouldShow('feature_templates') && (
+                            <Link href="/app/templates" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/templates') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                                <LayoutTemplate className="w-4 h-4" />
+                                Templates
+                            </Link>
+                        )}
+                        {shouldShow('feature_packages') && (
+                            <Link href="/app/packages" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/packages') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                                <Package className="w-4 h-4" />
+                                Packages
+                            </Link>
+                        )}
+                        {shouldShow('feature_inspector') && (
+                            <Link href="/app/inspector" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/inspector' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                                <Search className="w-4 h-4" />
+                                Inspector
+                            </Link>
+                        )}
+                        {user && shouldShow('feature_organization') && (
                             <Link href="/app/org" className={`block px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/org' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                 <span className="flex items-center gap-2">
                                     <Building2 className="w-4 h-4" />
@@ -216,7 +258,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                                 </span>
                             </Link>
                         )}
-                        {user && (
+                        {user && shouldShow('feature_myskills') && (
                             <Link href="/app/library" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/library' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                 <Library className="w-4 h-4" />
                                 My Skills

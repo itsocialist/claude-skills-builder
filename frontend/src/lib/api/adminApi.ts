@@ -116,6 +116,7 @@ export interface SiteSettings {
     primary_color: string;
     categories: string[];
     menu_items: { label: string; href: string }[];
+    feature_flags?: Record<string, 'PUBLIC' | 'ADMIN_ONLY' | 'DISABLED'>;
     [key: string]: any;
 }
 

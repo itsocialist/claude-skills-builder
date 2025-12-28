@@ -1,0 +1,24 @@
+{
+    "antigravity.agent.executionMode": "auto-approve-safe",
+    "antigravity.agent.maxConcurrentTasks": 1,
+    // NATIVE BROWSER CONFIGURATION
+    "gemini.agent.browser.headless": true,
+    "gemini.agent.browser.timeout": 5000,
+    "gemini.agent.browser.viewport": {
+        "width": 1280,
+        "height": 800
+    },
+    // PREVENT TAB SPAM
+    "gemini.agent.browser.reuseSession": true,
+    "gemini.agent.browser.closeOnFinish": true,
+    // CONTEXT AWARENESS
+    "gemini.context.alwaysInclude": [
+        "GEMINI.md"
+    ],
+    // MODEL ROUTING
+    "gemini.agent.modelOverrides": {
+        "browser": "gemini-2.5-computer-use",
+        "planning": "claude-3-5-sonnet",
+        "coding": "gemini-3-pro"
+    }
+}
