@@ -9,8 +9,12 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import { Users, FileText, Building2, TrendingUp, Settings, Shield } from 'lucide-react';
 import Link from 'next/link';
 
-// Admin emails from env (case-insensitive)
-const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').toLowerCase().split(',');
+// Admin emails from env (case-insensitive, trim whitespace)
+const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '')
+    .toLowerCase()
+    .split(',')
+    .map(email => email.trim())
+    .filter(email => email.length > 0);
 
 export default function AdminPage() {
     const router = useRouter();
