@@ -63,7 +63,7 @@ export default function AdminPage() {
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
                 <div className="flex items-center gap-3 mb-8">
-                    <Shield className="w-8 h-8 text-primary" />
+                    <Shield className="w-8 h-8 text-primary-500" />
                     <div>
                         <h1 className="text-2xl font-bold text-foreground">Site Administration</h1>
                         <p className="text-muted-foreground">Manage users, settings, and monitor usage</p>
@@ -74,10 +74,10 @@ export default function AdminPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                     {statCards.map((stat) => (
                         <Link key={stat.label} href={stat.href}>
-                            <Card className="p-6 hover:border-primary/50 transition-colors cursor-pointer">
+                            <Card className="p-6 hover:border-primary-500/50 transition-colors cursor-pointer">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-primary/10 rounded-lg">
-                                        <stat.icon className="w-6 h-6 text-primary" />
+                                    <div className="p-3 bg-primary-500/10 rounded-lg">
+                                        <stat.icon className="w-6 h-6 text-primary-500" />
                                     </div>
                                     <div>
                                         <p className="text-2xl font-bold text-foreground">{stat.value}</p>
