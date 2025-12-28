@@ -11,6 +11,7 @@ description: "Project Constitution: Anti-Vibe Design, Technical Stack, and Gover
     *   *Rule:* Use compact tables and lists. Avoid "card clouds".
 *   **Context Over Content:** Never display data without context (metadata, stats, relationships).
 *   **No "Coming Soon":** Never ship placeholder buttons. If it doesn't work, don't show it.
+*   **No Unfinished Features:** Do not create UI for unfinished features unless explicitly agreed on with the user and the team. UIs that display placeholder data or non-functional elements are prohibited.
 *   **Optimistic UI:** Never use full-screen loading skeletons. Use distinct, localized spinners or optimistic updates.
 *   **Color Palette:** Use the "Obsidian" theme (dark mode first). Avoid "Startup Blue" (generic hex codes).
 
