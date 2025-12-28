@@ -12,9 +12,12 @@ This workflow defines the standard procedure for closing a sprint or major featu
 -   **UX Designer:** Verify UI consistency, layout (e.g., Shell usage), and "Anti-Vibe" compliance.
 -   **DevOps Engineer:** Review build configuration, env vars, and deployment scripts.
 
-*Tool Usage:* Use `ship-ape` to `switch_role` and `execute_as_role` for each stakeholder.
+*Tool Usage:* You MUST use `ship-ape` to `switch_role` and `execute_as_role` for each stakeholder to get their explicit sign-off. Do not skip this.
 
-## 2. Directory Structure & Hygiene Review
+## 2. Admin Guide & Documentation Update (CRITICAL)
+**Goal:** Operational documentation must match code.
+-   **Update `docs/ADMIN_GUIDE.md:`** Document new admin features, config changes, or troubleshooting steps.
+-   **Readme/Status:** Update `README.md` and `00-CURRENT-STATUS.md`.
 **Goal:** Maintain a clean project workspace.
 -   Audit top-level directories and `docs/`.
 -   Identify temporary files, unused scripts, or empty folders.

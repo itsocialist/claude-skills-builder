@@ -9,32 +9,42 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import { Users, FileText, Building2, TrendingUp, Settings, Shield } from 'lucide-react';
 import Link from 'next/link';
 
-// Admin emails from env (case-insensitive, trim whitespace)
-const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '')
-    .toLowerCase()
-    .split(',')
-    .map(email => email.trim())
-    .filter(email => email.length > 0);
-
 export default function AdminPage() {
     const router = useRouter();
     const { user, loading } = useAuth();
     const [isAdmin, setIsAdmin] = useState(false);
     const [stats, setStats] = useState({
-        totalUsers: 0,
-        totalSkills: 0,
-        totalTeams: 0,
-        skillsToday: 0,
+        users: 0,
+        skills: 0,
+        settings: 0,
+        orgs: 0,
+        skills_today: 0,
     });
 
     useEffect(() => {
         if (!loading && user) {
             // Check admin status (case-insensitive)
-            const adminCheck = ADMIN_EMAILS.includes((user.email || '').toLowerCase().trim());
+            const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '')
+                .toLowerCase()
+                .split(',')
+                .map(email => email.trim())
+                .filter(email => email.length > 0);
+
+            const userEmail = (user.email || '').toLowerCase().trim();
+            const adminCheck = adminEmails.includes(userEmail);
             setIsAdmin(adminCheck);
 
             if (!adminCheck) {
                 router.push('/app');
+            } else {
+                // Fetch stats if admin
+                fetch('/api/admin/stats')
+                    .then(res => res.json())
+                    .then(data => {
+                        // Map API response to state keys if they differ
+                        setStats(prev => ({ ...prev, ...data }));
+                    })
+                    .catch(err => console.error('Stats fetch failed', err));
             }
         } else if (!loading && !user) {
             router.push('/');
@@ -52,10 +62,10 @@ export default function AdminPage() {
     }
 
     const statCards = [
-        { label: 'Total Users', value: stats.totalUsers, icon: Users, href: '/app/admin/users' },
-        { label: 'Total Skills', value: stats.totalSkills, icon: FileText, href: '#' },
-        { label: 'Teams', value: stats.totalTeams, icon: Building2, href: '#' },
-        { label: 'Skills Today', value: stats.skillsToday, icon: TrendingUp, href: '#' },
+        { label: 'Total Users', value: stats.users, icon: Users, href: '/app/admin/users' },
+        { label: 'Total Skills', value: stats.skills, icon: FileText, href: '#' },
+        { label: 'Organizations', value: stats.orgs, icon: Building2, href: '#' },
+        { label: 'Skills Today', value: stats.skills_today, icon: TrendingUp, href: '#' },
     ];
 
     return (

@@ -131,13 +131,18 @@ WHERE slug = 'skill-slug';
 
 ### User Invitation Fails
 
-1. Verify `SUPABASE_SERVICE_ROLE_KEY` is set correctly
+1. Verify `SUPABASE_SERVICE_ROLE_KEY` is set correctly in Vercel (Production) or `.env.local`
 2. Check Supabase email settings are configured
-3. Ensure the email address is valid
+3. Ensure the email address is valid with no trailing spaces
 
 ### Admin Panel Not Visible
 
 1. Verify your email is in `NEXT_PUBLIC_ADMIN_EMAILS`
-2. Sign out and sign back in
-3. Check for typos in the email list
+2. **Production Note:** Ensure environment variables in Vercel do NOT have trailing newlines/spaces.
+3. Sign out and sign back in to refresh claims.
+
+### Admin Stats Dashboard
+
+Currently, the stats dashboard uses placeholder data. Real-time analytics are scheduled for Sprint 16 (STORY-041).
+
 
