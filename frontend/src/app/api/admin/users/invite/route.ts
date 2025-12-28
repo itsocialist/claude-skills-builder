@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',') || [];
-        if (!adminEmails.includes(adminUser.email || '')) {
+        const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').toLowerCase().split(',').map(e => e.trim()).filter(Boolean);
+        if (!adminEmails.includes((adminUser.email || '').toLowerCase().trim())) {
             return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 });
         }
 

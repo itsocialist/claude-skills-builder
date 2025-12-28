@@ -31,8 +31,8 @@ export async function GET(request: NextRequest) {
         }
 
         // Check if user is admin
-        const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',') || [];
-        if (!adminEmails.includes(user.email || '')) {
+        const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').toLowerCase().split(',').map(e => e.trim()).filter(Boolean);
+        if (!adminEmails.includes((user.email || '').toLowerCase().trim())) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
@@ -96,8 +96,8 @@ export async function PATCH(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
         }
 
-        const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',') || [];
-        if (!adminEmails.includes(user.email || '')) {
+        const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').toLowerCase().split(',').map(e => e.trim()).filter(Boolean);
+        if (!adminEmails.includes((user.email || '').toLowerCase().trim())) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 

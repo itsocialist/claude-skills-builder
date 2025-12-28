@@ -11,7 +11,11 @@ import { getSiteSettings, updateSiteSetting } from '@/lib/api/adminApi';
 import { ArrowLeft, Save, Loader2, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
-const ADMIN_EMAILS = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',') || [];
+const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '')
+    .toLowerCase()
+    .split(',')
+    .map(email => email.trim())
+    .filter(email => email.length > 0);
 
 interface LocalSiteSettings {
     site_name: string;
@@ -50,7 +54,7 @@ export default function AdminSettingsPage() {
 
     useEffect(() => {
         if (!loading && user) {
-            const adminCheck = ADMIN_EMAILS.includes(user.email || '');
+            const adminCheck = ADMIN_EMAILS.includes((user.email || '').toLowerCase().trim());
             setIsAdmin(adminCheck);
 
             if (!adminCheck) {

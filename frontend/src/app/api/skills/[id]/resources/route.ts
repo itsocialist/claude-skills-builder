@@ -119,8 +119,8 @@ export async function POST(
 
         if (type === 'template') {
             // Admin check for templates
-            const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',') || [];
-            if (!adminEmails.includes(user.email || '')) {
+            const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').toLowerCase().split(',').map(e => e.trim()).filter(Boolean);
+            if (!adminEmails.includes((user.email || '').toLowerCase().trim())) {
                 return NextResponse.json({ error: 'Admin access required for template resources' }, { status: 403 });
             }
             resourceData.template_id = skillId;
@@ -193,8 +193,8 @@ export async function DELETE(
 
         // Authorization check
         if (resource.template_id) {
-            const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',') || [];
-            if (!adminEmails.includes(user.email || '')) {
+            const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').toLowerCase().split(',').map(e => e.trim()).filter(Boolean);
+            if (!adminEmails.includes((user.email || '').toLowerCase().trim())) {
                 return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
             }
         } else if (resource.user_skills?.user_id !== user.id) {

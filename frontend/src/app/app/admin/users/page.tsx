@@ -11,7 +11,11 @@ import { ArrowLeft, Search, UserX, Loader2, UserPlus, X } from 'lucide-react';
 import Link from 'next/link';
 import { listUsers, toggleUserStatus, inviteUser, AdminUser } from '@/lib/api/adminApi';
 
-const ADMIN_EMAILS = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',') || [];
+const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '')
+    .toLowerCase()
+    .split(',')
+    .map(email => email.trim())
+    .filter(email => email.length > 0);
 
 export default function AdminUsersPage() {
     const router = useRouter();
@@ -29,7 +33,7 @@ export default function AdminUsersPage() {
 
     useEffect(() => {
         if (!loading && user && session) {
-            const adminCheck = ADMIN_EMAILS.includes(user.email || '');
+            const adminCheck = ADMIN_EMAILS.includes((user.email || '').toLowerCase().trim());
             setIsAdmin(adminCheck);
 
             if (!adminCheck) {
@@ -237,8 +241,8 @@ export default function AdminUsersPage() {
 
                         {inviteMessage && (
                             <div className={`p-3 rounded-lg mb-4 text-sm ${inviteMessage.type === 'success'
-                                    ? 'bg-green-500/20 text-green-400'
-                                    : 'bg-red-500/20 text-red-400'
+                                ? 'bg-green-500/20 text-green-400'
+                                : 'bg-red-500/20 text-red-400'
                                 }`}>
                                 {inviteMessage.text}
                             </div>
