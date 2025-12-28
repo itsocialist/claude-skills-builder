@@ -65,7 +65,7 @@ export default function AdminPage() {
                 <div className="flex items-center gap-3 mb-8">
                     <Shield className="w-8 h-8 text-primary-500" />
                     <div>
-                        <h1 className="text-2xl font-bold text-foreground">Site Administration</h1>
+                        <h1 className="text-2xl font-bold text-primary">Site Administration</h1>
                         <p className="text-muted-foreground">Manage users, settings, and monitor usage</p>
                     </div>
                 </div>

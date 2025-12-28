@@ -160,7 +160,7 @@ export default function AdminSettingsPage() {
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-foreground">Site Settings</h1>
+                        <h1 className="text-2xl font-bold text-primary">Site Settings</h1>
                         <p className="text-muted-foreground">Configure branding, content, and policies</p>
                     </div>
                 </div>

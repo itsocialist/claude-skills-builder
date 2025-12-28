@@ -122,7 +122,7 @@ export default function AdminUsersPage() {
                         </Button>
                     </Link>
                     <div className="flex-1">
-                        <h1 className="text-2xl font-bold text-foreground">User Management</h1>
+                        <h1 className="text-2xl font-bold text-primary">User Management</h1>
                         <p className="text-muted-foreground">{users.length} registered users</p>
                     </div>
                     <Button onClick={() => setShowInviteModal(true)}>
