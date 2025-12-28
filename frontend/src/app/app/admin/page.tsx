@@ -24,9 +24,18 @@ export default function AdminPage() {
     });
 
     useEffect(() => {
+        // DEBUG: Remove after diagnosis
+        console.log('[Admin Debug]', {
+            loading,
+            userEmail: user?.email,
+            ADMIN_EMAILS,
+            envVar: process.env.NEXT_PUBLIC_ADMIN_EMAILS,
+        });
+
         if (!loading && user) {
             // Check admin status (case-insensitive)
             const adminCheck = ADMIN_EMAILS.includes((user.email || '').toLowerCase());
+            console.log('[Admin Debug] Check result:', { adminCheck, userEmailLower: (user.email || '').toLowerCase() });
             setIsAdmin(adminCheck);
 
             if (!adminCheck) {

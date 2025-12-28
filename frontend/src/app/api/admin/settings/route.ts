@@ -14,8 +14,9 @@ if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KE
 // GET: Publicly accessible settings (site name, colors, etc.)
 export async function GET(request: NextRequest) {
     try {
-        // Return empty settings if Supabase not configured (graceful fallback)
+        // Log error and return empty settings if Supabase not configured
         if (!supabaseAdmin) {
+            console.error('CRITICAL: Supabase Admin client not configured. Check NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.');
             return NextResponse.json({});
         }
 
