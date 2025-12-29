@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { ArrowLeft, Download, Package, Sparkles, Search, FileText, BarChart3, Rocket, ChevronDown, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -240,10 +242,33 @@ export default function PowerBundlesPage() {
                             {/* Expanded Output Example */}
                             {expandedBundle === bundle.id && (
                                 <div className="p-4 bg-muted/30 border-t border-border">
-                                    <div className="bg-card rounded-lg p-4 text-sm font-mono overflow-x-auto">
-                                        <pre className="whitespace-pre-wrap text-muted-foreground leading-relaxed">
+                                    <div className="bundle-output-preview bg-card rounded-lg p-6 overflow-x-auto">
+                                        <ReactMarkdown
+                                            remarkPlugins={[remarkGfm]}
+                                            components={{
+                                                h2: ({ children }) => <h2 className="text-lg font-bold text-foreground mb-3 mt-0">{children}</h2>,
+                                                h3: ({ children }) => <h3 className="text-base font-semibold text-foreground mb-2 mt-4">{children}</h3>,
+                                                p: ({ children }) => <p className="text-muted-foreground mb-3 leading-relaxed">{children}</p>,
+                                                ul: ({ children }) => <ul className="list-disc list-inside space-y-1 mb-4 text-muted-foreground">{children}</ul>,
+                                                ol: ({ children }) => <ol className="list-decimal list-inside space-y-1 mb-4 text-muted-foreground">{children}</ol>,
+                                                li: ({ children }) => <li className="text-muted-foreground">{children}</li>,
+                                                strong: ({ children }) => <strong className="text-foreground font-semibold">{children}</strong>,
+                                                table: ({ children }) => (
+                                                    <div className="overflow-x-auto mb-4">
+                                                        <table className="w-full border-collapse text-sm">
+                                                            {children}
+                                                        </table>
+                                                    </div>
+                                                ),
+                                                thead: ({ children }) => <thead className="bg-muted/50">{children}</thead>,
+                                                tbody: ({ children }) => <tbody>{children}</tbody>,
+                                                tr: ({ children }) => <tr className="border-b border-border">{children}</tr>,
+                                                th: ({ children }) => <th className="px-3 py-2 text-left font-semibold text-foreground border border-border">{children}</th>,
+                                                td: ({ children }) => <td className="px-3 py-2 text-muted-foreground border border-border">{children}</td>,
+                                            }}
+                                        >
                                             {bundle.outputExample}
-                                        </pre>
+                                        </ReactMarkdown>
                                     </div>
                                 </div>
                             )}
