@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { ArrowRight, Play, Home, Briefcase, TrendingUp, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DemoGallery } from '@/components/marketing/DemoGallery';
+import { FAQAccordion } from '@/components/marketing/FAQAccordion';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
 import { useOnboarding } from '@/lib/hooks/useOnboarding';
 
@@ -252,6 +253,16 @@ export default function MarketingPage() {
               you don&apos;t need an account, and you own everything you create.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-10 bg-card border-y border-border">
+        <div className="container mx-auto px-6">
+          <h2 className="text-xl font-bold mb-6 text-foreground text-center">
+            Frequently Asked Questions
+          </h2>
+          <FAQAccordion />
         </div>
       </section>
 
