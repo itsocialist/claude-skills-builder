@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { X, Sparkles, Loader2, Check, Zap, RefreshCw, Save, Download, FileDown } from 'lucide-react';
+import { X, Sparkles, Loader2, Check, Zap, RefreshCw, Save, Download, FileDown, Edit } from 'lucide-react';
 import { generateSkillFromDescription, runSkillPreview } from '@/lib/claude-client';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
 import { EmailCaptureModal } from './EmailCaptureModal';
@@ -36,6 +36,36 @@ const QUICK_START_PROMPTS = [
         title: "Content Outlines",
         description: "Create structured content outlines",
         prompt: "Generate detailed content outlines for blog posts or articles with sections, key points, and research suggestions."
+    },
+    {
+        title: "Social Media Posts",
+        description: "Craft engaging social media content",
+        prompt: "Create engaging social media posts from ideas or topics. Optimize for platform (LinkedIn, Twitter, Instagram) with appropriate tone, hashtags, and calls-to-action."
+    },
+    {
+        title: "Blog Articles",
+        description: "Write SEO-optimized blog posts",
+        prompt: "Generate complete blog articles from topics or outlines. Include SEO-friendly headers, engaging introductions, valuable content, and strong conclusions."
+    },
+    {
+        title: "Code Documentation",
+        description: "Document code and functions",
+        prompt: "Generate clear technical documentation for code, APIs, or functions. Include purpose, parameters, return values, examples, and edge cases."
+    },
+    {
+        title: "Support Responses",
+        description: "Draft customer support replies",
+        prompt: "Create helpful customer support responses. Be empathetic, provide clear solutions, include troubleshooting steps, and offer follow-up assistance."
+    },
+    {
+        title: "Sales Proposals",
+        description: "Generate persuasive proposals",
+        prompt: "Create compelling sales proposals from requirements. Include executive summary, solution overview, pricing, benefits, and next steps."
+    },
+    {
+        title: "Interview Prep",
+        description: "Prepare interview questions",
+        prompt: "Generate thoughtful interview questions for candidates. Cover technical skills, experience, cultural fit, and behavioral scenarios relevant to the role."
     }
 ];
 
@@ -52,6 +82,8 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
     const [testInput, setTestInput] = useState('');
     const [testOutput, setTestOutput] = useState('');
     const [isTestingSkill, setIsTestingSkill] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [editedSkill, setEditedSkill] = useState<any>(null);
 
     const handleStart = () => {
         setStep('describe');
@@ -233,23 +265,25 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
                         </div>
 
                         {/* Quick Start Templates */}
-                        <div className="grid grid-cols-2 gap-3 mb-6">
-                            {QUICK_START_PROMPTS.map((template, i) => (
-                                <button
-                                    key={i}
-                                    onClick={() => {
-                                        setSelectedTemplate(i);
-                                        setCustomPrompt('');
-                                    }}
-                                    className={`p-4 text-left rounded-lg border transition-all ${selectedTemplate === i
-                                        ? 'border-primary bg-primary/10'
-                                        : 'border-border hover:border-primary/50'
-                                        }`}
-                                >
-                                    <div className="font-medium text-foreground mb-1">{template.title}</div>
-                                    <div className="text-sm text-muted-foreground">{template.description}</div>
-                                </button>
-                            ))}
+                        <div className="max-h-96 overflow-y-auto mb-6">
+                            <div className="grid grid-cols-3 gap-3">
+                                {QUICK_START_PROMPTS.map((template, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => {
+                                            setSelectedTemplate(i);
+                                            setCustomPrompt('');
+                                        }}
+                                        className={`p-4 text-left rounded-lg border transition-all ${selectedTemplate === i
+                                            ? 'border-primary bg-primary/10'
+                                            : 'border-border hover:border-primary/50'
+                                            }`}
+                                    >
+                                        <div className="font-medium text-foreground mb-1">{template.title}</div>
+                                        <div className="text-sm text-muted-foreground">{template.description}</div>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
 
                         <div className="relative mb-6">
@@ -353,8 +387,34 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
                                 />
                                 {testOutput && (
                                     <div className="relative">
-                                        <div className="p-4 bg-background rounded border border-border max-h-80 overflow-y-auto prose prose-sm max-w-none dark:prose-invert">
-                                            <ReactMarkdown>{testOutput}</ReactMarkdown>
+                                        <div className="p-4 bg-background rounded border border-border max-h-80 overflow-y-auto">
+                                            <div className="markdown-preview">
+                                                <ReactMarkdown
+                                                    components={{
+                                                        h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mb-4 text-foreground border-b border-border pb-2" {...props} />,
+                                                        h2: ({ node, ...props }) => <h2 className="text-xl font-semibold mb-3 text-foreground mt-6" {...props} />,
+                                                        h3: ({ node, ...props }) => <h3 className="text-lg font-medium mb-2 text-foreground mt-4" {...props} />,
+                                                        p: ({ node, ...props }) => <p className="mb-3 text-foreground leading-relaxed" {...props} />,
+                                                        ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-3 space-y-1 text-foreground" {...props} />,
+                                                        ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-3 space-y-1 text-foreground" {...props} />,
+                                                        li: ({ node, ...props }) => <li className="ml-4" {...props} />,
+                                                        code: ({ node, inline, ...props }: any) =>
+                                                            inline ?
+                                                                <code className="px-1.5 py-0.5 bg-muted rounded text-sm font-mono text-primary" {...props} /> :
+                                                                <code className="block p-3 bg-muted rounded my-2 text-sm font-mono overflow-x-auto" {...props} />,
+                                                        strong: ({ node, ...props }) => <strong className="font-semibold text-foreground" {...props} />,
+                                                        em: ({ node, ...props }) => <em className="italic text-foreground" {...props} />,
+                                                        blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground my-3" {...props} />,
+                                                        table: ({ node, ...props }) => <table className="w-full border-collapse my-4" {...props} />,
+                                                        th: ({ node, ...props }) => <th className="border border-border px-3 py-2 bg-muted font-semibold text-left" {...props} />,
+                                                        td: ({ node, ...props }) => <td className="border border-border px-3 py-2" {...props} />,
+                                                        a: ({ node, ...props }) => <a className="text-primary hover:underline" {...props} />,
+                                                        hr: ({ node, ...props }) => <hr className="my-4 border-border" {...props} />,
+                                                    }}
+                                                >
+                                                    {testOutput}
+                                                </ReactMarkdown>
+                                            </div>
                                         </div>
                                         <div className="flex gap-2 mt-2">
                                             <Button
