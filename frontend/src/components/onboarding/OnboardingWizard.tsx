@@ -4,9 +4,12 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { X, Sparkles, Loader2, Check, Zap } from 'lucide-react';
-import { generateSkillFromDescription } from '@/lib/claude-client';
+import { Input } from '@/components/ui/input';
+import { X, Sparkles, Loader2, Check, Zap, RefreshCw, Save, Download, FileDown } from 'lucide-react';
+import { generateSkillFromDescription, runSkillPreview } from '@/lib/claude-client';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
+import { EmailCaptureModal } from './EmailCaptureModal';
+import ReactMarkdown from 'react-markdown';
 
 interface OnboardingWizardProps {
     onClose: () => void;
@@ -42,6 +45,13 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
     const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null);
     const [generatedSkill, setGeneratedSkill] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
+    const [showEmailCapture, setShowEmailCapture] = useState(false);
+    const [hasDownloaded, setHasDownloaded] = useState(false);
+
+    // Test console state
+    const [testInput, setTestInput] = useState('');
+    const [testOutput, setTestOutput] = useState('');
+    const [isTestingSkill, setIsTestingSkill] = useState(false);
 
     const handleStart = () => {
         setStep('describe');
@@ -88,11 +98,66 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
             a.download = `${generatedSkill.name.toLowerCase().replace(/\s+/g, '-')}.zip`;
             a.click();
             URL.revokeObjectURL(url);
-            onComplete();
+
+            // Mark as downloaded and show email capture
+            setHasDownloaded(true);
+            setShowEmailCapture(true);
         } catch (error) {
             console.error('Failed to generate skill:', error);
             setError('Failed to download skill');
         }
+    };
+
+    const handleTestSkill = async () => {
+        if (!generatedSkill || !testInput.trim()) return;
+
+        setIsTestingSkill(true);
+        setError(null);
+
+        try {
+            // Use platform API key to run the skill
+            const platformKey = process.env.NEXT_PUBLIC_PLATFORM_CLAUDE_KEY || '';
+
+            if (!platformKey) {
+                throw new Error('Platform API key not configured');
+            }
+
+            // Call Claude API with the skill's instructions
+            const result = await runSkillPreview(
+                platformKey,
+                generatedSkill,
+                testInput
+            );
+
+            setTestOutput(result.response);
+        } catch (err) {
+            console.error('Skill preview error:', err);
+            setTestOutput(`❌ Error testing skill: ${err instanceof Error ? err.message : 'Unknown error'}\n\nThe skill will work when uploaded to Claude.ai with your own API key.`);
+        } finally {
+            setIsTestingSkill(false);
+        }
+    };
+
+    const handleCreateAnother = () => {
+        // Reset all state
+        setGeneratedSkill(null);
+        setCustomPrompt('');
+        setSelectedTemplate(null);
+        setError(null);
+        setHasDownloaded(false);
+        setTestInput('');
+        setTestOutput('');
+        setStep('describe');
+    };
+
+    const handleEmailCaptureComplete = () => {
+        setShowEmailCapture(false);
+        onComplete();
+    };
+
+    const handleEmailCaptureSkip = () => {
+        setShowEmailCapture(false);
+        onComplete();
     };
 
     const handleSkip = () => {
@@ -177,8 +242,8 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
                                         setCustomPrompt('');
                                     }}
                                     className={`p-4 text-left rounded-lg border transition-all ${selectedTemplate === i
-                                            ? 'border-primary bg-primary/10'
-                                            : 'border-border hover:border-primary/50'
+                                        ? 'border-primary bg-primary/10'
+                                        : 'border-border hover:border-primary/50'
                                         }`}
                                 >
                                     <div className="font-medium text-foreground mb-1">{template.title}</div>
@@ -249,6 +314,7 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
                             <span className="text-lg font-semibold">Your skill is ready!</span>
                         </div>
 
+                        {/* Skill Details */}
                         <div className="space-y-4 mb-6">
                             <div>
                                 <label className="text-xs font-medium text-muted-foreground uppercase">Name</label>
@@ -272,17 +338,106 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
                             </div>
                         </div>
 
-                        <div className="flex gap-3">
-                            <Button onClick={handleDownload} className="flex-1">
-                                Download & Use
-                            </Button>
-                            <Button variant="outline" onClick={() => setStep('describe')}>
-                                Start Over
+                        {/* Test Console */}
+                        <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border">
+                            <label className="text-sm font-medium text-foreground mb-2 block">
+                                Try it out (preview):
+                            </label>
+                            <div className="space-y-2">
+                                <Input
+                                    value={testInput}
+                                    onChange={(e) => setTestInput(e.target.value)}
+                                    placeholder={`Try: "${generatedSkill.triggers[0]}"`}
+                                    className="bg-background"
+                                    onKeyDown={(e) => e.key === 'Enter' && handleTestSkill()}
+                                />
+                                {testOutput && (
+                                    <div className="relative">
+                                        <div className="p-4 bg-background rounded border border-border max-h-80 overflow-y-auto prose prose-sm max-w-none dark:prose-invert">
+                                            <ReactMarkdown>{testOutput}</ReactMarkdown>
+                                        </div>
+                                        <div className="flex gap-2 mt-2">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => {
+                                                    const blob = new Blob([testOutput], { type: 'text/markdown' });
+                                                    const url = URL.createObjectURL(blob);
+                                                    const a = document.createElement('a');
+                                                    a.href = url;
+                                                    a.download = `${generatedSkill.name}-preview.md`;
+                                                    a.click();
+                                                    URL.revokeObjectURL(url);
+                                                }}
+                                                className="text-xs"
+                                            >
+                                                <FileDown className="w-3 h-3 mr-1" />
+                                                Export as Markdown
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleTestSkill}
+                                    disabled={isTestingSkill || !testInput.trim()}
+                                >
+                                    {isTestingSkill ? (
+                                        <>
+                                            <Loader2 className="w-3 h-3 mr-2 animate-spin" />
+                                            Generating...
+                                        </>
+                                    ) : (
+                                        'Test Skill'
+                                    )}
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="space-y-3">
+                            <div className="grid grid-cols-2 gap-3">
+                                <Button onClick={handleDownload} className="w-full">
+                                    <Download className="w-4 h-4 mr-2" />
+                                    Download
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setShowEmailCapture(true)}
+                                    className="w-full border-primary/50 text-primary hover:bg-primary/10"
+                                >
+                                    <Save className="w-4 h-4 mr-2" />
+                                    Save to Account
+                                </Button>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                onClick={handleCreateAnother}
+                                className="w-full"
+                            >
+                                <RefreshCw className="w-4 h-4 mr-2" />
+                                Create Another Skill
                             </Button>
                         </div>
+
+                        {hasDownloaded && (
+                            <p className="text-xs text-center text-muted-foreground mt-4">
+                                ✅ Downloaded! Upload the ZIP to Claude.ai to use your skill.
+                            </p>
+                        )}
                     </div>
                 )}
             </Card>
+
+            {/* Email Capture Modal - shown after download */}
+            {showEmailCapture && (
+                <EmailCaptureModal
+                    onClose={() => setShowEmailCapture(false)}
+                    onSkip={handleEmailCaptureSkip}
+                    onSuccess={handleEmailCaptureComplete}
+                />
+            )}
         </div>
     );
 }

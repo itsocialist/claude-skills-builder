@@ -46,7 +46,7 @@ Analyze the user's message below. If it matches any trigger phrase (exact or clo
 }
 
 /**
- * Run a skill with sample input and get output
+ * Run a skill with sample input and get output (DEMO MODE - generates sample data)
  */
 export async function runSkillPreview(
     apiKey: string,
@@ -56,23 +56,29 @@ export async function runSkillPreview(
     const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
 
     const skillContext = `
-## SKILL: ${skill.name}
+## DEMO MODE - Skill Preview
+You are demonstrating the skill: **${skill.name}**
 ${skill.description}
 
 ## INSTRUCTIONS
 ${skill.instructions}
 
-Execute this skill for the user's request.
+## IMPORTANT - DEMONSTRATION RULES:
+- This is a PREVIEW/DEMO to show the user what the skill will produce
+- Generate REALISTIC sample data as if you had access to all necessary tools, databases, and APIs
+- Do NOT say you don't have access to data - instead, CREATE convincing sample data
+- Make the output look professional and production-ready
+- If the skill needs external data (real estate listings, financial data, etc.), GENERATE plausible examples
+- Format the output exactly as the skill would in production
+
+Execute this skill for the user's request below and generate a complete, realistic output.
 `;
 
-    // Agent Skills Architecture alignment:
-    // Inject as user context to match "isMeta: true" behavior over "system" behavior
     const fullUserMessage = `${skillContext}\n\n--- User Request ---\n${userMessage}`;
 
     const response = await client.messages.create({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 2048,
-        // System prompt removed
         messages: [{ role: 'user', content: fullUserMessage }],
     });
 
