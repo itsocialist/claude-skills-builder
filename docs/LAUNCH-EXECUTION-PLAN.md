@@ -20,43 +20,34 @@ Based on research for tech/AI subreddits:
 
 ---
 
-## 📝 Reddit Post Drafts
+## 📝 Reddit Post Drafts (Humanized)
 
 ---
 
-### r/ClaudeAI Post (PRIMARY)
+### r/ClaudeAI Post (PRIMARY) — Post Monday Dec 29, 6 AM PST
 
-**Title Options** (pick one):
-1. "Heavy Claude user here - just discovered Skills and built a tool to make them accessible"
-2. "I've been using Claude daily for months. Skills changed everything - so I built this"
-3. "The gap between Claude power users and everyone else is too big. I'm trying to fix that."
+**Title**: "I've been using Claude daily for months. Skills changed everything - so I built this"
 
 **Post Body**:
 
 ```
-Hey r/ClaudeAI 👋
+Been a Claude Pro subscriber for a while now - use it for code reviews, client proposals, all kinds of stuff. But I only found out about Skills recently and kind of kicked myself for not looking into them sooner.
 
-I've been a heavy Claude user for months - Pro subscriber, use it for everything from code reviews to client proposals. But I only recently discovered **Claude Skills** and honestly... game changer.
+Thing is, actually making Skills was a pain. The whole SKILL.md format felt like it was meant for developers, not regular users. I tried a few tools out there but nothing really clicked - either too complicated or didn't let me do what I actually wanted.
 
-The problem? Creating Skills felt like it was designed for developers. I looked at some existing tools, but they either:
-- Required too much technical knowledge
-- Didn't focus on practical business use cases
-- Weren't built for both quick templates AND power users who want full control
+So I ended up building my own thing: GetClaudeSkills
 
-So I built **GetClaudeSkills** - a free skill builder that works for:
-- 🏢 **Small business owners** who want templates they can customize
-- ⚡ **Power users** who want a visual canvas to build complex workflows
-- 🚀 **Everyone in between** who just wants to stop copy-pasting the same prompts
+Basically it's a visual builder where you can:
+- Create skills without touching YAML/code (unless you want to)
+- Start from templates instead of a blank page
+- Compare two skill versions side by side before exporting
+- Just download and drag into Claude
 
-**What makes it different:**
-- Visual builder (no YAML/code unless you want it)
-- 10+ ready-to-use templates for real use cases
-- A/B comparison to test variations side-by-side
-- Download → Upload to Claude → Done
+Made it free, no signup needed. Figured there's probably other people in the same boat.
 
-**Try it:** https://getclaudeskills.ai (free, no account needed)
+https://getclaudeskills.ai
 
-Would genuinely love feedback from this community - what's missing? What templates would be most useful for your workflow?
+Curious what templates would actually be useful for you guys? I've got a few up already (real estate, consulting, content stuff) but always looking to add more.
 ```
 
 ---
@@ -68,33 +59,29 @@ Would genuinely love feedback from this community - what's missing? What templat
 **Post Body**:
 
 ```
-Hey r/SideProject!
+Been using Claude Pro daily for a few months. Found out about Skills recently and immediately wanted to build a bunch of them. Problem was... actually creating them felt way harder than it needed to be.
 
-I've been using Claude Pro daily for months. Recently discovered Skills and it felt like a superpower... but also like something only devs could really use.
+Looked around for tools. Everything was either too technical or so dumbed down it couldn't do much. Nothing in between.
 
-I looked around for tools to help, but everything I found was either too technical or too basic. Nothing bridged the gap between "I just want a template" and "I want full control."
+So I just built what I wanted: GetClaudeSkills
 
-So I built **GetClaudeSkills**.
+Stack if anyone's curious:
+- Next.js 14, TypeScript
+- Supabase for auth/DB
+- ReactFlow for the visual editor
+- Vercel
 
-**The idea:** Make Claude Skills accessible to small business owners AND give power users a real visual builder.
+Main features:
+- Visual skill builder, no code required
+- 10 templates to start from
+- A/B testing built in
+- One-click export
 
-**Tech stack:**
-- Next.js 14 + TypeScript
-- Supabase (auth, DB)
-- ReactFlow for visual canvas
-- Vercel deployment
+It's free, no signup: https://getclaudeskills.ai
 
-**Key features:**
-- No-code visual builder
-- 10+ templates (real estate, consulting, content)
-- A/B comparison mode
-- Export to Claude in one click
+Biggest thing I learned building this: show people the output first, not the config. Completely changed how I designed the onboarding.
 
-**Try it:** https://getclaudeskills.ai (free, no signup needed)
-
-Biggest lesson: "Show the cake" - users need to see outputs, not configs. Changed my whole approach.
-
-What would you have done differently?
+Anyway, curious what you'd do differently.
 ```
 
 ---
@@ -106,31 +93,22 @@ What would you have done differently?
 **Post Body**:
 
 ```
-Hey r/Entrepreneur 👋
+Use Claude every day for proposals, emails, meeting notes - the usual. Noticed that most people I talk to (especially small business owners) don't even know about Skills, which is kind of a shame because they're incredibly useful.
 
-Quick background: I'm a heavy Claude AI user - it's become essential for proposals, emails, meeting notes. But I noticed most people (especially small business owners) aren't getting the full value because they don't know about **Skills**.
+Quick explainer: Skills let Claude remember your workflows. Instead of copy-pasting the same prompt every time, you just type "create proposal" and it does its thing.
 
-Skills let Claude remember your workflows - so instead of copy-pasting the same prompts over and over, you just type "create proposal" and it knows exactly what to do.
+Problem is, setting up Skills has a learning curve. You need to know the format, the structure, it's not exactly plug and play.
 
-**The problem:** Creating Skills requires technical knowledge most business owners don't have.
+So I built GetClaudeSkills - basically a visual builder that lets you create Skills in a couple minutes without any technical knowledge.
 
-**My solution:** I built **GetClaudeSkills** - a free visual builder that lets anyone create Claude Skills in about 2 minutes.
+Works for:
+- Consultants who are sick of rewriting the same proposals
+- Agents who need consistent listings
+- Anyone who's copy-pasting the same prompts over and over
 
-**Who it's for:**
-- Consultants tired of rewriting proposals
-- Real estate agents who need consistent listings
-- Anyone copy-pasting the same prompts daily
+It's free, no account required: https://getclaudeskills.ai
 
-**What you get:**
-- 10+ ready-to-use templates
-- Visual builder (no coding)
-- Download and upload to Claude instantly
-
-**Try it:** https://getclaudeskills.ai
-
-No account, no credit card, completely free.
-
-Would love to hear what workflows you'd want templated - I'm actively building based on feedback.
+If you've got a workflow you'd want templated, let me know - actively adding more based on what people ask for.
 ```
 
 ---
