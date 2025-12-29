@@ -2,6 +2,7 @@
 
 import { ReactNode, useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Library, LogIn, Building2, Menu, PanelRightOpen, Wand2, LayoutTemplate, Package, Hammer, Search, Compass, GitBranch } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -96,8 +97,21 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                         </SheetTrigger>
                         <SheetContent side="left" className="p-0 w-64">
                             <div className="h-14 flex items-center px-6 border-b border-border">
-                                <Link href="/app" className="font-bold text-xl tracking-tight text-primary">
-                                    {settings.site_name}
+                                <Link href="/app">
+                                    <Image
+                                        src="/branding/logo-full-light.svg"
+                                        alt="GetClaudeSkills"
+                                        width={140}
+                                        height={28}
+                                        className="dark:hidden"
+                                    />
+                                    <Image
+                                        src="/branding/logo-full-dark.svg"
+                                        alt="GetClaudeSkills"
+                                        width={140}
+                                        height={28}
+                                        className="hidden dark:block"
+                                    />
                                 </Link>
                             </div>
                             <nav className="p-4 space-y-1">
@@ -165,9 +179,22 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
 
                 {/* Sidebar Header (Desktop) */}
                 <div className="hidden lg:flex w-64 items-center px-6 border-r border-border flex-shrink-0">
-                    <span className="font-bold text-xl tracking-tight text-primary mb-1">
-                        {settings.site_name}
-                    </span>
+                    <Link href="/app">
+                        <Image
+                            src="/branding/logo-full-light.svg"
+                            alt="GetClaudeSkills"
+                            width={160}
+                            height={32}
+                            className="dark:hidden"
+                        />
+                        <Image
+                            src="/branding/logo-full-dark.svg"
+                            alt="GetClaudeSkills"
+                            width={160}
+                            height={32}
+                            className="hidden dark:block"
+                        />
+                    </Link>
                 </div>
 
                 {/* Main Header */}

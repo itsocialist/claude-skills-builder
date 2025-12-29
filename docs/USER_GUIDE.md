@@ -41,7 +41,6 @@ GetClaudeSkills is a comprehensive platform for creating, managing, and sharing 
 ---
 
 ## Interactive Onboarding
-*Introduced in Sprint 18*
 
 **First-time visitors** are automatically greeted with an interactive 4-step wizard that helps you create your first skill in under 60 seconds—no prior experience required.
 

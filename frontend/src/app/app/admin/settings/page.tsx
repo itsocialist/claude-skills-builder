@@ -40,7 +40,7 @@ export default function AdminSettingsPage() {
     const [newMenuItem, setNewMenuItem] = useState({ label: '', href: '' });
 
     const [settings, setSettings] = useState<LocalSiteSettings>({
-        site_name: 'ClaudeSkillsFacet',
+        site_name: 'GetClaudeSkills',
         primary_color: '#C15F3C',
         background_color: '#1a1a1a',
         accent_color: '#2a2a2a',
@@ -178,7 +178,7 @@ export default function AdminSettingsPage() {
                             <Input
                                 value={settings.site_name}
                                 onChange={(e) => setSettings({ ...settings, site_name: e.target.value })}
-                                placeholder="ClaudeSkillsFacet"
+                                placeholder="GetClaudeSkills"
                             />
                         </div>
 

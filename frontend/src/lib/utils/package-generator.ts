@@ -85,7 +85,7 @@ ${skillDefinitions}
 
 ---
 
-*Generated with ClaudeSkillsFacet*
+*Generated with GetClaudeSkills*
 `;
 }
 
@@ -117,7 +117,7 @@ ${pkg.skills.map(ps => `- **${ps.skill.name}** (${ps.type})`).join('\n')}
 
 ---
 
-*Generated with ClaudeSkillsFacet*
+*Generated with GetClaudeSkills*
 `;
 }
 

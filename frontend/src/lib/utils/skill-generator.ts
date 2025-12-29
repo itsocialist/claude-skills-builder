@@ -98,7 +98,7 @@ ${skill.category}
 
 ${resourceList}---
 
-Generated with [ClaudeSkillsFacet](https://claudeskillsfacet.com)
+Generated with [GetClaudeSkills](https://getclaudeskills.ai)
 `;
 }
 
