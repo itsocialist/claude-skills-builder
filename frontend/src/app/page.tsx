@@ -1,12 +1,45 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Play, Home, Briefcase, TrendingUp, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DemoGallery } from '@/components/marketing/DemoGallery';
+import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
+import { useOnboarding } from '@/lib/hooks/useOnboarding';
 
 export default function MarketingPage() {
+  const { hasSeenOnboarding, markAsComplete } = useOnboarding();
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    // Show onboarding after a short delay to avoid flash on mount
+    const timer = setTimeout(() => {
+      setShowOnboarding(!hasSeenOnboarding);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [hasSeenOnboarding]);
+
+  const handleOnboardingClose = () => {
+    setShowOnboarding(false);
+  };
+
+  const handleOnboardingComplete = () => {
+    markAsComplete();
+    setShowOnboarding(false);
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background">{
+      /* Onboarding Modal */
+      showOnboarding && (
+        <OnboardingWizard
+          onClose={handleOnboardingClose}
+          onComplete={handleOnboardingComplete}
+        />
+      )
+    }
       {/* Navigation - Brighter header with accent */}
       <nav className="bg-card border-b-2 border-primary sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
