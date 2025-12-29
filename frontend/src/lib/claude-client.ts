@@ -47,11 +47,13 @@ Analyze the user's message below. If it matches any trigger phrase (exact or clo
 
 /**
  * Run a skill with sample input and get output (DEMO MODE - generates sample data)
+ * Now with STREAMING for real-time output!
  */
 export async function runSkillPreview(
     apiKey: string,
     skill: Skill,
-    userMessage: string
+    userMessage: string,
+    onChunk?: (text: string) => void
 ): Promise<{ response: string; tokensUsed: number }> {
     const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
 
@@ -76,19 +78,32 @@ Execute this skill for the user's request below and generate a complete, realist
 
     const fullUserMessage = `${skillContext}\n\n--- User Request ---\n${userMessage}`;
 
-    const response = await client.messages.create({
+    const stream = client.messages.stream({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 2048,
         messages: [{ role: 'user', content: fullUserMessage }],
     });
 
-    const responseText = response.content[0].type === 'text'
-        ? response.content[0].text
-        : '';
+    let fullText = '';
+    let inputTokens = 0;
+    let outputTokens = 0;
 
-    const tokensUsed = (response.usage?.input_tokens || 0) + (response.usage?.output_tokens || 0);
+    for await (const event of stream) {
+        if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+            fullText += event.delta.text;
+            if (onChunk) {
+                onChunk(fullText); // Send incremental updates to UI
+            }
+        } else if (event.type === 'message_start') {
+            inputTokens = event.message.usage.input_tokens;
+        } else if (event.type === 'message_delta') {
+            outputTokens = event.usage.output_tokens;
+        }
+    }
 
-    return { response: responseText, tokensUsed };
+    const tokensUsed = inputTokens + outputTokens;
+
+    return { response: fullText, tokensUsed };
 }
 
 /**

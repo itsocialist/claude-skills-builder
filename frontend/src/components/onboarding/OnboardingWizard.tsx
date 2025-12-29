@@ -147,6 +147,7 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
 
         setIsTestingSkill(true);
         setError(null);
+        setTestOutput(''); // Clear previous output
 
         try {
             // Use platform API key to run the skill
@@ -156,14 +157,16 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
                 throw new Error('Platform API key not configured');
             }
 
-            // Call Claude API with the skill's instructions
-            const result = await runSkillPreview(
+            // Call Claude API with streaming for real-time output
+            await runSkillPreview(
                 platformKey,
                 generatedSkill,
-                testInput
+                testInput,
+                (incrementalText) => {
+                    // Update UI with each chunk as it streams in
+                    setTestOutput(incrementalText);
+                }
             );
-
-            setTestOutput(result.response);
         } catch (err) {
             console.error('Skill preview error:', err);
             setTestOutput(`❌ Error testing skill: ${err instanceof Error ? err.message : 'Unknown error'}\n\nThe skill will work when uploaded to Claude.ai with your own API key.`);
