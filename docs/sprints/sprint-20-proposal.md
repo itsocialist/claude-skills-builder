@@ -17,6 +17,33 @@
 | **US-B1: Brand Consistency** | **S** | **🔴 Required** | **Rename ClaudeSkilsFacets → GetClaudeSkills** |
 | **US-B2: Wordmark Logo** | **S** | **🔴 Required** | **Replace site title text with logo** |
 | **US-B3: Favicon** | **S** | **🔴 Required** | **Get from marketing, upload** |
+| **US-C1: Clipboard Notification** | **S** | **🐛 Bug** | **No feedback on copy to clipboard** |
+| **US-C2: Bundles Navigation** | **S** | **🔴 Required** | **Add to shell + homepage** |
+| **US-C3: Bundles Feature Flag** | **S** | **📋 Proposed** | **Admin control for visibility** |
+| **US-C4: Bundle Admin CRUD** | **M** | **📋 Proposed** | **Admin-only bundle creator/editor** |
+
+### US-C1: Clipboard Notification Bug [S] — 🐛 Bug
+- [ ] Add toast/notification when link is copied to clipboard
+- [ ] Apply to ALL copy-to-clipboard actions across the app
+- [ ] Include social share buttons, skill copy, any other copy actions
+- [ ] Use consistent notification style (toast or inline "Copied!")
+
+### US-C2: Bundles Navigation [S] — 🔴 Required  
+- [ ] Add "Bundles" link to shell/navigation menu
+- [ ] Add featured bundles section to homepage
+- [ ] Link from marketplace to bundles
+
+### US-C3: Bundles Feature Flag [S] — 📋 Proposed
+- [ ] Add `FEATURE_BUNDLES` flag to lib/flags.ts
+- [ ] Add toggle to admin settings screen
+- [ ] Conditionally render bundles nav link and homepage section
+
+### US-C4: Bundle Admin CRUD [M] — 📋 Proposed
+- [ ] Create admin-only bundle management page at `/app/admin/bundles`
+- [ ] List existing bundles with edit/delete actions
+- [ ] Create new bundle form (name, tagline, icon, color, skills list)
+- [ ] Edit bundle output example (markdown editor)
+- [ ] Store bundles in Supabase `bundles` table (new migration)
 
 ### US-B1: Brand Consistency [S] — 🔴 Required
 - [ ] Find and replace all "ClaudeSkilsFacets" → "GetClaudeSkills" 
