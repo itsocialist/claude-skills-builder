@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { X, Sparkles, Loader2, Check, Zap, RefreshCw, Save, Download, FileDown, Edit } from 'lucide-react';
-import { generateSkillFromDescription, runSkillPreview, refineSkillWithFeedback } from '@/lib/claude-client';
+import { generateSkillFromDescription, runSkillPreview, refineSkillWithFeedback, runBaselinePreview } from '@/lib/claude-client';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
 import { EmailCaptureModal } from './EmailCaptureModal';
 import ReactMarkdown from 'react-markdown';
@@ -82,6 +82,7 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
     const [testInput, setTestInput] = useState('');
     const [testOutput, setTestOutput] = useState('');
     const [isTestingSkill, setIsTestingSkill] = useState(false);
+    const [baselineOutput, setBaselineOutput] = useState('');
     const [isEditMode, setIsEditMode] = useState(false);
     const [editedSkill, setEditedSkill] = useState<any>(null);
     const [refineFeedback, setRefineFeedback] = useState('');
@@ -148,28 +149,34 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
         setIsTestingSkill(true);
         setError(null);
         setTestOutput(''); // Clear previous output
+        setBaselineOutput(''); // Clear baseline
 
         try {
-            // Use platform API key to run the skill
             const platformKey = process.env.NEXT_PUBLIC_PLATFORM_CLAUDE_KEY || '';
 
             if (!platformKey) {
                 throw new Error('Platform API key not configured');
             }
 
-            // Call Claude API with streaming for real-time output
-            await runSkillPreview(
-                platformKey,
-                generatedSkill,
-                testInput,
-                (incrementalText) => {
-                    // Update UI with each chunk as it streams in
-                    setTestOutput(incrementalText);
-                }
-            );
+            // Run BOTH in parallel for A/B comparison
+            await Promise.all([
+                // WITH skill (Column B)
+                runSkillPreview(
+                    platformKey,
+                    generatedSkill,
+                    testInput,
+                    (text) => setTestOutput(text)
+                ),
+                // WITHOUT skill (Column A)
+                runBaselinePreview(
+                    platformKey,
+                    testInput,
+                    (text) => setBaselineOutput(text)
+                )
+            ]);
         } catch (err) {
             console.error('Skill preview error:', err);
-            setTestOutput(`❌ Error testing skill: ${err instanceof Error ? err.message : 'Unknown error'}\n\nThe skill will work when uploaded to Claude.ai with your own API key.`);
+            setTestOutput(`❌ Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
         } finally {
             setIsTestingSkill(false);
         }
@@ -420,56 +427,71 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
                                     className="bg-background"
                                     onKeyDown={(e) => e.key === 'Enter' && handleTestSkill()}
                                 />
-                                {testOutput && (
-                                    <div className="relative">
-                                        <div className="p-4 bg-background rounded border border-border max-h-80 overflow-y-auto">
-                                            <div className="markdown-preview">
-                                                <ReactMarkdown
-                                                    components={{
-                                                        h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mb-4 text-foreground border-b border-border pb-2" {...props} />,
-                                                        h2: ({ node, ...props }) => <h2 className="text-xl font-semibold mb-3 text-foreground mt-6" {...props} />,
-                                                        h3: ({ node, ...props }) => <h3 className="text-lg font-medium mb-2 text-foreground mt-4" {...props} />,
-                                                        p: ({ node, ...props }) => <p className="mb-3 text-foreground leading-relaxed" {...props} />,
-                                                        ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-3 space-y-1 text-foreground" {...props} />,
-                                                        ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-3 space-y-1 text-foreground" {...props} />,
-                                                        li: ({ node, ...props }) => <li className="ml-4" {...props} />,
-                                                        code: ({ node, inline, ...props }: any) =>
-                                                            inline ?
-                                                                <code className="px-1.5 py-0.5 bg-muted rounded text-sm font-mono text-primary" {...props} /> :
-                                                                <code className="block p-3 bg-muted rounded my-2 text-sm font-mono overflow-x-auto" {...props} />,
-                                                        strong: ({ node, ...props }) => <strong className="font-semibold text-foreground" {...props} />,
-                                                        em: ({ node, ...props }) => <em className="italic text-foreground" {...props} />,
-                                                        blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground my-3" {...props} />,
-                                                        table: ({ node, ...props }) => <table className="w-full border-collapse my-4" {...props} />,
-                                                        th: ({ node, ...props }) => <th className="border border-border px-3 py-2 bg-muted font-semibold text-left" {...props} />,
-                                                        td: ({ node, ...props }) => <td className="border border-border px-3 py-2" {...props} />,
-                                                        a: ({ node, ...props }) => <a className="text-primary hover:underline" {...props} />,
-                                                        hr: ({ node, ...props }) => <hr className="my-4 border-border" {...props} />,
-                                                    }}
-                                                >
-                                                    {testOutput}
-                                                </ReactMarkdown>
+                                {(testOutput || baselineOutput) && (
+                                    <div className="grid grid-cols-2 gap-3 mt-3">
+                                        {/* Column A: Without Skill */}
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <div className="w-2 h-2 rounded-full bg-muted-foreground" />
+                                                <span className="text-xs font-medium text-muted-foreground uppercase">Without Skill</span>
+                                            </div>
+                                            <div className="p-3 bg-muted/30 rounded border border-border max-h-60 overflow-y-auto text-sm">
+                                                {baselineOutput ? (
+                                                    <div className="text-muted-foreground whitespace-pre-wrap">{baselineOutput}</div>
+                                                ) : (
+                                                    <div className="text-muted-foreground italic">Loading...</div>
+                                                )}
                                             </div>
                                         </div>
-                                        <div className="flex gap-2 mt-2">
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => {
-                                                    const blob = new Blob([testOutput], { type: 'text/markdown' });
-                                                    const url = URL.createObjectURL(blob);
-                                                    const a = document.createElement('a');
-                                                    a.href = url;
-                                                    a.download = `${generatedSkill.name}-preview.md`;
-                                                    a.click();
-                                                    URL.revokeObjectURL(url);
-                                                }}
-                                                className="text-xs"
-                                            >
-                                                <FileDown className="w-3 h-3 mr-1" />
-                                                Export as Markdown
-                                            </Button>
+                                        {/* Column B: With Skill */}
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <div className="w-2 h-2 rounded-full bg-primary" />
+                                                <span className="text-xs font-medium text-primary uppercase">With Skill ✨</span>
+                                            </div>
+                                            <div className="p-3 bg-primary/5 rounded border border-primary/30 max-h-60 overflow-y-auto text-sm">
+                                                {testOutput ? (
+                                                    <ReactMarkdown
+                                                        components={{
+                                                            h1: ({ node, ...props }) => <h1 className="text-lg font-bold mb-2 text-foreground" {...props} />,
+                                                            h2: ({ node, ...props }) => <h2 className="text-base font-semibold mb-2 text-foreground" {...props} />,
+                                                            h3: ({ node, ...props }) => <h3 className="text-sm font-medium mb-1 text-foreground" {...props} />,
+                                                            p: ({ node, ...props }) => <p className="mb-2 text-foreground leading-relaxed" {...props} />,
+                                                            ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-2 space-y-1 text-foreground text-sm" {...props} />,
+                                                            ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-2 space-y-1 text-foreground text-sm" {...props} />,
+                                                            li: ({ node, ...props }) => <li className="ml-2" {...props} />,
+                                                            strong: ({ node, ...props }) => <strong className="font-semibold text-foreground" {...props} />,
+                                                        }}
+                                                    >
+                                                        {testOutput}
+                                                    </ReactMarkdown>
+                                                ) : (
+                                                    <div className="text-muted-foreground italic">Loading...</div>
+                                                )}
+                                            </div>
                                         </div>
+                                    </div>
+                                )}
+                                {(testOutput || baselineOutput) && (
+                                    <div className="flex gap-2 mt-2">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => {
+                                                const combined = `# A/B Comparison\n\n## Without Skill\n${baselineOutput}\n\n## With Skill\n${testOutput}`;
+                                                const blob = new Blob([combined], { type: 'text/markdown' });
+                                                const url = URL.createObjectURL(blob);
+                                                const a = document.createElement('a');
+                                                a.href = url;
+                                                a.download = `${generatedSkill.name}-comparison.md`;
+                                                a.click();
+                                                URL.revokeObjectURL(url);
+                                            }}
+                                            className="text-xs"
+                                        >
+                                            <FileDown className="w-3 h-3 mr-1" />
+                                            Export Comparison
+                                        </Button>
                                     </div>
                                 )}
                                 <Button

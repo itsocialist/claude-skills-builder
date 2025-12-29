@@ -107,6 +107,45 @@ Execute this skill for the user's request below and generate a complete, realist
 }
 
 /**
+ * Run a baseline preview WITHOUT skill instructions (for A/B comparison)
+ * Shows what Claude would output without the skill
+ */
+export async function runBaselinePreview(
+    apiKey: string,
+    userMessage: string,
+    onChunk?: (text: string) => void
+): Promise<{ response: string; tokensUsed: number }> {
+    const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
+
+    const stream = client.messages.stream({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1024, // Shorter for baseline
+        messages: [{ role: 'user', content: userMessage }],
+    });
+
+    let fullText = '';
+    let inputTokens = 0;
+    let outputTokens = 0;
+
+    for await (const event of stream) {
+        if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+            fullText += event.delta.text;
+            if (onChunk) {
+                onChunk(fullText);
+            }
+        } else if (event.type === 'message_start') {
+            inputTokens = event.message.usage.input_tokens;
+        } else if (event.type === 'message_delta') {
+            outputTokens = event.usage.output_tokens;
+        }
+    }
+
+    const tokensUsed = inputTokens + outputTokens;
+
+    return { response: fullText, tokensUsed };
+}
+
+/**
  * Validate API key by making a minimal request
  */
 export async function validateApiKey(apiKey: string): Promise<boolean> {
