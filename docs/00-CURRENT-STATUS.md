@@ -1,6 +1,6 @@
 # ClaudeSkillsFacet - Current Project Status
 
-**Last Updated:** 2025-12-28 (Sprint 17 Complete)  
+**Last Updated:** 2025-12-28 (Sprint 18 Complete)  
 **Brand Name:** ClaudeSkillsFacet  
 **Tagline:** "Claude Skills: Find, Build and Bundle"
 **Production URL:** https://getclaudeskills.ai
@@ -33,7 +33,8 @@ This project began as a weekend MVP but has evolved into a comprehensive enterpr
 | Sprint 15.5 | Stabilization & Governance | ✅ Complete |
 | Sprint 16 | Admin Stats (Beta) | ✅ Complete |
 | Sprint 17 | Stability & Infrastructure | ✅ Complete |
-| Sprint 18 | TBD | 📋 Planning |
+| Sprint 18 | Interactive Onboarding | ✅ Complete |
+| Sprint 19 | TBD | 📋 Planning |
 
 ## Completed Features
 
@@ -164,6 +165,22 @@ This project began as a weekend MVP but has evolved into a comprehensive enterpr
 - ✅ Engineering Standards & Patterns Documentation
 - ✅ Sprint Completion Ritual Workflow
 
+### Sprint 17: Stability & Infrastructure
+- ✅ OAuth callback route fix (authentication loop resolution)
+- ✅ Admin middleware restoration
+- ✅ Shell role calculation fix
+
+### Sprint 18: Interactive Onboarding
+- ✅ 4-step onboarding wizard (first-visit detection)
+- ✅ 10 Quick-Start Templates (exceeds 5 planned)
+- ✅ Real skill preview with Claude API integration
+- ✅ Word-by-word streaming (<1s perceived latency)
+- ✅ Skill refinement with AI feedback
+- ✅ Email capture with Supabase auth
+- ✅ A/B Comparison (side-by-side, parallel streaming)
+- ✅ Toggle split/full view modes
+- ✅ Comparison metrics (word count, sections)
+- ✅ Deployment workflow with approval gates
 
 ## Technology Stack
 
