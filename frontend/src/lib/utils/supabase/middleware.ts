@@ -42,7 +42,9 @@ export async function updateSession(request: NextRequest) {
         // 1. Protected Routes (require auth)
         // Exempt public tools (Builder, Templates) and Marketplace from blanket auth
         // These are controlled by their specific Feature Flags below
+        // CRITICAL: /app must be public to prevent redirect loops when unauthenticated
         const isPublicRoute =
+            path === '/app' ||  // Dashboard - shows login modal if not authenticated
             path.startsWith('/app/builder') ||
             path.startsWith('/app/templates') ||
             path.startsWith('/marketplace') ||

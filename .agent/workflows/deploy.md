@@ -1,84 +1,84 @@
----
-description: Pre-production deployment checklist with required testing and approval
----
-
 # Deployment Workflow
 
-**CRITICAL: NEVER deploy directly to production without following these steps.**
+## HARD RULES - NEVER VIOLATE
 
-## 1. Build Verification
-// turbo
-```bash
-cd frontend && npm run build
+### 🛑 Rule 1: NEVER Push Directly to Main
+- **All changes** must be validated in local dev before pushing
+- No exceptions, even for "obvious" fixes
+
+### 🛑 Rule 2: Always Validate in Dev First
 ```
-- Must pass without errors
-- Note any warnings
-
-## 2. Dev Testing (REQUIRED)
-```bash
-# Ensure dev server is running
-npm run dev
-```
-
-**Manual browser verification:**
-1. Open http://localhost:3000
-2. Test the feature end-to-end
-3. Check console for errors (F12 → Console)
-4. Verify on mobile viewport (F12 → Toggle device)
-
-## 3. Screenshot/Recording Evidence
-**Agent:** Capture screenshot or recording of feature working:
-```
-Use browser_subagent to:
-- Navigate to feature
-- Perform actions
-- Capture screenshot with SaveScreenshot: true
+1. npm run dev
+2. Open browser to localhost:3000
+3. Navigate using UI (not direct URLs)
+4. Verify the fix works
+5. ONLY THEN push to main
 ```
 
-## 4. User Validation Checkpoint ⚠️
-**STOP HERE - Request user approval:**
-```
-notify_user with:
-- Summary of changes
-- Screenshot/recording link
-- Request explicit "proceed with deployment" confirmation
-```
-
-**DO NOT PROCEED without user saying "deploy" or "proceed".**
-
-## 5. Git Commit
-```bash
-git add -A && git commit -m "feat: description"
-git push origin main
-```
-
-## 6. Production Deployment
-// turbo
-```bash
-cd /path/to/repo && vercel --prod
-```
-
-## 7. Post-Deploy Verification
-**Agent:** Capture screenshot of production:
-- Test feature in production URL
-- Compare with dev screenshot
-- Report any differences
-
-## 8. Final Report
-```
-notify_user with:
-- ✅ Deployed to production
-- Production URL
-- Verification screenshot
-```
+### 🛑 Rule 3: Auth Changes Require Full Flow Test
+Before pushing ANY auth-related changes:
+- [ ] Login flow works
+- [ ] Logout flow works  
+- [ ] Protected route redirect works
+- [ ] No redirect loops
+- [ ] returnTo parameter preserved
 
 ---
 
-## When to Use This Workflow
-- Any feature deployment
-- Bug fixes affecting production
-- Configuration changes
+## Workflow Steps
 
-## Exceptions
-- Urgent hotfixes (document exception)
-- User explicitly says "skip testing, deploy now"
+### Step 1: Make Changes Locally
+```bash
+# Make code changes
+```
+
+### Step 2: Start Dev Server
+```bash
+cd frontend && npm run dev
+```
+
+### Step 3: Validate in Browser
+- Use UI navigation, NOT direct URL jumps
+- Test the actual user flow
+- Check for console errors
+
+### Step 4: Run Build Check
+```bash
+npm run build
+```
+
+### Step 5: Push to Main
+```bash
+git add -A && git commit -m "description" && git push origin main
+```
+
+### Step 6: Verify Production
+- Wait for Vercel deployment
+- Test in production browser
+- If still broken, investigate prod-specific issues
+
+---
+
+## Auth-Specific Checklist
+
+| Test | Command/Action |
+|------|----------------|
+| Protected route while logged out | Navigate via UI to My Skills |
+| Redirect URL | Should be `/app?returnTo=/app/library` |
+| No redirect loops | Page should load, not error |
+| Login completes | OAuth flow returns to app |
+| returnTo works | After login, returns to intended page |
+
+---
+
+## Files That Affect Auth
+
+```
+lib/utils/supabase/middleware.ts    -- Route protection (CRITICAL)
+middleware.ts                        -- Main middleware entry
+components/auth/AuthProvider.tsx     -- Client auth context
+```
+
+> [!CAUTION]
+> Changes to middleware.ts can break ALL user access to the app.
+> Always test the full login/logout flow before pushing.
