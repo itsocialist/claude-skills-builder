@@ -50,17 +50,19 @@ export async function updateSession(request: NextRequest) {
             path.startsWith('/app/canvas');
 
         if (path.startsWith('/app') && !isPublicRoute && !user) {
-            // Redirect to home with login query param to trigger auth modal/flow
-            const url = new URL('/', request.url);
-            url.searchParams.set('login', 'true');
+            // Redirect to /app which will show login modal
+            // Preserve intended destination for post-login redirect
+            const url = new URL('/app', request.url);
+            url.searchParams.set('returnTo', path);
             return NextResponse.redirect(url);
         }
 
         // 2. Admin Routes (require checking admin status - usually metadata or email)
         if (path.startsWith('/app/admin')) {
             if (!user) {
-                const url = new URL('/', request.url);
-                url.searchParams.set('login', 'true');
+                // Redirect to /app with returnTo for post-login redirect
+                const url = new URL('/app', request.url);
+                url.searchParams.set('returnTo', path);
                 return NextResponse.redirect(url);
             }
 
