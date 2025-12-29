@@ -1,6 +1,36 @@
-# Sprint 20: User Engagement & Feedback
+# Sprint 20: User Engagement, Feedback & UX Polish
 
-**Theme**: Create feedback loops and improve user engagement to drive retention and product improvements.
+**Theme**: Create feedback loops, improve user engagement, and polish UX for mobile and power users.
+
+---
+
+## Priority UX Fixes (Carried from Sprint 19 Review)
+
+### US-0: Inspector Menu Improvements [S]
+- [ ] Widen inspector sidebar default width
+- [ ] Make sidebar resizable (drag handle)
+- [ ] Apply to all screens where inspector appears
+
+### US-00: Generated Output Markdown Rendering [S] — BUG
+- [ ] Fix raw markdown (`**bold**`, `- bullets`) showing in generated response
+- [ ] Apply ReactMarkdown + remark-gfm like Power Bundles fix
+- [ ] Affects: Builder preview, Test Skill output
+
+### US-000: RESEND Email Configuration [S]
+- [ ] Add RESEND_API_KEY to Vercel environment
+- [ ] Test welcome email on skill download
+- [ ] Verify email tracking works
+
+### US-0000: Mobile Optimization Audit [M]
+- [ ] Review all pages on mobile viewport
+- [ ] Fix any layout issues on marketplace, bundles, builder
+- [ ] Ensure touch targets are appropriately sized
+- [ ] Test and fix navigation on mobile
+
+### US-00000: AI-Powered UX Audit [S]
+- [ ] Conduct persona-based walkthrough (similar to prior audit)
+- [ ] Identify friction points and confusion areas
+- [ ] Document recommendations for Sprint 21
 
 ---
 
