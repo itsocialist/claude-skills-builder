@@ -13,6 +13,8 @@
 4. Measure funnel performance (Analytics)
 5. Protect platform resources (Rate Limiting)
 6. Populate marketplace with starter content (15+ Skills)
+7. Educate non-Claude users (Educational Content)
+8. Showcase bundled value (Power Bundles)
 
 ---
 
@@ -133,6 +135,42 @@
 - Leverage existing 10 onboarding templates as base
 - Add 5+ additional high-value skills
 - Use builder to create and publish programmatically or manually
+
+---
+
+### US-7: Educational Content [S] — Issue #59
+
+**As a** first-time visitor unfamiliar with Claude,  
+**I want** to understand what Claude Skills are and how to install them,  
+**So that** I can confidently use the platform without prior Claude experience.
+
+**Acceptance Criteria:**
+- [ ] "What is a Claude Skill?" explainer on landing page or /learn page
+- [ ] Step-by-step installation guide with screenshots
+- [ ] Quick video or animation showing installation process
+- [ ] FAQ addressing: Do I need an account? Is it free? How do I use it?
+
+**Technical Notes:**
+- Consider inline section on landing page vs. dedicated /learn route
+- May integrate with onboarding wizard as optional tooltip
+
+---
+
+### US-8: Power Bundle Product Concept [M] — Issue #60
+
+**As a** new user exploring the platform,  
+**I want** to see curated skill bundles organized by outcome,  
+**So that** I understand the depth of value and can get started faster.
+
+**Acceptance Criteria:**
+- [ ] Define 4 Power Bundles: Research Studio, Content Engine, Data Analyst, Project Kickstart
+- [ ] Bundle landing page or marketplace section
+- [ ] Each bundle shows final OUTPUT (the "cake"), not just skill list
+- [ ] "Get This Bundle" CTA downloads all skills as single package
+
+**Technical Notes:**
+- Reference: Notion Templates, Figma Community bundles
+- Could be premium/upsell feature in future
 
 ---
 

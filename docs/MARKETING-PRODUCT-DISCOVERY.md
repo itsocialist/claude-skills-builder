@@ -75,3 +75,23 @@ The Visual Canvas should reinforce the "Cake" concept:
 
 User describes: "I want a skill that takes meeting notes and emails a summary."
 System shows: A preview of that exact email *before* the skill is even built.
+
+---
+
+## 8. Educational Content (New)
+*Bridging the knowledge gap for non-Claude users*
+
+**The Problem**: Many visitors don't know what Claude Skills are or how to install them.
+
+**Solution**: Add educational content that answers:
+1.  **"What is a Claude Skill?"** - A reusable template that makes Claude work YOUR way
+2.  **"How do I install it?"** - Simple 3-step: Download → Upload to Claude → Start using
+3.  **"Do I need a Claude account?"** - Yes, but it's free to create
+
+### Placement Options
+*   **Landing Page**: Inline explainer section
+*   **Dedicated /learn page**: Full tutorial with screenshots
+*   **Onboarding Wizard**: Pre-template tooltip or step
+*   **FAQ Accordion**: On marketplace pages
+
+### Sprint 19 Story: #57
