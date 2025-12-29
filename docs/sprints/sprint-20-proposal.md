@@ -6,28 +6,43 @@
 
 ## Priority UX Fixes (Carried from Sprint 19 Review)
 
-### US-0: Inspector Menu Improvements [S]
+| Story | Size | Status | Notes |
+|-------|------|--------|-------|
+| US-0: Inspector Menu Improvements | S | 📋 Proposed | Widen + resizable sidebar |
+| US-00: Markdown Rendering Bug | S | 🐛 Bug | Raw `**bold**` in output |
+| US-00a: Marketplace Skill Testing | M | 📋 Proposed | 16 skills need validation |
+| US-000: RESEND Email Config | S | ⏳ Pending | User action: add API key |
+| US-0000: Mobile Optimization | M | 📋 Proposed | Full mobile audit |
+| US-00000: AI UX Audit | S | 📋 Proposed | Persona walkthrough |
+
+### US-0: Inspector Menu Improvements [S] — 📋 Proposed
 - [ ] Widen inspector sidebar default width
 - [ ] Make sidebar resizable (drag handle)
 - [ ] Apply to all screens where inspector appears
 
-### US-00: Generated Output Markdown Rendering [S] — BUG
+### US-00: Generated Output Markdown Rendering [S] — 🐛 BUG
 - [ ] Fix raw markdown (`**bold**`, `- bullets`) showing in generated response
 - [ ] Apply ReactMarkdown + remark-gfm like Power Bundles fix
 - [ ] Affects: Builder preview, Test Skill output
 
-### US-000: RESEND Email Configuration [S]
+### US-00a: Marketplace Skill Testing [M] — 📋 Proposed
+- [ ] Test all 16 seeded marketplace skills with Claude
+- [ ] Verify each generates quality output
+- [ ] Fix/improve any underperforming skill instructions
+- [ ] Link Power Bundle skills to actual marketplace skills
+
+### US-000: RESEND Email Configuration [S] — ⏳ Pending User Action
 - [ ] Add RESEND_API_KEY to Vercel environment
 - [ ] Test welcome email on skill download
 - [ ] Verify email tracking works
 
-### US-0000: Mobile Optimization Audit [M]
+### US-0000: Mobile Optimization Audit [M] — 📋 Proposed
 - [ ] Review all pages on mobile viewport
 - [ ] Fix any layout issues on marketplace, bundles, builder
 - [ ] Ensure touch targets are appropriately sized
 - [ ] Test and fix navigation on mobile
 
-### US-00000: AI-Powered UX Audit [S]
+### US-00000: AI-Powered UX Audit [S] — 📋 Proposed
 - [ ] Conduct persona-based walkthrough (similar to prior audit)
 - [ ] Identify friction points and confusion areas
 - [ ] Document recommendations for Sprint 21
