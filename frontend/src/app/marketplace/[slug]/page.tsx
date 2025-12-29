@@ -12,6 +12,7 @@ import { ReviewModal } from '@/components/marketplace/ReviewModal';
 import { MarketplaceListing } from '@/types/marketplace.types';
 import { Profile, SkillReview } from '@/types/community.types';
 import { getProfileByUsername } from '@/lib/profiles';
+import { copyToClipboard } from '@/lib/utils/clipboard';
 import {
     Download,
     BadgeCheck,
@@ -140,7 +141,7 @@ export default function SkillDetailPage() {
     };
 
     const handleCopyLink = () => {
-        navigator.clipboard.writeText(window.location.href);
+        copyToClipboard(window.location.href, 'Link');
         setShowShareMenu(false);
     };
 

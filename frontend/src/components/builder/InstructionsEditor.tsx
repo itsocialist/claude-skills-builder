@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useSkillStore } from '@/lib/store/skillStore';
 import Editor from '@monaco-editor/react';
 import { Eye, Code, Columns } from 'lucide-react';
+import { MarkdownOutput } from '@/components/MarkdownOutput';
 import { SkillSnippets } from './SkillSnippets';
 
 type ViewMode = 'editor' | 'preview' | 'split';
@@ -102,9 +103,7 @@ export function InstructionsEditor() {
                 {/* Preview */}
                 {(viewMode === 'preview' || viewMode === 'split') && (
                     <div className="h-[500px] overflow-y-auto p-6 bg-card">
-                        <div className="prose prose-invert max-w-none">
-                            {renderMarkdown(skill.instructions)}
-                        </div>
+                        <MarkdownOutput content={skill.instructions} />
                     </div>
                 )}
             </div>

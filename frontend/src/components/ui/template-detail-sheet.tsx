@@ -18,6 +18,7 @@ import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { copyToClipboard } from '@/lib/utils/clipboard';
 
 interface TemplateDetailSheetProps {
     template: Template | null;
@@ -53,7 +54,7 @@ export function TemplateDetailSheet({ template, open, onOpenChange }: TemplateDe
 
     const handleShare = () => {
         const shareUrl = `${window.location.origin}/app/templates/${template.id}`;
-        navigator.clipboard.writeText(shareUrl);
+        copyToClipboard(shareUrl, 'Share link');
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };

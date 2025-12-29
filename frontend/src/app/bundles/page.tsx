@@ -8,6 +8,9 @@ import { ArrowLeft, Download, Package, Sparkles, Search, FileText, BarChart3, Ro
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
+import { generateBundleZip } from '@/lib/utils/bundle-generator'
+import { saveAs } from 'file-saver'
+import { toast } from 'sonner'
 
 interface Bundle {
     id: string
@@ -144,9 +147,16 @@ Launch a targeted MVP in 6 weeks that validates our core hypothesis with minimal
 export default function PowerBundlesPage() {
     const [expandedBundle, setExpandedBundle] = useState<string | null>(null)
 
-    const handleDownload = (bundle: Bundle) => {
-        // In production, this would trigger a download of all skills in the bundle
-        alert(`Downloading ${bundle.name} bundle with ${bundle.skills.length} skills...`)
+    const handleDownload = async (bundle: Bundle) => {
+        const toastId = toast.loading(`Preparing ${bundle.name} bundle...`);
+        try {
+            const blob = await generateBundleZip(bundle.name, bundle.skills);
+            saveAs(blob, `${bundle.id}.zip`);
+            toast.success(`${bundle.name} bundle ready!`, { id: toastId });
+        } catch (error: any) {
+            console.error('Bundle download failed:', error);
+            toast.error(error.message || 'Failed to generate bundle', { id: toastId });
+        }
     }
 
     return (
@@ -243,32 +253,7 @@ export default function PowerBundlesPage() {
                             {expandedBundle === bundle.id && (
                                 <div className="p-4 bg-muted/30 border-t border-border">
                                     <div className="bundle-output-preview bg-card rounded-lg p-6 overflow-x-auto">
-                                        <ReactMarkdown
-                                            remarkPlugins={[remarkGfm]}
-                                            components={{
-                                                h2: ({ children }) => <h2 className="text-lg font-bold text-foreground mb-3 mt-0">{children}</h2>,
-                                                h3: ({ children }) => <h3 className="text-base font-semibold text-foreground mb-2 mt-4">{children}</h3>,
-                                                p: ({ children }) => <p className="text-muted-foreground mb-3 leading-relaxed">{children}</p>,
-                                                ul: ({ children }) => <ul className="list-disc list-inside space-y-1 mb-4 text-muted-foreground">{children}</ul>,
-                                                ol: ({ children }) => <ol className="list-decimal list-inside space-y-1 mb-4 text-muted-foreground">{children}</ol>,
-                                                li: ({ children }) => <li className="text-muted-foreground">{children}</li>,
-                                                strong: ({ children }) => <strong className="text-foreground font-semibold">{children}</strong>,
-                                                table: ({ children }) => (
-                                                    <div className="overflow-x-auto mb-4">
-                                                        <table className="w-full border-collapse text-sm">
-                                                            {children}
-                                                        </table>
-                                                    </div>
-                                                ),
-                                                thead: ({ children }) => <thead className="bg-muted/50">{children}</thead>,
-                                                tbody: ({ children }) => <tbody>{children}</tbody>,
-                                                tr: ({ children }) => <tr className="border-b border-border">{children}</tr>,
-                                                th: ({ children }) => <th className="px-3 py-2 text-left font-semibold text-foreground border border-border">{children}</th>,
-                                                td: ({ children }) => <td className="px-3 py-2 text-muted-foreground border border-border">{children}</td>,
-                                            }}
-                                        >
-                                            {bundle.outputExample}
-                                        </ReactMarkdown>
+                                        <MarkdownOutput content={bundle.outputExample} />
                                     </div>
                                 </div>
                             )}

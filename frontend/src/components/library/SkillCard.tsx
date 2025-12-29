@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Edit3, Trash2, Copy, Download, MoreVertical, Eye, Share2 } from 'lucide-react';
 import type { SavedSkill } from '@/lib/api/skillsApi';
+import { copyToClipboard } from '@/lib/utils/clipboard';
 
 interface SkillCardProps {
     skill: SavedSkill;
@@ -18,7 +19,7 @@ export function SkillCard({ skill, onEdit, onDelete, onDuplicate, onExport }: Sk
 
     const handleShare = () => {
         const shareUrl = `${window.location.origin}/s/${skill.id}`;
-        navigator.clipboard.writeText(shareUrl);
+        copyToClipboard(shareUrl, 'Share link');
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
@@ -107,7 +108,7 @@ export function SkillCard({ skill, onEdit, onDelete, onDuplicate, onExport }: Sk
                                     <button
                                         onClick={() => {
                                             const shareUrl = `${window.location.origin}/s/${skill.id}`;
-                                            navigator.clipboard.writeText(shareUrl);
+                                            copyToClipboard(shareUrl, 'Share link');
                                             setShowMenu(false);
                                         }}
                                         className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-[#3a3a3a]"
