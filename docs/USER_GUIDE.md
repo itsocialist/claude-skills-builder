@@ -1,15 +1,16 @@
 # User Guide
 
 > **Last Updated:** 2025-12-28
-> **Version:** v2.0 (Post-Sprint 17)
+> **Version:** v2.1 (Post-Sprint 18)
 
 ## Table of Contents
 1. [Getting Started](#getting-started)
-2. [Skill Wizard](#skill-wizard)
-3. [Visual Canvas](#visual-canvas)
-4. [Skill Builder](#skill-builder-traditional)
-5. [Marketplace & Library](#marketplace--library)
-6. [Export & Analysis](#export--analysis)
+2. [Interactive Onboarding](#interactive-onboarding) *(New)*
+3. [Skill Wizard](#skill-wizard)
+4. [Visual Canvas](#visual-canvas)
+5. [Skill Builder](#skill-builder-traditional)
+6. [Marketplace & Library](#marketplace--library)
+7. [Export & Analysis](#export--analysis)
 
 ---
 
@@ -36,6 +37,50 @@ GetClaudeSkills is a comprehensive platform for creating, managing, and sharing 
 5. Click the link to complete sign-in
 
 > **💡 Tip:** Magic links expire after 1 hour. If your link expires, simply request a new one.
+
+---
+
+## Interactive Onboarding
+*Introduced in Sprint 18*
+
+**First-time visitors** are automatically greeted with an interactive 4-step wizard that helps you create your first skill in under 60 seconds—no prior experience required.
+
+### How It Works
+
+1. **Welcome Screen:** Introduction to skills and their capabilities
+2. **Describe or Select Template:** Either describe what you need in plain English, OR choose from 10 quick-start templates:
+   - Property Listings, Email Drafting, Meeting Notes, Content Outlines
+   - Social Media, Blog Articles, Code Docs, Support Responses
+   - Sales Proposals, Interview Prep
+3. **Generate:** AI creates a complete skill based on your input
+4. **Preview & Compare:** See your skill in action with A/B comparison
+
+### A/B Comparison Feature
+The preview step shows **side-by-side output comparison**:
+- **Left column (Without Skill):** How Claude responds normally
+- **Right column (With Skill ✨):** Enhanced output using your skill
+
+This demonstrates exactly how your skill improves Claude's responses.
+
+**Features:**
+- **Parallel streaming:** Both outputs appear in real-time
+- **Metrics bar:** Shows word count and section differences
+- **Toggle view:** Switch between split and full view modes
+- **Export:** Download comparison as Markdown
+
+### Refining Your Skill
+Not quite right? Use the **"Refine this skill"** button to:
+- Describe what you'd like changed in natural language
+- AI updates the skill based on your feedback
+- Re-test until you're satisfied
+
+### What Happens Next
+After previewing, you can:
+- **Download ZIP:** Get a complete skill package for Claude Desktop
+- **Create Account:** Save to your library (optional email signup)
+- **Skip:** Return to the main app and build manually
+
+> **🚀 Quick Start:** The onboarding wizard is the fastest way to experience GetClaudeSkills. Try it on your first visit!
 
 ---
 

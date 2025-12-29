@@ -11,6 +11,7 @@ This workflow defines the standard procedure for closing a sprint or major featu
 -   **Frontend Engineer:** Check code quality, component usage, and performance.
 -   **UX Designer:** Verify UI consistency, layout (e.g., Shell usage), and "Anti-Vibe" compliance.
 -   **DevOps Engineer:** Review build configuration, env vars, and deployment scripts.
+-   **Technical Writer:** Review documentation accuracy, update guides, ensure status docs reflect current state.
 
 *Tool Usage:* You MUST use `ship-ape` to `switch_role` and `execute_as_role` for each stakeholder to get their explicit sign-off. Do not skip this.
 

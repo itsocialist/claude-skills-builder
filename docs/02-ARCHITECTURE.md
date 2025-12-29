@@ -1,7 +1,7 @@
 # ClaudeSkillsFacet - Architecture (v3)
 
 **Last Updated:** 2025-12-28
-**Current Sprint:** Sprint 17 (Stability & Infrastructure)
+**Current Sprint:** Sprint 18 (Interactive Onboarding)
 
 > **Note:** This document supersedes the Phase 1 MVP architecture. Legacy documentation archived in `docs/archive/phase-1-mvp/`.
 
@@ -52,6 +52,9 @@ graph TD
 - **Shell.tsx:** Responsive 3-column layout with Feature Flag integration.
 - **Middleware:** Server-side route protection based on `feature_flags` in Supabase.
 - **Visual Canvas:** ReactFlow-based node editor (`/app/canvas`).
+- **OnboardingWizard:** First-visit interactive wizard with A/B comparison (Sprint 18).
+  - Uses `NEXT_PUBLIC_PLATFORM_CLAUDE_KEY` for skill preview
+  - Parallel streaming for side-by-side output comparison
 
 ### State Management
 - **Zustand:** `skillStore` (Single Skill), `packageStore` (Bundles).

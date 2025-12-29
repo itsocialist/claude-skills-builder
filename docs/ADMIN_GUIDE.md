@@ -1,11 +1,11 @@
 # Admin Guide
 
 > **Last Updated:** 2025-12-28
-> **Version:** v2.0 (Post-Sprint 17)
+> **Version:** v2.1 (Post-Sprint 18)
 
 ## Table of Contents
 1. [Configuration](#configuration)
-2. [Feature Flags](#feature-flags-management) (New)
+2. [Feature Flags](#feature-flags-management)
 3. [User Management](#user-management)
 4. [Dashboard Stats](#dashboard-statistics)
 5. [Marketplace Management](#marketplace-management)
@@ -26,6 +26,10 @@ NEXT_PUBLIC_ADMIN_EMAILS=admin@example.com,admin2@example.com
 
 # Required for user invitations and backend management
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# Platform Claude API key for onboarding skill preview (Sprint 18)
+# This key is used to power the A/B comparison in the onboarding wizard
+NEXT_PUBLIC_PLATFORM_CLAUDE_KEY=sk-ant-api03-...
 
 # Optional: Force specific feature flag states (emergency use only)
 OVERRIDE_FEATURE_FLAGS={"feature_admin":"ADMIN_ONLY"}
