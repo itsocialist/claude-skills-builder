@@ -5,6 +5,7 @@ const SKILL_SYSTEM_PROMPT = `You are Claude with the following skill loaded. Whe
 
 /**
  * Test if a phrase triggers a skill
+ * In DEMO MODE (when testPhrase is short/sparse), Claude will auto-generate realistic sample inputs
  */
 export async function testSkillTrigger(
     apiKey: string,
@@ -13,25 +14,34 @@ export async function testSkillTrigger(
 ): Promise<{ triggered: boolean; response: string; tokensUsed: number }> {
     const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
 
+    // Determine if we should use demo mode (short/sparse input)
+    const isDemoMode = testPhrase.trim().split(/\s+/).length < 10;
+
+    const demoInstructions = isDemoMode ? `
+## DEMO MODE ACTIVE
+The user has provided a short prompt. To demonstrate this skill effectively:
+- If the skill requires specific input data (company names, products, metrics, etc.), INVENT realistic sample data
+- Do NOT ask the user for more information - CREATE plausible examples yourself
+- Generate output as if you have all necessary context
+- Make the demo output look production-ready and professional
+` : '';
+
     const skillContext = `
 ## SKILL: ${skill.name}
 **Triggers:** ${skill.triggers.map(t => `"${t}"`).join(', ')}
 **Instructions:**
 ${skill.instructions}
-
+${demoInstructions}
 ## TASK
-Analyze the user's message below. If it matches any trigger phrase (exact or close semantic match), execute the skill and respond. Otherwise, say "SKILL_NOT_TRIGGERED" and explain why.
+Execute the skill for the user's request. Generate complete, professional output.
+${isDemoMode ? 'Since this is demo mode, generate realistic sample data for any missing required inputs.' : ''}
 `;
 
-    // Agent Skills Architecture alignment:
-    // Skills are injected as ephemeral USER messages (hidden via isMeta: true), not System messages.
-    // To simulate this via the public API, we prepend the instruction to the user's message.
     const fullUserMessage = `${SKILL_SYSTEM_PROMPT}\n\n${skillContext}\n\n--- User Message ---\n${testPhrase}`;
 
     const response = await client.messages.create({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1024,
-        // System prompt removed to better simulate skill behavior
+        max_tokens: 2048,
         messages: [{ role: 'user', content: fullUserMessage }],
     });
 

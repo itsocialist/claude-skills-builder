@@ -8,6 +8,7 @@ import { testSkillTrigger } from '@/lib/claude-client';
 import { Play, Loader2, CheckCircle, XCircle, ChevronDown, ChevronRight, Key } from 'lucide-react';
 import type { Skill } from '@/types/skill.types';
 import { ApiKeySettings } from './ApiKeySettings';
+import { MarkdownOutput } from '@/components/MarkdownOutput';
 
 interface TestConsoleProps {
     skill: Skill;
@@ -158,8 +159,8 @@ export function TestConsole({ skill, apiKey, onApiKeyChange }: TestConsoleProps)
                             </span>
                         </div>
 
-                        <div className="bg-muted/50 rounded-md p-3 text-sm text-foreground whitespace-pre-wrap max-h-64 overflow-y-auto">
-                            {result.response}
+                        <div className="bg-muted/50 rounded-md p-3 max-h-96 overflow-y-auto">
+                            <MarkdownOutput content={result.response} />
                         </div>
                     </Card>
                 )}
