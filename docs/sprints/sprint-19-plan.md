@@ -15,52 +15,111 @@
 
 ---
 
-## Backlog
+## User Stories
 
-| # | Story | Size | Priority |
-|---|-------|------|----------|
-| 1 | SEO Optimization | S | 🥇 Critical |
-| 2 | Social Sharing (OG Images) | S | 🥈 High |
-| 3 | Email Onboarding Sequence | M | 🥉 High |
-| 4 | Analytics Dashboard Enhancements | M | Medium |
-| 5 | API Rate Limiting | S | Medium |
+### US-1: SEO Optimization [S] — Issue #49
+
+**As a** potential user searching for AI skill tools,  
+**I want** GetClaudeSkills to appear in search results,  
+**So that** I can discover and use the platform.
+
+**Acceptance Criteria:**
+- [ ] Each page has unique `<title>` and `<meta description>` tags
+- [ ] `/sitemap.xml` is generated dynamically with all marketplace skills
+- [ ] Skills have JSON-LD structured data (`SoftwareApplication` schema)
+- [ ] Canonical URLs are set on all pages
+- [ ] `robots.txt` allows search engine crawling
+- [ ] Lighthouse SEO audit score ≥ 90
+
+**Technical Notes:**
+- Files: `layout.tsx`, `marketplace/[slug]/page.tsx`, `sitemap.ts`
+- Use Next.js metadata API
 
 ---
 
-## Story Details
+### US-2: Social Sharing [S] — Issue #50
 
-### 1. SEO Optimization [S]
-- Meta tags (title, description) per page
-- Generate `/sitemap.xml` for marketplace
-- JSON-LD structured data for skills
-- Canonical URLs
-- `robots.txt`
+**As a** skill creator,  
+**I want** my shared skills to display attractive previews on social media,  
+**So that** I can attract more users to view my skills.
 
-### 2. Social Sharing [S]
-- Dynamic OG images via Vercel OG
-- Twitter card meta tags
-- LinkedIn preview optimization
-- Share buttons on skill pages
+**Acceptance Criteria:**
+- [ ] Dynamic OG images generated per skill (skill name, description, branding)
+- [ ] Twitter card meta tags render correctly in Twitter Card Validator
+- [ ] LinkedIn previews show skill title, description, and image
+- [ ] Share buttons (Twitter, LinkedIn, Copy Link) on skill detail pages
+- [ ] OG image includes GetClaudeSkills branding
 
-### 3. Email Onboarding Sequence [M]
-- Provider: Resend (recommended)
-- 3-email drip sequence:
-  1. Welcome (immediate)
-  2. Tutorial (Day 1)
-  3. Share prompt (Day 3)
-- Track opens/clicks
+**Technical Notes:**
+- Use Vercel OG (`@vercel/og`) for dynamic image generation
+- Files: `marketplace/[slug]/opengraph-image.tsx`
 
-### 4. Analytics Dashboard [M]
-- Onboarding funnel visualization
-- Historical trend charts (30 days)
-- CSV export
-- Email capture conversion rate
+---
 
-### 5. API Rate Limiting [S]
-- 10 req/min per IP (unauth)
-- 30 req/min (authenticated)
-- Return 429 with retry-after
-- In-memory store (simple)
+### US-3: Email Onboarding Sequence [M] — Issue #51
+
+**As a** new user who downloaded a skill,  
+**I want** to receive helpful follow-up emails,  
+**So that** I learn how to get more value from the platform.
+
+**Acceptance Criteria:**
+- [ ] Email provider (Resend) integrated
+- [ ] Welcome email sent immediately after skill download
+- [ ] Tutorial email ("Get more from your skill") sent Day 1
+- [ ] Share prompt email ("Share your skill") sent Day 3
+- [ ] Email templates have GetClaudeSkills branding
+- [ ] Open and click rates are tracked
+- [ ] Unsubscribe link works correctly
+
+**Technical Notes:**
+- Provider: Resend (API key required)
+- Use Supabase scheduled functions or edge functions for delays
+
+---
+
+### US-4: Analytics Dashboard Enhancements [M] — Issue #52
+
+**As an** admin or product manager,  
+**I want** to see marketing funnel metrics,  
+**So that** I can measure conversion and optimize the user journey.
+
+**Acceptance Criteria:**
+- [ ] Onboarding funnel visualization (Visit → Start → Generate → Download)
+- [ ] Historical trend chart (last 30 days) for key metrics
+- [ ] CSV export of analytics data
+- [ ] Email capture conversion rate displayed
+- [ ] Skill creation → download rate displayed
+
+**Technical Notes:**
+- Files: `app/admin/page.tsx`, `lib/analytics/`
+- Consider Recharts for visualizations
+
+---
+
+### US-5: API Rate Limiting [S] — Issue #53
+
+**As a** platform operator,  
+**I want** to limit API abuse,  
+**So that** the platform Claude API key is protected from misuse.
+
+**Acceptance Criteria:**
+- [ ] Unauthenticated users: 10 requests/minute per IP
+- [ ] Authenticated users: 30 requests/minute
+- [ ] 429 response returned with `Retry-After` header when limit exceeded
+- [ ] Rate limit state stored in-memory (Map)
+- [ ] Rate limiting applied to `/api/claude/*` routes
+
+**Technical Notes:**
+- Middleware implementation
+- Consider Redis for future scalability (not required for MVP)
+
+---
+
+## Definition of Done
+- [ ] Code reviewed and merged to `main`
+- [ ] Deployed to production
+- [ ] Acceptance criteria verified
+- [ ] Documentation updated if needed
 
 ---
 
@@ -68,20 +127,21 @@
 
 | Metric | Target |
 |--------|--------|
-| Lighthouse SEO Score | > 90 |
+| Lighthouse SEO Score | ≥ 90 |
 | Social shares/week | > 10 |
 | Email open rate | > 40% |
 | Onboarding completion | > 60% |
+| Rate limit violations blocked | 100% |
 
 ---
 
 ## Sprint 18 Retrospective
 
 ### What Went Well
-- ✅ A/B comparison exceeded expectations
-- ✅ Parallel streaming worked flawlessly
-- ✅ 10 quick-start templates (2x planned)
-- ✅ Deployment workflow formalized
+- A/B comparison exceeded expectations
+- Parallel streaming worked flawlessly
+- 10 quick-start templates (2x planned)
+- Deployment workflow formalized
 
 ### Lessons Learned
 - Always test on correct production URL
