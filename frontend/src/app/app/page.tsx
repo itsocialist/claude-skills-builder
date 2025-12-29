@@ -43,7 +43,7 @@ export default function AppHomePage() {
       <div className="space-y-8">
         {/* Quick Actions */}
         <section>
-          <h1 className="text-2xl font-bold mb-4 text-foreground">Welcome to ClaudeSkills</h1>
+          <h1 className="text-2xl font-bold mb-4 text-foreground">Welcome to GetClaudeSkills.ai</h1>
           <p className="text-muted-foreground mb-6">
             Build powerful Claude Skills quickly. Start with a template or create from scratch.
           </p>
