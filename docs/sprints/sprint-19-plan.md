@@ -12,6 +12,7 @@
 3. Activate captured users (Email Sequence)
 4. Measure funnel performance (Analytics)
 5. Protect platform resources (Rate Limiting)
+6. Populate marketplace with starter content (15+ Skills)
 
 ---
 
@@ -112,6 +113,26 @@
 **Technical Notes:**
 - Middleware implementation
 - Consider Redis for future scalability (not required for MVP)
+
+---
+
+### US-6: Marketplace Skill Seeding [M] — Issue #54
+
+**As a** new visitor browsing the marketplace,  
+**I want** to see a variety of useful skills,  
+**So that** I understand the platform's value and get inspired.
+
+**Acceptance Criteria:**
+- [ ] 15+ skills published to marketplace
+- [ ] Skills span 5+ categories (Code, Writing, Data, Business, Creative)
+- [ ] Each skill has description, triggers, and examples
+- [ ] Skills are functional and tested
+- [ ] Skills include diverse use cases (templates from onboarding + new ones)
+
+**Technical Notes:**
+- Leverage existing 10 onboarding templates as base
+- Add 5+ additional high-value skills
+- Use builder to create and publish programmatically or manually
 
 ---
 
