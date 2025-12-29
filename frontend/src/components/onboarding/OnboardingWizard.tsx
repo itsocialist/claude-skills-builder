@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { X, Sparkles, Loader2, Check, Zap, RefreshCw, Save, Download, FileDown, Edit } from 'lucide-react';
+import { X, Sparkles, Loader2, Check, Zap, RefreshCw, Save, Download, FileDown, Edit, LayoutGrid, Maximize2 } from 'lucide-react';
 import { generateSkillFromDescription, runSkillPreview, refineSkillWithFeedback, runBaselinePreview } from '@/lib/claude-client';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
 import { EmailCaptureModal } from './EmailCaptureModal';
@@ -87,6 +87,24 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
     const [editedSkill, setEditedSkill] = useState<any>(null);
     const [refineFeedback, setRefineFeedback] = useState('');
     const [isRefining, setIsRefining] = useState(false);
+    const [compareView, setCompareView] = useState<'split' | 'skill'>('split');
+
+    // Comparison metrics
+    const comparisonMetrics = useMemo(() => {
+        if (!testOutput || !baselineOutput) return null;
+        const baselineWords = baselineOutput.split(/\s+/).length;
+        const skillWords = testOutput.split(/\s+/).length;
+        const baselineSections = (baselineOutput.match(/^#/gm) || []).length;
+        const skillSections = (testOutput.match(/^#/gm) || []).length;
+        return {
+            baselineWords,
+            skillWords,
+            wordDiff: skillWords - baselineWords,
+            baselineSections,
+            skillSections,
+            sectionDiff: skillSections - baselineSections,
+        };
+    }, [testOutput, baselineOutput]);
 
     const handleStart = () => {
         setStep('describe');
@@ -428,70 +446,107 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
                                     onKeyDown={(e) => e.key === 'Enter' && handleTestSkill()}
                                 />
                                 {(testOutput || baselineOutput) && (
-                                    <div className="grid grid-cols-2 gap-3 mt-3">
-                                        {/* Column A: Without Skill */}
-                                        <div>
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <div className="w-2 h-2 rounded-full bg-muted-foreground" />
-                                                <span className="text-xs font-medium text-muted-foreground uppercase">Without Skill</span>
-                                            </div>
-                                            <div className="p-3 bg-muted/30 rounded border border-border max-h-60 overflow-y-auto text-sm">
-                                                {baselineOutput ? (
-                                                    <div className="text-muted-foreground whitespace-pre-wrap">{baselineOutput}</div>
+                                    <div className="mt-3">
+                                        {/* Metrics Bar + Toggle */}
+                                        <div className="flex items-center justify-between mb-2">
+                                            {comparisonMetrics && (
+                                                <div className="flex gap-3 text-xs">
+                                                    <span className="text-muted-foreground">
+                                                        Words: <span className="text-foreground font-medium">{comparisonMetrics.skillWords}</span>
+                                                        {comparisonMetrics.wordDiff > 0 && (
+                                                            <span className="text-green-500 ml-1">(+{comparisonMetrics.wordDiff})</span>
+                                                        )}
+                                                    </span>
+                                                    <span className="text-muted-foreground">
+                                                        Sections: <span className="text-foreground font-medium">{comparisonMetrics.skillSections}</span>
+                                                        {comparisonMetrics.sectionDiff > 0 && (
+                                                            <span className="text-green-500 ml-1">(+{comparisonMetrics.sectionDiff})</span>
+                                                        )}
+                                                    </span>
+                                                </div>
+                                            )}
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => setCompareView(compareView === 'split' ? 'skill' : 'split')}
+                                                className="text-xs h-7"
+                                            >
+                                                {compareView === 'split' ? (
+                                                    <><Maximize2 className="w-3 h-3 mr-1" />Full View</>
                                                 ) : (
-                                                    <div className="text-muted-foreground italic">Loading...</div>
+                                                    <><LayoutGrid className="w-3 h-3 mr-1" />Compare</>
                                                 )}
+                                            </Button>
+                                        </div>
+
+                                        {/* A/B Comparison Grid */}
+                                        <div className={`grid gap-3 ${compareView === 'split' ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                                            {/* Column A: Without Skill (hidden in full view) */}
+                                            {compareView === 'split' && (
+                                                <div>
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <div className="w-2 h-2 rounded-full bg-muted-foreground" />
+                                                        <span className="text-xs font-medium text-muted-foreground uppercase">Without Skill</span>
+                                                    </div>
+                                                    <div className="p-3 bg-muted/30 rounded border border-border max-h-60 overflow-y-auto text-sm">
+                                                        {baselineOutput ? (
+                                                            <div className="text-muted-foreground whitespace-pre-wrap">{baselineOutput}</div>
+                                                        ) : (
+                                                            <div className="text-muted-foreground italic">Loading...</div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {/* Column B: With Skill */}
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <div className="w-2 h-2 rounded-full bg-primary" />
+                                                    <span className="text-xs font-medium text-primary uppercase">With Skill ✨</span>
+                                                </div>
+                                                <div className={`p-3 bg-primary/5 rounded border border-primary/30 overflow-y-auto text-sm ${compareView === 'split' ? 'max-h-60' : 'max-h-80'}`}>
+                                                    {testOutput ? (
+                                                        <ReactMarkdown
+                                                            components={{
+                                                                h1: ({ node, ...props }) => <h1 className="text-lg font-bold mb-2 text-foreground" {...props} />,
+                                                                h2: ({ node, ...props }) => <h2 className="text-base font-semibold mb-2 text-foreground" {...props} />,
+                                                                h3: ({ node, ...props }) => <h3 className="text-sm font-medium mb-1 text-foreground" {...props} />,
+                                                                p: ({ node, ...props }) => <p className="mb-2 text-foreground leading-relaxed" {...props} />,
+                                                                ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-2 space-y-1 text-foreground text-sm" {...props} />,
+                                                                ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-2 space-y-1 text-foreground text-sm" {...props} />,
+                                                                li: ({ node, ...props }) => <li className="ml-2" {...props} />,
+                                                                strong: ({ node, ...props }) => <strong className="font-semibold text-foreground" {...props} />,
+                                                            }}
+                                                        >
+                                                            {testOutput}
+                                                        </ReactMarkdown>
+                                                    ) : (
+                                                        <div className="text-muted-foreground italic">Loading...</div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
-                                        {/* Column B: With Skill */}
-                                        <div>
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <div className="w-2 h-2 rounded-full bg-primary" />
-                                                <span className="text-xs font-medium text-primary uppercase">With Skill ✨</span>
-                                            </div>
-                                            <div className="p-3 bg-primary/5 rounded border border-primary/30 max-h-60 overflow-y-auto text-sm">
-                                                {testOutput ? (
-                                                    <ReactMarkdown
-                                                        components={{
-                                                            h1: ({ node, ...props }) => <h1 className="text-lg font-bold mb-2 text-foreground" {...props} />,
-                                                            h2: ({ node, ...props }) => <h2 className="text-base font-semibold mb-2 text-foreground" {...props} />,
-                                                            h3: ({ node, ...props }) => <h3 className="text-sm font-medium mb-1 text-foreground" {...props} />,
-                                                            p: ({ node, ...props }) => <p className="mb-2 text-foreground leading-relaxed" {...props} />,
-                                                            ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-2 space-y-1 text-foreground text-sm" {...props} />,
-                                                            ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-2 space-y-1 text-foreground text-sm" {...props} />,
-                                                            li: ({ node, ...props }) => <li className="ml-2" {...props} />,
-                                                            strong: ({ node, ...props }) => <strong className="font-semibold text-foreground" {...props} />,
-                                                        }}
-                                                    >
-                                                        {testOutput}
-                                                    </ReactMarkdown>
-                                                ) : (
-                                                    <div className="text-muted-foreground italic">Loading...</div>
-                                                )}
-                                            </div>
+
+                                        {/* Export Button */}
+                                        <div className="flex gap-2 mt-2">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => {
+                                                    const combined = `# A/B Comparison\n\n## Without Skill\n${baselineOutput}\n\n## With Skill\n${testOutput}`;
+                                                    const blob = new Blob([combined], { type: 'text/markdown' });
+                                                    const url = URL.createObjectURL(blob);
+                                                    const a = document.createElement('a');
+                                                    a.href = url;
+                                                    a.download = `${generatedSkill.name}-comparison.md`;
+                                                    a.click();
+                                                    URL.revokeObjectURL(url);
+                                                }}
+                                                className="text-xs"
+                                            >
+                                                <FileDown className="w-3 h-3 mr-1" />
+                                                Export Comparison
+                                            </Button>
                                         </div>
-                                    </div>
-                                )}
-                                {(testOutput || baselineOutput) && (
-                                    <div className="flex gap-2 mt-2">
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => {
-                                                const combined = `# A/B Comparison\n\n## Without Skill\n${baselineOutput}\n\n## With Skill\n${testOutput}`;
-                                                const blob = new Blob([combined], { type: 'text/markdown' });
-                                                const url = URL.createObjectURL(blob);
-                                                const a = document.createElement('a');
-                                                a.href = url;
-                                                a.download = `${generatedSkill.name}-comparison.md`;
-                                                a.click();
-                                                URL.revokeObjectURL(url);
-                                            }}
-                                            className="text-xs"
-                                        >
-                                            <FileDown className="w-3 h-3 mr-1" />
-                                            Export Comparison
-                                        </Button>
                                     </div>
                                 )}
                                 <Button
