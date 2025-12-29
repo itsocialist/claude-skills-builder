@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { X, Sparkles, Loader2, Check, Zap, RefreshCw, Save, Download, FileDown, Edit } from 'lucide-react';
-import { generateSkillFromDescription, runSkillPreview } from '@/lib/claude-client';
+import { generateSkillFromDescription, runSkillPreview, refineSkillWithFeedback } from '@/lib/claude-client';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
 import { EmailCaptureModal } from './EmailCaptureModal';
 import ReactMarkdown from 'react-markdown';
@@ -84,6 +84,8 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
     const [isTestingSkill, setIsTestingSkill] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [editedSkill, setEditedSkill] = useState<any>(null);
+    const [refineFeedback, setRefineFeedback] = useState('');
+    const [isRefining, setIsRefining] = useState(false);
 
     const handleStart = () => {
         setStep('describe');
@@ -167,6 +169,36 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
             setTestOutput(`❌ Error testing skill: ${err instanceof Error ? err.message : 'Unknown error'}\n\nThe skill will work when uploaded to Claude.ai with your own API key.`);
         } finally {
             setIsTestingSkill(false);
+        }
+    };
+
+    const handleRefine = async () => {
+        if (!generatedSkill || !refineFeedback.trim()) return;
+
+        setIsRefining(true);
+        setError(null);
+
+        try {
+            const platformKey = process.env.NEXT_PUBLIC_PLATFORM_CLAUDE_KEY || '';
+
+            if (!platformKey) {
+                throw new Error('Platform API key not configured');
+            }
+
+            const result = await refineSkillWithFeedback(
+                platformKey,
+                generatedSkill,
+                refineFeedback
+            );
+
+            setGeneratedSkill(result.skill);
+            setRefineFeedback('');
+            setIsEditMode(false);
+        } catch (err) {
+            console.error('Refine error:', err);
+            setError(err instanceof Error ? err.message : 'Failed to refine skill');
+        } finally {
+            setIsRefining(false);
         }
     };
 
@@ -454,6 +486,65 @@ export function OnboardingWizard({ onClose, onComplete }: OnboardingWizardProps)
                                 </Button>
                             </div>
                         </div>
+
+                        {/* Refine Skill Section */}
+                        {!isEditMode ? (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setIsEditMode(true)}
+                                className="mb-6 w-full"
+                            >
+                                <Edit className="w-4 h-4 mr-2" />
+                                Refine this skill
+                            </Button>
+                        ) : (
+                            <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border">
+                                <label className="text-sm font-medium text-foreground mb-2 block">
+                                    How would you like to improve this skill?
+                                </label>
+                                <Textarea
+                                    value={refineFeedback}
+                                    onChange={(e) => setRefineFeedback(e.target.value)}
+                                    placeholder="Example: Make it more formal, add examples, focus on features for luxury properties..."
+                                    className="mb-3 min-h-[80px]"
+                                />
+                                {error && (
+                                    <div className="mb-3 p-2 bg-destructive/10 border border-destructive/30 rounded text-destructive text-sm">
+                                        {error}
+                                    </div>
+                                )}
+                                <div className="flex gap-2">
+                                    <Button
+                                        onClick={handleRefine}
+                                        disabled={isRefining || !refineFeedback.trim()}
+                                        className="flex-1"
+                                    >
+                                        {isRefining ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                Refining...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Sparkles className="w-4 h-4 mr-2" />
+                                                Refine Skill
+                                            </>
+                                        )}
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => {
+                                            setIsEditMode(false);
+                                            setRefineFeedback('');
+                                            setError(null);
+                                        }}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Action Buttons */}
                         <div className="space-y-3">
