@@ -14,6 +14,24 @@
 | US-000: RESEND Email Config | S | ⏳ Pending | User action: add API key |
 | US-0000: Mobile Optimization | M | 📋 Proposed | Full mobile audit |
 | US-00000: AI UX Audit | S | 📋 Proposed | Persona walkthrough |
+| **US-B1: Brand Consistency** | **S** | **🔴 Required** | **Rename ClaudeSkilsFacets → GetClaudeSkills** |
+| **US-B2: Wordmark Logo** | **S** | **🔴 Required** | **Replace site title text with logo** |
+| **US-B3: Favicon** | **S** | **🔴 Required** | **Get from marketing, upload** |
+
+### US-B1: Brand Consistency [S] — 🔴 Required
+- [ ] Find and replace all "ClaudeSkilsFacets" → "GetClaudeSkills" 
+- [ ] Audit codebase for any other legacy brand names
+- [ ] Verify all user-facing text uses correct brand name
+
+### US-B2: Wordmark Logo in Header [S] — 🔴 Required
+- [ ] Replace site title text with wordmark logo image
+- [ ] Use existing logo from `marketing/assets/logos/`
+- [ ] Ensure dark/light mode compatibility
+
+### US-B3: Favicon Update [S] — 🔴 Required
+- [ ] Get favicon from marketing assets
+- [ ] Upload to `frontend/public/`
+- [ ] Verify displays correctly in browser tabs
 
 ### US-0: Inspector Menu Improvements [S] — 📋 Proposed
 - [ ] Widen inspector sidebar default width
