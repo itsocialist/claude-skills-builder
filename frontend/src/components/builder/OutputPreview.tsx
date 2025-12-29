@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { runSkillPreview } from '@/lib/claude-client';
 import { Play, Loader2 } from 'lucide-react';
+import { MarkdownOutput } from '@/components/MarkdownOutput';
 import type { Skill } from '@/types/skill.types';
 
 interface OutputPreviewProps {
@@ -90,8 +91,8 @@ export function OutputPreview({ skill, apiKey }: OutputPreviewProps) {
                         </span>
                     </div>
 
-                    <div className="bg-muted/50 rounded-md p-3 text-sm text-foreground whitespace-pre-wrap max-h-64 overflow-y-auto">
-                        {result.response}
+                    <div className="bg-muted/50 rounded-md p-3 max-h-96 overflow-y-auto">
+                        <MarkdownOutput content={result.response} />
                     </div>
                 </Card>
             )}

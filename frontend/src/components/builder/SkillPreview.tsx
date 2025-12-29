@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import yaml from 'js-yaml';
+import { MarkdownOutput } from '@/components/MarkdownOutput';
 import type { Skill } from '@/types/skill.types';
 
 interface SkillPreviewProps {
@@ -61,9 +62,9 @@ export function SkillPreview({ skill }: SkillPreviewProps) {
                     {frontmatterSection}
                 </pre>
                 {/* Markdown Body */}
-                <pre className="text-muted-foreground whitespace-pre-wrap mt-2">
-                    {bodySection}
-                </pre>
+                <div className="mt-4 p-4 rounded border border-border bg-card">
+                    <MarkdownOutput content={bodySection} />
+                </div>
             </div>
         </div>
     );

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { MarkdownOutput } from '@/components/MarkdownOutput';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StarRating } from '@/components/ui/StarRating';
@@ -267,9 +268,9 @@ export default function SkillDetailPage() {
             {/* Description */}
             <Card className="p-6 mb-6">
                 <h2 className="text-lg font-semibold text-foreground mb-3">Description</h2>
-                <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
-                    {listing.description || 'No description provided.'}
-                </p>
+                <div className="text-muted-foreground leading-relaxed">
+                    <MarkdownOutput content={listing.description || 'No description provided.'} />
+                </div>
             </Card>
 
             {/* Triggers */}
@@ -293,11 +294,8 @@ export default function SkillDetailPage() {
             {skillDetails?.instructions && (
                 <Card className="p-6 mb-6">
                     <h2 className="text-lg font-semibold text-foreground mb-3">Instructions Preview</h2>
-                    <div className="bg-muted rounded-lg p-4 max-h-64 overflow-y-auto">
-                        <pre className="text-sm text-muted-foreground whitespace-pre-wrap font-mono">
-                            {skillDetails.instructions.slice(0, 500)}
-                            {skillDetails.instructions.length > 500 && '...'}
-                        </pre>
+                    <div className="bg-muted rounded-lg p-4 max-h-96 overflow-y-auto">
+                        <MarkdownOutput content={skillDetails.instructions} />
                     </div>
                 </Card>
             )}
