@@ -9,6 +9,7 @@ import { Shell } from '@/components/layout/Shell';
 import { fetchUserSkills, deleteSkill, duplicateSkill, type SavedSkill } from '@/lib/api/skillsApi';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
 import { Search, Plus, Library, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useSiteSettings } from '@/lib/contexts/SiteSettingsContext';
 import { DEFAULT_FLAGS } from '@/lib/flags';
 
@@ -119,12 +120,11 @@ export default function LibraryPage() {
                     <p className="text-gray-400 mb-6">
                         Create an account or sign in to save and manage your skills.
                     </p>
-                    <button
+                    <Button
                         onClick={() => router.push('/app')}
-                        className="bg-[#C15F3C] hover:bg-[#a84e31] text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
                     >
                         Go to Home
-                    </button>
+                    </Button>
                 </div>
             </Shell>
         );
@@ -143,13 +143,13 @@ export default function LibraryPage() {
                     </div>
                 </div>
                 {canUseBuilder && (
-                    <button
+                    <Button
                         onClick={() => router.push('/app/builder')}
-                        className="flex items-center gap-2 bg-[#C15F3C] hover:bg-[#a84e31] text-white px-4 py-2.5 rounded-lg font-medium transition-colors"
+                        className="gap-2"
                     >
                         <Plus className="w-4 h-4" />
                         New Skill
-                    </button>
+                    </Button>
                 )}
 
                 {/* Upload Zone */}
@@ -200,12 +200,11 @@ export default function LibraryPage() {
                                     Create your first skill to get started!
                                 </p>
                                 {canUseBuilder && (
-                                    <button
+                                    <Button
                                         onClick={() => router.push('/app/builder')}
-                                        className="bg-[#C15F3C] hover:bg-[#a84e31] text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
                                     >
                                         Create Skill
-                                    </button>
+                                    </Button>
                                 )}
                             </>
                         ) : (
