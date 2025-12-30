@@ -1,5 +1,18 @@
 # GetClaudeSkills Route Documentation
 
+## 🚨 CRITICAL ROUTING RULE
+
+**ALL application routes live under `/app`**
+
+- ✅ Correct: `/app/admin`, `/app/inspector`, `/app/templates`
+- ❌ Wrong: `/admin`, `/inspector`, `/templates`
+
+The only exceptions are:
+- `/` (landing page)
+- `/marketplace` (public marketplace)
+- `/bundles` (public bundles)
+- `/learn/*` (educational content)
+
 ## Public Routes (No Auth Required)
 
 | Route | Page | Description |

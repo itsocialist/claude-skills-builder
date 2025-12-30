@@ -133,10 +133,10 @@ export async function generateBundleZip(bundleName: string, skillNames: string[]
         throw new Error('Supabase not configured');
     }
 
-    // Fetch skill data from user_skills table (where seed data lives)
+    // Fetch skill data from marketplace_skills table (where seed data lives)
     console.log('[Bundle Generator] Searching for skills:', skillNames);
     const { data: skillsData, error } = await supabase
-        .from('user_skills')
+        .from('marketplace_skills')
         .select('*')
         .in('name', skillNames);
 
