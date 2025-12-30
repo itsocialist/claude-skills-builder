@@ -133,9 +133,9 @@ export async function generateBundleZip(bundleName: string, skillNames: string[]
         throw new Error('Supabase not configured');
     }
 
-    // Fetch skill data from templates table (not user_skills)
+    // Fetch skill data from user_skills table (where seed data lives)
     const { data: skillsData, error } = await supabase
-        .from('templates')
+        .from('user_skills')
         .select('*')
         .in('name', skillNames);
 
