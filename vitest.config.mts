@@ -10,12 +10,12 @@ export default defineConfig({
         setupFiles: [],
         exclude: ['**/node_modules/**', '**/e2e/**'],
         alias: {
-            '@': path.resolve(__dirname, './src'),
+            '@': path.resolve(__dirname, './frontend/src'),
         },
     },
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, './src'),
+            '@': path.resolve(__dirname, './frontend/src'),
         },
     },
 });

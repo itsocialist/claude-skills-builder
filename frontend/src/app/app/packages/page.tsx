@@ -11,17 +11,17 @@ export default function PackagesPage() {
     const packages: any[] = [];
 
     return (
-        <Shell title="Packages">
+        <Shell title="Bundle Builder">
             <div className="container mx-auto py-8">
                 <div className="flex justify-between items-center mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold text-foreground mb-2">Skill Packages</h1>
-                        <p className="text-muted-foreground">Bundle multiple skills into a single uploadable package.</p>
+                        <h1 className="text-3xl font-bold text-foreground mb-2">Bundle Builder</h1>
+                        <p className="text-muted-foreground">Create custom skill bundles to upload to Claude.ai.</p>
                     </div>
                     <Link href="/app/packages/new">
                         <Button>
                             <Plus className="h-4 w-4 mr-2" />
-                            Create Package
+                            Create Bundle
                         </Button>
                     </Link>
                 </div>
@@ -29,12 +29,12 @@ export default function PackagesPage() {
                 {packages.length === 0 ? (
                     <Card className="p-12 text-center border-border">
                         <Package className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                        <h3 className="text-lg font-semibold text-foreground mb-2">No packages yet</h3>
+                        <h3 className="text-lg font-semibold text-foreground mb-2">No bundles yet</h3>
                         <p className="text-muted-foreground mb-4">
-                            Create your first skill package to bundle multiple skills together.
+                            Create your first skill bundle to combine multiple skills.
                         </p>
                         <Link href="/app/packages/new">
-                            <Button>Create Package</Button>
+                            <Button>Create Bundle</Button>
                         </Link>
                     </Card>
                 ) : (

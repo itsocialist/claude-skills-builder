@@ -36,5 +36,6 @@ description: "Project Constitution: Anti-Vibe Design, Technical Stack, and Gover
     *   `task.md` must be kept in sync with reality.
 
 # 4. Critical File Paths
-*   **Artifacts:** `/Users/briandawson/.gemini/antigravity/brain/99de8cf2-5430-4084-ab01-8ef319376923/`
 *   **Workflows:** `.agent/workflows/`
+*   **Roles:** `.agent/roles/`
+*   **Knowledge Base:** Managed by Antigravity at `~/.gemini/antigravity/knowledge/`

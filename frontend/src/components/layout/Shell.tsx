@@ -118,7 +118,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                                 {shouldShow('feature_marketplace') && (
                                     <Link href="/marketplace" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/marketplace') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                         <Compass className="w-4 h-4" />
-                                        Discover
+                                        Discover Skills
                                     </Link>
                                 )}
                                 {shouldShow('feature_generations') && (
@@ -136,14 +136,14 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                                 {shouldShow('feature_templates') && (
                                     <Link href="/app/templates" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/templates') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                         <LayoutTemplate className="w-4 h-4" />
-                                        Templates
+                                        Skill Templates
                                     </Link>
                                 )}
                                 {/* Bundles - Feature flagged */}
                                 {shouldShow('feature_bundles') && (
                                     <Link href="/bundles" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/bundles' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                         <Layers className="w-4 h-4" />
-                                        Bundles
+                                        Power Bundles
                                     </Link>
                                 )}
                                 {shouldShow('feature_packages') && (
@@ -155,7 +155,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                                 {shouldShow('feature_inspector') && (
                                     <Link href="/app/inspector" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/inspector' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                         <Search className="w-4 h-4" />
-                                        Inspector
+                                        Skill Inspector
                                     </Link>
                                 )}
                                 {user && shouldShow('feature_organization') && (
@@ -245,7 +245,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                         {shouldShow('feature_marketplace') && (
                             <Link href="/marketplace" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/marketplace') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                 <Compass className="w-4 h-4" />
-                                Discover
+                                Discover Skills
                             </Link>
                         )}
                         {shouldShow('feature_generations') && (
@@ -269,14 +269,14 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                         {shouldShow('feature_templates') && (
                             <Link href="/app/templates" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/templates') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                 <LayoutTemplate className="w-4 h-4" />
-                                Templates
+                                Skill Templates
                             </Link>
                         )}
                         {/* Bundles - Feature flagged */}
                         {shouldShow('feature_bundles') && (
                             <Link href="/bundles" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/bundles' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                 <Layers className="w-4 h-4" />
-                                Bundles
+                                Power Bundles
                             </Link>
                         )}
                         {shouldShow('feature_packages') && (
@@ -288,7 +288,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                         {shouldShow('feature_inspector') && (
                             <Link href="/app/inspector" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/inspector' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                 <Search className="w-4 h-4" />
-                                Inspector
+                                Skill Inspector
                             </Link>
                         )}
                         {user && shouldShow('feature_organization') && (

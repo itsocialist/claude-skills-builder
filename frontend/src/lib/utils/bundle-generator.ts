@@ -133,22 +133,39 @@ export async function generateBundleZip(bundleName: string, skillNames: string[]
         throw new Error('Supabase not configured');
     }
 
-    // Fetch skill data from marketplace_skills table (where seed data lives)
+    // Fetch skill data via market_listings (public RLS) with join to user_skills
+    // market_listings.skill_id references user_skills.id
     console.log('[Bundle Generator] Searching for skills:', skillNames);
-    const { data: skillsData, error } = await supabase
-        .from('marketplace_skills')
-        .select('*')
-        .in('name', skillNames);
+    const { data: listingsData, error } = await supabase
+        .from('market_listings')
+        .select(`
+            title,
+            description,
+            category,
+            skill_id,
+            user_skills!inner(
+                name,
+                description,
+                category,
+                tags,
+                triggers,
+                instructions
+            )
+        `)
+        .in('title', skillNames);
 
-    console.log('[Bundle Generator] Query result:', { count: skillsData?.length, error });
+    console.log('[Bundle Generator] Query result:', { count: listingsData?.length, error });
 
     if (error) {
         throw new Error(`Failed to fetch bundle skills: ${error.message}`);
     }
 
-    if (!skillsData || skillsData.length === 0) {
+    if (!listingsData || listingsData.length === 0) {
         throw new Error('No skills found for this bundle');
     }
+
+    // Extract the joined user_skills data
+    const skillsData = listingsData.map(l => l.user_skills);
 
     // Convert to Skill type
     const skills: Skill[] = skillsData.map(s => ({

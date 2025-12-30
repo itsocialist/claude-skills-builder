@@ -175,7 +175,7 @@ export default function PowerBundlesPage() {
     }
 
     return (
-        <Shell title="Bundles">
+        <Shell title="Power Bundles">
             <div className="container mx-auto py-8">
                 {/* Header */}
                 <div className="mb-8">
