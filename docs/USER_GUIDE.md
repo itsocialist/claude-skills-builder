@@ -1,7 +1,7 @@
 # User Guide
 
-> **Last Updated:** 2025-12-28
-> **Version:** v2.1 (Post-Sprint 18)
+> **Last Updated:** 2025-12-30
+> **Version:** v2.2 (Post-Sprint 19)
 
 ## Table of Contents
 1. [Getting Started](#getting-started)
@@ -10,7 +10,8 @@
 4. [Visual Canvas](#visual-canvas)
 5. [Skill Builder](#skill-builder-traditional)
 6. [Marketplace & Library](#marketplace--library)
-7. [Export & Analysis](#export--analysis)
+7. [Skill Inspector](#skill-inspector) *(New)*
+8. [Export & Analysis](#export--analysis)
 
 ---
 
@@ -204,6 +205,7 @@ Access your personal skill collection at **Library** (`/app/library`).
 
 #### Available Actions
 - **📝 Edit:** Open in Builder to modify instructions or examples
+- **🔍 Inspect:** Open in Skill Inspector to validate and analyze
 - **🔗 Share:** Generate a public link or publish to marketplace
 - **📋 Duplicate:** Clone a skill as a starting point for variations
 - **🗑️ Delete:** Remove skills you no longer need
@@ -217,6 +219,46 @@ Access your personal skill collection at **Library** (`/app/library`).
 4. Submit for review (verified badge requires admin approval)
 
 > **🌟 Quality Tip:** Skills with clear descriptions, examples, and high ratings get featured on the marketplace homepage.
+
+---
+
+## Skill Inspector
+*Best for: Validation, Quality Assurance, Troubleshooting*
+
+The **Skill Inspector** (`/app/inspector`) validates and analyzes skill files to ensure they meet Claude Agent Skills specification requirements.
+
+### Input Methods
+
+1. **Select from My Skills** (New)
+   - Click the dropdown to choose any skill from your library
+   - Content auto-populates for inspection
+   - Click **"Analyze Skill"** to run validation
+
+2. **File Upload**
+   - Drag and drop a `.zip`, `.skill`, or `SKILL.md` file
+   - Alternatively, click **"browse"** to select a file
+
+3. **Paste Content**
+   - Paste SKILL.md content directly into the textarea
+   - Useful for quick validation of work-in-progress
+
+### Inspect from Skill Cards
+
+From the **My Skills** library (`/app/library`):
+1. Hover over any skill card
+2. Click the **⋮ menu** icon
+3. Select **"Inspect"**
+4. Inspector opens with your skill loaded
+
+### Validation Results
+
+The Inspector provides:
+- **Structure Validation:** Checks for required frontmatter fields (name, description, triggers)
+- **Content Quality:** Identifies missing or incomplete instructions
+- **AI Analysis** (optional): Enable AI-powered suggestions for improvements
+- **Quality Score:** Overall rating from 0-10
+
+> **💡 Tip:** Run your skills through the Inspector before publishing to the marketplace to ensure quality.
 
 ---
 
