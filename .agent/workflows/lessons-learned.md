@@ -244,6 +244,14 @@ These rules are **non-negotiable** and have been established through this conver
 > - Navigation ingress status
 > - Orphaned routes clearly marked
 
+### Rule 5: No Fake Data References (2025-12-29)
+> **NEVER hardcode references to data that doesn't exist in the database.**
+> - Bundle skill names must match ACTUAL templates/marketplace_skills records
+> - Dashboard template buttons must reference REAL template slugs
+> - If referencing DB records, VERIFY they exist first
+> - "Made up" skill names like "Blog Post Optimizer" when it doesn't exist = BROKEN FEATURE
+> - Always query the database or check migrations BEFORE hardcoding references
+
 ---
 
 ## 📚 Knowledge References
