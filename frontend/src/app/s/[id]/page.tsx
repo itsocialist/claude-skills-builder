@@ -1,22 +1,42 @@
 import { Metadata } from 'next';
-import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 interface PageProps {
     params: Promise<{ id: string }>;
 }
 
+interface SkillData {
+    id: string;
+    name: string;
+    description: string;
+    category: string;
+    tags: string[];
+    triggers: string[];
+    instructions: string;
+}
+
+async function getSkill(id: string): Promise<SkillData | null> {
+    try {
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://getclaudeskills.ai';
+        const response = await fetch(`${baseUrl}/api/skills/${id}/share`, {
+            cache: 'no-store',
+        });
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const data = await response.json();
+        return data.skill;
+    } catch (error) {
+        console.error('[SharePage] Error fetching skill:', error);
+        return null;
+    }
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { id } = await params;
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
-    const { data: skill } = await supabase
-        .from('user_skills')
-        .select('name, description')
-        .eq('id', id)
-        .single();
+    const skill = await getSkill(id);
 
     const title = skill?.name || 'Shared Skill';
     const description = skill?.description || 'A custom Claude skill';
@@ -38,18 +58,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             images: [ogImageUrl],
         },
     };
-}
-
-async function getSkill(id: string) {
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
-    const { data, error } = await supabase
-        .from('user_skills')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-    if (error) return null;
-    return data;
 }
 
 export default async function SharedSkillPage({ params }: PageProps) {
