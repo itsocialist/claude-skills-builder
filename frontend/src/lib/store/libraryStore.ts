@@ -2,7 +2,6 @@
 
 import { create } from 'zustand';
 import { fetchUserSkills, saveSkill, deleteSkill as apiDeleteSkill, type SavedSkill } from '@/lib/api/skillsApi';
-import JSZip from 'jszip';
 
 interface LibraryState {
     skills: SavedSkill[];
@@ -87,6 +86,16 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
         }
 
         try {
+            // Dynamic import JSZip to handle potential chunk loading issues
+            let JSZip;
+            try {
+                JSZip = (await import('jszip')).default;
+            } catch (chunkError) {
+                console.error('Failed to load JSZip:', chunkError);
+                set({ error: 'Failed to load zip processor. Please refresh the page and try again.' });
+                return null;
+            }
+
             const zip = await JSZip.loadAsync(file);
 
             // Find SKILL.md in the zip
