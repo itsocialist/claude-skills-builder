@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useState, useEffect, useMemo } from 'react';
+import { ReactNode, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -45,6 +45,55 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
     const [saveStatus, setSaveStatus] = useState<'saved' | 'editing'>('saved');
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [mobileInspectorOpen, setMobileInspectorOpen] = useState(false);
+
+    // Resizable panel state
+    const [panelWidth, setPanelWidth] = useState(300);
+    const [isResizing, setIsResizing] = useState(false);
+
+    // Load saved panel width from localStorage
+    useEffect(() => {
+        const saved = localStorage.getItem('inspector-panel-width');
+        if (saved) {
+            const width = parseInt(saved, 10);
+            if (width >= 200 && width <= 600) {
+                setPanelWidth(width);
+            }
+        }
+    }, []);
+
+    // Mouse handlers for resize
+    const handleResizeStart = useCallback((e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsResizing(true);
+    }, []);
+
+    useEffect(() => {
+        if (!isResizing) return;
+
+        const handleMouseMove = (e: MouseEvent) => {
+            const containerWidth = window.innerWidth;
+            const newWidth = containerWidth - e.clientX;
+            const clampedWidth = Math.min(600, Math.max(200, newWidth));
+            setPanelWidth(clampedWidth);
+        };
+
+        const handleMouseUp = () => {
+            setIsResizing(false);
+            localStorage.setItem('inspector-panel-width', panelWidth.toString());
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        };
+    }, [isResizing, panelWidth]);
 
     // Feature Flag Check Helper
     const shouldShow = (key: FlagKey): boolean => {
@@ -327,8 +376,17 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
 
                 {/* Inspector Panel */}
                 {inspector && (
-                    <aside className="hidden lg:block w-[300px] bg-card border-l border-border flex-shrink-0 h-[calc(100vh-96px)] overflow-hidden">
-                        <div className="h-full">
+                    <aside
+                        className="hidden lg:flex bg-card border-l border-border flex-shrink-0 h-[calc(100vh-96px)] overflow-hidden relative"
+                        style={{ width: panelWidth }}
+                    >
+                        {/* Resize Handle */}
+                        <div
+                            onMouseDown={handleResizeStart}
+                            className="absolute left-0 top-0 w-1 h-full cursor-col-resize hover:bg-primary/50 transition-colors z-10"
+                            title="Drag to resize"
+                        />
+                        <div className="h-full overflow-hidden flex-1">
                             {inspector}
                         </div>
                     </aside>

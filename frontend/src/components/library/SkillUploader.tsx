@@ -74,8 +74,11 @@ export function SkillUploader({ compact = false }: SkillUploaderProps) {
         e.target.value = '';
     }, [user, importFromZip, clearError]);
 
+    // In compact mode, show toast-style notifications at the top of the card
+    const statusMessage = success || error;
+
     return (
-        <div className={compact ? '' : 'mb-6'}>
+        <div className={compact ? 'h-full' : 'mb-6'}>
             {/* Drop Zone */}
             <label
                 htmlFor="skill-upload"
@@ -83,8 +86,8 @@ export function SkillUploader({ compact = false }: SkillUploaderProps) {
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 className={`
-                    block border-2 border-dashed rounded-xl transition-all cursor-pointer
-                    ${compact ? 'p-6 h-full' : 'p-8 text-center'}
+                    block border-2 border-dashed rounded-xl transition-all cursor-pointer h-full
+                    ${compact ? 'p-6' : 'p-8 text-center'}
                     ${isDragging
                         ? 'border-primary bg-primary/10'
                         : 'border-border hover:border-primary/50 bg-card hover:bg-primary/5'
@@ -100,6 +103,23 @@ export function SkillUploader({ compact = false }: SkillUploaderProps) {
                     id="skill-upload"
                 />
 
+                {/* Status messages for compact mode - show inside card */}
+                {compact && statusMessage && (
+                    <div className={`mb-3 flex items-center gap-2 p-2 rounded-lg text-xs ${success
+                            ? 'bg-green-500/10 border border-green-500/30 text-green-500'
+                            : 'bg-destructive/10 border border-destructive/30 text-destructive'
+                        }`}>
+                        {success ? <CheckCircle className="w-3 h-3 flex-shrink-0" /> : <AlertCircle className="w-3 h-3 flex-shrink-0" />}
+                        <span className="truncate">{statusMessage}</span>
+                        <button
+                            onClick={(e) => { e.preventDefault(); success ? setSuccess(null) : clearError(); }}
+                            className="ml-auto hover:opacity-70"
+                        >
+                            <X className="w-3 h-3" />
+                        </button>
+                    </div>
+                )}
+
                 <div className={compact ? 'flex items-start gap-4' : 'flex flex-col items-center gap-3'}>
                     {isUploading ? (
                         <>
@@ -108,7 +128,7 @@ export function SkillUploader({ compact = false }: SkillUploaderProps) {
                         </>
                     ) : (
                         <>
-                            <div className={`w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center ${compact ? 'flex-shrink-0 group-hover:bg-primary/20 transition-colors' : ''}`}>
+                            <div className={`w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center ${compact ? 'flex-shrink-0' : ''}`}>
                                 {isDragging ? (
                                     <FileArchive className="w-6 h-6 text-primary" />
                                 ) : (
@@ -135,8 +155,8 @@ export function SkillUploader({ compact = false }: SkillUploaderProps) {
                 </div>
             </label>
 
-            {/* Success Message */}
-            {success && (
+            {/* Success Message - only show in non-compact mode */}
+            {!compact && success && (
                 <div className="mt-3 flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-green-500 text-sm">
                     <CheckCircle className="w-4 h-4 flex-shrink-0" />
                     {success}
@@ -146,8 +166,8 @@ export function SkillUploader({ compact = false }: SkillUploaderProps) {
                 </div>
             )}
 
-            {/* Error Message */}
-            {error && (
+            {/* Error Message - only show in non-compact mode */}
+            {!compact && error && (
                 <div className="mt-3 flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/30 rounded-lg text-destructive text-sm">
                     <AlertCircle className="w-4 h-4 flex-shrink-0" />
                     {error}
