@@ -9,6 +9,7 @@ import { Shell } from '@/components/layout/Shell';
 import { useLibraryStore, useFilteredSkills } from '@/lib/store/libraryStore';
 import { duplicateSkill, type SavedSkill } from '@/lib/api/skillsApi';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
+import { showClaudeInstallPrompt } from '@/lib/utils/claude-install-prompt';
 import { Search, Plus, Library, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSiteSettings } from '@/lib/contexts/SiteSettingsContext';
@@ -61,6 +62,9 @@ export default function LibraryPage() {
         a.download = `${skill.name.toLowerCase().replace(/\s+/g, '-')}.zip`;
         a.click();
         URL.revokeObjectURL(url);
+
+        // Show Claude install prompt
+        showClaudeInstallPrompt(skill.name);
     };
 
     const handleInspect = (skill: SavedSkill) => {
