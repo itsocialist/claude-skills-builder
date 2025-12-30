@@ -21,6 +21,13 @@ export const metadata: Metadata = {
   description: "Build custom Claude skills without coding. Free templates for real estate, consulting, and business professionals. Start in 2 minutes.",
   keywords: ["claude skills", "claude skill builder", "ai templates", "prompt templates", "claude ai", "ai for real estate", "ai for consultants"],
   authors: [{ name: "GetClaudeSkills" }],
+  icons: {
+    icon: [
+      { url: "/branding/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/branding/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/branding/apple-touch-icon.png",
+  },
   openGraph: {
     title: "GetClaudeSkills | Create AI Templates in Minutes",
     description: "Build custom Claude skills without coding. Free templates for real estate, consulting, and business. Start in 2 minutes.",
