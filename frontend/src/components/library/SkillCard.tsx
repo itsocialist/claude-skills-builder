@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Edit3, Trash2, Copy, Download, MoreVertical, Eye, Share2 } from 'lucide-react';
+import { Edit3, Trash2, Copy, Download, MoreVertical, Eye, Share2, Search } from 'lucide-react';
 import type { SavedSkill } from '@/lib/api/skillsApi';
 import { copyToClipboard } from '@/lib/utils/clipboard';
 
@@ -11,9 +11,10 @@ interface SkillCardProps {
     onDelete: (skillId: string) => void;
     onDuplicate: (skillId: string) => void;
     onExport: (skill: SavedSkill) => void;
+    onInspect?: (skill: SavedSkill) => void;
 }
 
-export function SkillCard({ skill, onEdit, onDelete, onDuplicate, onExport }: SkillCardProps) {
+export function SkillCard({ skill, onEdit, onDelete, onDuplicate, onExport, onInspect }: SkillCardProps) {
     const [showMenu, setShowMenu] = useState(false);
     const [copied, setCopied] = useState(false);
 
@@ -105,6 +106,18 @@ export function SkillCard({ skill, onEdit, onDelete, onDuplicate, onExport }: Sk
                                         <Download className="w-3.5 h-3.5" />
                                         Export
                                     </button>
+                                    {onInspect && (
+                                        <button
+                                            onClick={() => {
+                                                onInspect(skill);
+                                                setShowMenu(false);
+                                            }}
+                                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-[#3a3a3a]"
+                                        >
+                                            <Search className="w-3.5 h-3.5" />
+                                            Inspect
+                                        </button>
+                                    )}
                                     <button
                                         onClick={() => {
                                             const shareUrl = `${window.location.origin}/s/${skill.id}`;

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Shell } from '@/components/layout/Shell';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -287,6 +288,7 @@ function InspectorPanel({
 export default function InspectorPage() {
     const { user } = useAuth();
     const { skills, fetchSkills } = useLibraryStore();
+    const searchParams = useSearchParams();
     const [file, setFile] = useState<File | null>(null);
     const [skillContent, setSkillContent] = useState('');
     const [analyzing, setAnalyzing] = useState(false);
@@ -303,6 +305,25 @@ export default function InspectorPage() {
             fetchSkills(user.id);
         }
     }, [user, fetchSkills]);
+
+    // Auto-load skill from URL param (when navigating from My Skills)
+    useEffect(() => {
+        const urlSkillId = searchParams.get('skillId');
+        if (urlSkillId && skills.length > 0 && !selectedSkillId) {
+            const skill = skills.find(s => s.id === urlSkillId);
+            if (skill) {
+                setSelectedSkillId(urlSkillId);
+                setSkillContent(`---
+name: ${skill.name}
+description: ${skill.description || ''}
+category: ${skill.category || ''}
+triggers: [${skill.triggers.map(t => `"${t}"`).join(', ')}]
+---
+
+${skill.instructions || ''}`);
+            }
+        }
+    }, [searchParams, skills, selectedSkillId]);
 
     // Generate SKILL.md content from a saved skill
     const generateSkillMd = (skill: typeof skills[0]) => {

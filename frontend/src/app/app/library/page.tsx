@@ -63,6 +63,10 @@ export default function LibraryPage() {
         URL.revokeObjectURL(url);
     };
 
+    const handleInspect = (skill: SavedSkill) => {
+        router.push(`/app/inspector?skillId=${skill.id}`);
+    };
+
     // Get unique categories
     const categories = ['all', ...new Set(skills.map(s => s.category).filter(Boolean))];
 
@@ -223,6 +227,7 @@ export default function LibraryPage() {
                                 onDelete={handleDelete}
                                 onDuplicate={handleDuplicate}
                                 onExport={handleExport}
+                                onInspect={handleInspect}
                             />
                         ))}
                     </div>
