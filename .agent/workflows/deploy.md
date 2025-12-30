@@ -47,12 +47,22 @@ cd frontend && npm run dev
 npm run build
 ```
 
-### Step 5: Push to Main
+### Step 5: 🛑 REQUEST APPROVAL (MANDATORY)
+**STOP HERE. DO NOT PROCEED WITHOUT USER APPROVAL.**
+
+Use `notify_user` to:
+- Show what was fixed
+- Show validation results (screenshots/recordings)
+- Ask: "Ready to push to production?"
+
+**NEVER auto-push. ALWAYS wait for explicit approval.**
+
+### Step 6: Push to Main (Only After Approval)
 ```bash
 git add -A && git commit -m "description" && git push origin main
 ```
 
-### Step 6: Verify Production
+### Step 7: Verify Production
 - Wait for Vercel deployment
 - Test in production browser
 - If still broken, investigate prod-specific issues

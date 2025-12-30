@@ -4,7 +4,7 @@ import { ReactNode, useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Library, LogIn, Building2, Menu, PanelRightOpen, Wand2, LayoutTemplate, Package, Hammer, Search, Compass, GitBranch } from 'lucide-react';
+import { Library, LogIn, Building2, Menu, PanelRightOpen, Wand2, LayoutTemplate, Package, Hammer, Search, Compass, GitBranch, Layers } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useSiteSettings } from '@/lib/contexts/SiteSettingsContext';
 import { UserMenu } from '@/components/auth/UserMenu';
@@ -85,8 +85,8 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
 
     return (
         <div className="flex flex-col min-h-screen bg-background">
-            {/* Unified Header Row - Brighter with accent */}
-            <header className="h-14 bg-card border-b-2 border-primary flex items-stretch sticky top-0 z-20 shadow-sm">
+            {/* Unified Header Row - Transparent with blur */}
+            <header className="h-14 bg-background/80 backdrop-blur-md border-b border-border/50 flex items-stretch sticky top-0 z-20">
                 {/* Mobile Menu Trigger */}
                 <div className="lg:hidden flex items-center px-4 border-r border-border">
                     <Sheet>
@@ -139,6 +139,11 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                                         Templates
                                     </Link>
                                 )}
+                                {/* Bundles - Public page */}
+                                <Link href="/bundles" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/bundles' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                                    <Layers className="w-4 h-4" />
+                                    Bundles
+                                </Link>
                                 {shouldShow('feature_packages') && (
                                     <Link href="/app/packages" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/packages') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                         <Package className="w-4 h-4" />
@@ -265,6 +270,11 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                                 Templates
                             </Link>
                         )}
+                        {/* Bundles - Public page */}
+                        <Link href="/bundles" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/bundles' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                            <Layers className="w-4 h-4" />
+                            Bundles
+                        </Link>
                         {shouldShow('feature_packages') && (
                             <Link href="/app/packages" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/packages') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                 <Package className="w-4 h-4" />

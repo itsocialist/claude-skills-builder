@@ -283,12 +283,50 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* Footer - Minimal */}
-      <footer className="bg-background border-t border-border py-6">
-        <div className="container mx-auto px-6 text-center">
-          <p className="text-sm text-muted-foreground">
-            GetClaudeSkills © {new Date().getFullYear()} · Not affiliated with Anthropic
-          </p>
+      {/* Footer - With Learn Hub Links */}
+      <footer className="bg-background border-t border-border py-8">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-6">
+            {/* Product */}
+            <div>
+              <h3 className="font-medium text-foreground mb-3">Product</h3>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/app/wizard" className="text-muted-foreground hover:text-primary">Quick Start</Link></li>
+                <li><Link href="/app/templates" className="text-muted-foreground hover:text-primary">Templates</Link></li>
+                <li><Link href="/bundles" className="text-muted-foreground hover:text-primary">Bundles</Link></li>
+                <li><Link href="/marketplace" className="text-muted-foreground hover:text-primary">Marketplace</Link></li>
+              </ul>
+            </div>
+            {/* Learn */}
+            <div>
+              <h3 className="font-medium text-foreground mb-3">Learn</h3>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/learn/what-is-a-skill" className="text-muted-foreground hover:text-primary">What is a Skill?</Link></li>
+                <li><Link href="/learn/installation-guide" className="text-muted-foreground hover:text-primary">Installation Guide</Link></li>
+              </ul>
+            </div>
+            {/* Tools */}
+            <div>
+              <h3 className="font-medium text-foreground mb-3">Tools</h3>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/app/builder" className="text-muted-foreground hover:text-primary">Skill Builder</Link></li>
+                <li><Link href="/app/inspector" className="text-muted-foreground hover:text-primary">Inspector</Link></li>
+              </ul>
+            </div>
+            {/* Company */}
+            <div>
+              <h3 className="font-medium text-foreground mb-3">Company</h3>
+              <ul className="space-y-2 text-sm">
+                <li><span className="text-muted-foreground">GetClaudeSkills</span></li>
+                <li><span className="text-muted-foreground text-xs">Not affiliated with Anthropic</span></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-border pt-6 text-center">
+            <p className="text-sm text-muted-foreground">
+              © {new Date().getFullYear()} GetClaudeSkills. Free forever.
+            </p>
+          </div>
         </div>
       </footer>
     </div>

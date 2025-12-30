@@ -118,6 +118,19 @@ claude-skills-builder/
 - **E2E Testing:** Playwright (Headless) running on Ubuntu.
 - **Preview:** Vercel Preview Deployments for every PR.
 
+## Route Structure
+
+See [`ROUTES.md`](./ROUTES.md) for complete application route mapping including:
+- Public, semi-public, protected, and admin-only routes
+- API endpoints
+- Authentication redirect logic
+- Feature flag integration
+- Navigation hierarchy
+- Orphaned routes requiring ingress
+
 ## References
 
 - [Claude Agent Skills Specification](https://docs.anthropic.com)
+- [Application Routes](./ROUTES.md)
+- [Admin Guide](./ADMIN_GUIDE.md)
+- [Test Credentials](./testing/TEST_CREDENTIALS.md)
