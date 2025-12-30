@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { FLAG_KEYS, FlagKey, FlagState } from '@/lib/flags';
 import { Shell } from '@/components/layout/Shell';
-import { ArrowLeft, Loader2, Shield, Globe, Lock, AlertTriangle, LayoutDashboard, Hammer, ShoppingBag, Wand2, Settings, TrendingUp, GitBranch, LayoutTemplate, Package, Search, Building2, Library } from 'lucide-react';
+import { ArrowLeft, Loader2, Shield, Globe, Lock, AlertTriangle, LayoutDashboard, Hammer, ShoppingBag, Wand2, Settings, TrendingUp, GitBranch, LayoutTemplate, Package, Search, Building2, Library, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -16,6 +16,7 @@ const FLAG_META: Record<FlagKey, { label: string; description: string; icon: any
     feature_canvas: { label: 'Visual Canvas', description: 'Interactive node editor.', icon: GitBranch },
     feature_templates: { label: 'Templates', description: 'Skill templates library.', icon: LayoutTemplate },
     feature_packages: { label: 'Packages', description: 'Skill package management.', icon: Package },
+    feature_bundles: { label: 'Power Bundles', description: 'Curated skill bundles.', icon: Layers },
     feature_inspector: { label: 'Inspector', description: 'Skill testing & debug.', icon: Search },
     feature_marketplace: { label: 'Marketplace', description: 'Public skill discovery.', icon: ShoppingBag },
     feature_generations: { label: 'Generations', description: 'AI generation tools.', icon: Wand2 },
