@@ -1,7 +1,6 @@
 'use client';
 
 import { toast } from 'sonner';
-import { ExternalLink } from 'lucide-react';
 
 /**
  * Claude Install Prompt Utility
@@ -76,10 +75,12 @@ export function showClaudeInstallPrompt(skillName: string): void {
 
     // Don't show if user permanently dismissed
     if (state.dismissed) {
+        console.log('[ClaudeInstallPrompt] User permanently dismissed, not showing');
         return;
     }
 
     const count = incrementDownloadCount();
+    console.log('[ClaudeInstallPrompt] Showing toast for:', skillName, 'count:', count);
 
     // Determine duration based on download count
     const duration = count <= 3 ? 15000 : 8000;

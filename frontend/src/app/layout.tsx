@@ -70,7 +70,7 @@ export default function RootLayout({
         <AuthProvider>
           <SiteSettingsProvider>
             {children}
-            <Toaster position="top-right" richColors />
+            <Toaster position="bottom-right" richColors closeButton />
           </SiteSettingsProvider>
         </AuthProvider>
       </body>
