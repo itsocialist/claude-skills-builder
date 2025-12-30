@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Claude Skills Builder | Create AI Templates in Minutes",
+    title: "GetClaudeSkills | Create AI Templates in Minutes",
     description: "Build custom Claude skills without coding. Free templates for real estate, consulting, and business.",
     images: ["/hero-banner-wide.png"],
   },

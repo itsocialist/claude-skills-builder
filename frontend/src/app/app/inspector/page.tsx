@@ -297,6 +297,7 @@ export default function InspectorPage() {
         const droppedFile = e.dataTransfer.files[0];
         if (droppedFile) {
             setFile(droppedFile);
+            // .md files can be read directly; .skill and .zip are archives
             if (droppedFile.name.endsWith('.md')) {
                 const reader = new FileReader();
                 reader.onload = (event) => {
@@ -311,6 +312,7 @@ export default function InspectorPage() {
         const selectedFile = e.target.files?.[0];
         if (selectedFile) {
             setFile(selectedFile);
+            // .md files can be read directly; .skill and .zip are archives
             if (selectedFile.name.endsWith('.md')) {
                 const reader = new FileReader();
                 reader.onload = (event) => {
@@ -400,11 +402,11 @@ export default function InspectorPage() {
                                     browse
                                 </label>
                             </p>
-                            <p className="text-xs text-muted-foreground">SKILL.md or ZIP</p>
+                            <p className="text-xs text-muted-foreground">SKILL.md, .zip, or .skill</p>
                         </div>
                         <input
                             type="file"
-                            accept=".md,.zip"
+                            accept=".md,.zip,.skill"
                             onChange={handleFileSelect}
                             className="hidden"
                             id="file-input"

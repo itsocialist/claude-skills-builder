@@ -115,17 +115,18 @@ export async function POST(request: NextRequest) {
         if (file) {
             if (file.name.endsWith('.md')) {
                 skillContent = await file.text();
-            } else if (file.name.endsWith('.zip')) {
+            } else if (file.name.endsWith('.zip') || file.name.endsWith('.skill')) {
+                // .skill files are just renamed .zip files
                 return NextResponse.json({
                     valid: false,
-                    errors: ['ZIP file analysis coming soon. Please upload SKILL.md directly for now.'],
+                    errors: ['Archive file analysis coming soon. Please upload SKILL.md directly for now.'],
                     warnings: [],
                     info: {},
                 });
             } else {
                 return NextResponse.json({
                     valid: false,
-                    errors: ['Unsupported file type. Please upload a .md or .zip file.'],
+                    errors: ['Unsupported file type. Please upload a .md, .zip, or .skill file.'],
                     warnings: [],
                     info: {},
                 });
