@@ -164,11 +164,14 @@ export async function generateBundleZip(bundleName: string, skillNames: string[]
         throw new Error('No skills found for this bundle');
     }
 
-    // Extract the joined user_skills data
-    const skillsData = listingsData.map(l => l.user_skills);
+    // Extract the joined user_skills data (Supabase inner join returns array or single object)
+    const skillsData = listingsData.map(l => {
+        const userSkill = Array.isArray(l.user_skills) ? l.user_skills[0] : l.user_skills;
+        return userSkill;
+    }).filter(Boolean);
 
     // Convert to Skill type
-    const skills: Skill[] = skillsData.map(s => ({
+    const skills: Skill[] = skillsData.map((s: any) => ({
         name: s.name,
         description: s.description,
         category: s.category,
