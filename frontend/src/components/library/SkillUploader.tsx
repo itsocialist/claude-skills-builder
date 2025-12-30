@@ -33,7 +33,7 @@ export function SkillUploader({ compact = false }: SkillUploaderProps) {
         if (!user) return;
 
         const files = Array.from(e.dataTransfer.files);
-        const zipFile = files.find(f => f.name.endsWith('.zip'));
+        const zipFile = files.find(f => f.name.endsWith('.zip') || f.name.endsWith('.skill'));
 
         if (!zipFile) {
             return;
@@ -56,7 +56,7 @@ export function SkillUploader({ compact = false }: SkillUploaderProps) {
         if (!user || !e.target.files?.length) return;
 
         const file = e.target.files[0];
-        if (!file.name.endsWith('.zip')) return;
+        if (!file.name.endsWith('.zip') && !file.name.endsWith('.skill')) return;
 
         setIsUploading(true);
         setSuccess(null);
@@ -106,8 +106,8 @@ export function SkillUploader({ compact = false }: SkillUploaderProps) {
                 {/* Status messages for compact mode - show inside card */}
                 {compact && statusMessage && (
                     <div className={`mb-3 flex items-center gap-2 p-2 rounded-lg text-xs ${success
-                            ? 'bg-green-500/10 border border-green-500/30 text-green-500'
-                            : 'bg-destructive/10 border border-destructive/30 text-destructive'
+                        ? 'bg-green-500/10 border border-green-500/30 text-green-500'
+                        : 'bg-destructive/10 border border-destructive/30 text-destructive'
                         }`}>
                         {success ? <CheckCircle className="w-3 h-3 flex-shrink-0" /> : <AlertCircle className="w-3 h-3 flex-shrink-0" />}
                         <span className="truncate">{statusMessage}</span>
