@@ -149,7 +149,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                                 {shouldShow('feature_packages') && (
                                     <Link href="/app/packages" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/packages') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                         <Package className="w-4 h-4" />
-                                        My Packages
+                                        Bundle Builder
                                     </Link>
                                 )}
                                 {shouldShow('feature_inspector') && (
@@ -282,7 +282,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                         {shouldShow('feature_packages') && (
                             <Link href="/app/packages" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/packages') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                 <Package className="w-4 h-4" />
-                                My Packages
+                                Bundle Builder
                             </Link>
                         )}
                         {shouldShow('feature_inspector') && (
