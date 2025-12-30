@@ -116,13 +116,57 @@ export async function POST(request: NextRequest) {
             if (file.name.endsWith('.md')) {
                 skillContent = await file.text();
             } else if (file.name.endsWith('.zip') || file.name.endsWith('.skill')) {
-                // .skill files are just renamed .zip files
-                return NextResponse.json({
-                    valid: false,
-                    errors: ['Archive file analysis coming soon. Please upload SKILL.md directly for now.'],
-                    warnings: [],
-                    info: {},
-                });
+                // .skill files are just renamed .zip files - extract SKILL.md
+                try {
+                    const JSZip = (await import('jszip')).default;
+                    const arrayBuffer = await file.arrayBuffer();
+                    const zip = await JSZip.loadAsync(arrayBuffer);
+
+                    // Look for SKILL.md in the archive (check root and common locations)
+                    const possiblePaths = ['SKILL.md', 'skill.md', 'README.md'];
+                    let foundContent: string | null = null;
+
+                    for (const path of possiblePaths) {
+                        const zipFile = zip.file(path);
+                        if (zipFile) {
+                            foundContent = await zipFile.async('string');
+                            break;
+                        }
+                    }
+
+                    // If not found at root, look in any subdirectory
+                    if (!foundContent) {
+                        const files = Object.keys(zip.files);
+                        for (const filePath of files) {
+                            if (filePath.toLowerCase().endsWith('skill.md')) {
+                                const zipFile = zip.file(filePath);
+                                if (zipFile) {
+                                    foundContent = await zipFile.async('string');
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (foundContent) {
+                        skillContent = foundContent;
+                    } else {
+                        return NextResponse.json({
+                            valid: false,
+                            errors: ['No SKILL.md found in archive. Archive should contain a SKILL.md file.'],
+                            warnings: [],
+                            info: { resourceCount: Object.keys(zip.files).length },
+                        });
+                    }
+                } catch (zipError) {
+                    console.error('ZIP extraction error:', zipError);
+                    return NextResponse.json({
+                        valid: false,
+                        errors: ['Failed to read archive. Ensure the file is a valid ZIP or .skill archive.'],
+                        warnings: [],
+                        info: {},
+                    });
+                }
             } else {
                 return NextResponse.json({
                     valid: false,
