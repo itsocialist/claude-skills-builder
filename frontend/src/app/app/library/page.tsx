@@ -142,18 +142,30 @@ export default function LibraryPage() {
                         </p>
                     </div>
                 </div>
-                {canUseBuilder && (
-                    <Button
-                        onClick={() => router.push('/app/builder')}
-                        className="gap-2"
-                    >
-                        <Plus className="w-4 h-4" />
-                        New Skill
-                    </Button>
-                )}
 
-                {/* Upload Zone */}
-                <SkillUploader />
+                {/* Action Cards - Two equal cards side by side */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    {/* Create New Skill Card */}
+                    {canUseBuilder && (
+                        <button
+                            onClick={() => router.push('/app/builder')}
+                            className="group p-6 border-2 border-dashed border-border rounded-xl bg-card hover:border-primary/50 hover:bg-primary/5 transition-all text-left"
+                        >
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                                    <Plus className="w-6 h-6 text-primary" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold text-foreground mb-1">Create New Skill</h3>
+                                    <p className="text-sm text-muted-foreground">Start from scratch with our visual builder</p>
+                                </div>
+                            </div>
+                        </button>
+                    )}
+
+                    {/* Import Skill Card - Inline SkillUploader styling */}
+                    <SkillUploader compact />
+                </div>
 
                 {/* Filters */}
                 <div className="flex flex-col sm:flex-row gap-4 mb-6">

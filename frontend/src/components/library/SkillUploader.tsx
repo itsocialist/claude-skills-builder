@@ -5,7 +5,11 @@ import { Upload, FileArchive, AlertCircle, CheckCircle, X } from 'lucide-react';
 import { useLibraryStore } from '@/lib/store/libraryStore';
 import { useAuth } from '@/components/auth/AuthProvider';
 
-export function SkillUploader() {
+interface SkillUploaderProps {
+    compact?: boolean;
+}
+
+export function SkillUploader({ compact = false }: SkillUploaderProps) {
     const { user } = useAuth();
     const { importFromZip, error, clearError } = useLibraryStore();
     const [isDragging, setIsDragging] = useState(false);
@@ -71,30 +75,32 @@ export function SkillUploader() {
     }, [user, importFromZip, clearError]);
 
     return (
-        <div className="mb-6">
+        <div className={compact ? '' : 'mb-6'}>
             {/* Drop Zone */}
-            <div
+            <label
+                htmlFor="skill-upload"
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 className={`
-                    border-2 border-dashed rounded-xl p-8 text-center transition-all
+                    block border-2 border-dashed rounded-xl transition-all cursor-pointer
+                    ${compact ? 'p-6 h-full' : 'p-8 text-center'}
                     ${isDragging
                         ? 'border-primary bg-primary/10'
-                        : 'border-border hover:border-primary/50 bg-card'
+                        : 'border-border hover:border-primary/50 bg-card hover:bg-primary/5'
                     }
                     ${isUploading ? 'opacity-50 pointer-events-none' : ''}
                 `}
             >
                 <input
                     type="file"
-                    accept=".zip"
+                    accept=".zip,.skill"
                     onChange={handleFileSelect}
                     className="hidden"
                     id="skill-upload"
                 />
 
-                <div className="flex flex-col items-center gap-3">
+                <div className={compact ? 'flex items-start gap-4' : 'flex flex-col items-center gap-3'}>
                     {isUploading ? (
                         <>
                             <div className="w-12 h-12 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -102,31 +108,32 @@ export function SkillUploader() {
                         </>
                     ) : (
                         <>
-                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                            <div className={`w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center ${compact ? 'flex-shrink-0 group-hover:bg-primary/20 transition-colors' : ''}`}>
                                 {isDragging ? (
                                     <FileArchive className="w-6 h-6 text-primary" />
                                 ) : (
                                     <Upload className="w-6 h-6 text-primary" />
                                 )}
                             </div>
-                            <div>
-                                <p className="text-foreground font-medium">
-                                    {isDragging ? 'Drop to import' : 'Import Skill Package'}
+                            <div className={compact ? '' : 'text-center'}>
+                                <p className={compact ? 'text-lg font-semibold text-foreground mb-1' : 'text-foreground font-medium'}>
+                                    {isDragging ? 'Drop to import' : 'Import Skill'}
                                 </p>
-                                <p className="text-sm text-muted-foreground mt-1">
-                                    Drag & drop a .zip file or{' '}
-                                    <label htmlFor="skill-upload" className="text-primary hover:underline cursor-pointer">
-                                        browse
-                                    </label>
+                                <p className="text-sm text-muted-foreground">
+                                    {compact ? 'Drop .zip or .skill file, or click to browse' : (
+                                        <>
+                                            Drag & drop a .zip file or{' '}
+                                            <span className="text-primary hover:underline">
+                                                browse
+                                            </span>
+                                        </>
+                                    )}
                                 </p>
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                                Max 5MB • Must contain SKILL.md
-                            </p>
                         </>
                     )}
                 </div>
-            </div>
+            </label>
 
             {/* Success Message */}
             {success && (
