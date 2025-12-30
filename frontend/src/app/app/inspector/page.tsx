@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Shell } from '@/components/layout/Shell';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Upload, FileText, CheckCircle, XCircle, AlertTriangle, Loader2, Sparkles, Lightbulb, Settings, ChevronDown, ChevronRight, Key } from 'lucide-react';
 import { useSiteSettings } from '@/lib/contexts/SiteSettingsContext';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { useLibraryStore } from '@/lib/store/libraryStore';
 import { DEFAULT_FLAGS } from '@/lib/flags';
+import { Library, ChevronDown as SelectChevron } from 'lucide-react';
 
 interface ValidationResult {
     valid: boolean;
@@ -283,6 +285,8 @@ function InspectorPanel({
 }
 
 export default function InspectorPage() {
+    const { user } = useAuth();
+    const { skills, fetchSkills } = useLibraryStore();
     const [file, setFile] = useState<File | null>(null);
     const [skillContent, setSkillContent] = useState('');
     const [analyzing, setAnalyzing] = useState(false);
@@ -290,6 +294,46 @@ export default function InspectorPage() {
     const [dragOver, setDragOver] = useState(false);
     const [useAI, setUseAI] = useState(false);
     const [apiKey, setApiKey] = useState('');
+    const [selectedSkillId, setSelectedSkillId] = useState<string | null>(null);
+    const [showSkillPicker, setShowSkillPicker] = useState(false);
+
+    // Fetch user's skills on mount
+    useEffect(() => {
+        if (user) {
+            fetchSkills(user.id);
+        }
+    }, [user, fetchSkills]);
+
+    // Generate SKILL.md content from a saved skill
+    const generateSkillMd = (skill: typeof skills[0]) => {
+        return `---
+name: ${skill.name}
+description: ${skill.description || ''}
+category: ${skill.category || ''}
+triggers: [${skill.triggers.map(t => `"${t}"`).join(', ')}]
+---
+
+${skill.instructions || ''}`;
+    };
+
+    // Handle skill selection from dropdown
+    const handleSkillSelect = (skillId: string) => {
+        const skill = skills.find(s => s.id === skillId);
+        if (skill) {
+            setSelectedSkillId(skillId);
+            setSkillContent(generateSkillMd(skill));
+            setFile(null); // Clear any uploaded file
+            setResult(null); // Clear previous results
+        }
+        setShowSkillPicker(false);
+    };
+
+    // Clear selected skill
+    const clearSelectedSkill = () => {
+        setSelectedSkillId(null);
+        setSkillContent('');
+        setResult(null);
+    };
 
     const handleFileDrop = (e: React.DragEvent) => {
         e.preventDefault();
@@ -384,6 +428,64 @@ export default function InspectorPage() {
                         Validate and analyze SKILL.md files or ZIP packages
                     </p>
                 </div>
+
+                {/* Skill Picker - Select from My Skills */}
+                {user && skills.length > 0 && (
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowSkillPicker(!showSkillPicker)}
+                            className="w-full flex items-center justify-between gap-3 p-3 bg-card border border-border rounded-lg hover:border-primary/50 transition-colors text-left"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                    <Library className="w-4 h-4 text-primary" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-foreground">
+                                        {selectedSkillId
+                                            ? skills.find(s => s.id === selectedSkillId)?.name
+                                            : 'Select from My Skills'}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">
+                                        {selectedSkillId
+                                            ? 'Click to change'
+                                            : `${skills.length} skill${skills.length === 1 ? '' : 's'} available`}
+                                    </p>
+                                </div>
+                            </div>
+                            <SelectChevron className={`w-4 h-4 text-muted-foreground transition-transform ${showSkillPicker ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {/* Dropdown List */}
+                        {showSkillPicker && (
+                            <div className="absolute z-10 w-full mt-1 bg-card border border-border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                {skills.map(skill => (
+                                    <button
+                                        key={skill.id}
+                                        onClick={() => handleSkillSelect(skill.id)}
+                                        className={`w-full text-left px-4 py-3 text-sm hover:bg-primary/5 border-b border-border last:border-b-0 transition-colors ${skill.id === selectedSkillId ? 'bg-primary/10 text-primary' : 'text-foreground'
+                                            }`}
+                                    >
+                                        <p className="font-medium">{skill.name}</p>
+                                        {skill.description && (
+                                            <p className="text-xs text-muted-foreground truncate">{skill.description}</p>
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Clear selection button */}
+                        {selectedSkillId && (
+                            <button
+                                onClick={clearSelectedSkill}
+                                className="absolute right-12 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground"
+                            >
+                                Clear
+                            </button>
+                        )}
+                    </div>
+                )}
 
                 {/* Compact Upload Area */}
                 <div
