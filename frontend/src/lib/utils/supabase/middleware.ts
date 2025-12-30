@@ -49,7 +49,9 @@ export async function updateSession(request: NextRequest) {
             path.startsWith('/app/templates') ||
             path.startsWith('/marketplace') ||
             path.startsWith('/app/wizard') ||
-            path.startsWith('/app/canvas');
+            path.startsWith('/app/canvas') ||
+            path.startsWith('/app/inspector') ||
+            path.startsWith('/app/packages');
 
         if (path.startsWith('/app') && !isPublicRoute && !user) {
             // Redirect to /app which will show login modal

@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { MarkdownOutput } from '@/components/MarkdownOutput'
 import { cn } from '@/lib/utils'
-import { generateBundleZip, getBundleFilename } from '@/lib/utils/bundle-generator'
 import { saveAs } from 'file-saver'
 import { toast } from 'sonner'
 
@@ -150,8 +149,24 @@ export default function PowerBundlesPage() {
     const handleDownload = async (bundle: Bundle) => {
         const toastId = toast.loading(`Preparing ${bundle.name} bundle...`);
         try {
-            const blob = await generateBundleZip(bundle.name, bundle.skills);
-            saveAs(blob, getBundleFilename(bundle.name));
+            // Use server API to bypass RLS
+            const response = await fetch('/api/bundles/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    bundleName: bundle.name,
+                    skillNames: bundle.skills,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to generate bundle');
+            }
+
+            const blob = await response.blob();
+            const slugName = bundle.name.toLowerCase().replace(/\s+/g, '-');
+            saveAs(blob, `${slugName}.skill`);
             toast.success(`${bundle.name} bundle ready!`, { id: toastId });
         } catch (error: any) {
             console.error('Bundle download failed:', error);
