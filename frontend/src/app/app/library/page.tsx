@@ -6,7 +6,8 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import { SkillCard } from '@/components/library/SkillCard';
 import { SkillUploader } from '@/components/library/SkillUploader';
 import { Shell } from '@/components/layout/Shell';
-import { fetchUserSkills, deleteSkill, duplicateSkill, type SavedSkill } from '@/lib/api/skillsApi';
+import { useLibraryStore, useFilteredSkills } from '@/lib/store/libraryStore';
+import { duplicateSkill, type SavedSkill } from '@/lib/api/skillsApi';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
 import { Search, Plus, Library, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,9 +17,8 @@ import { DEFAULT_FLAGS } from '@/lib/flags';
 export default function LibraryPage() {
     const router = useRouter();
     const { user, loading: authLoading, isConfigured } = useAuth();
-    const [skills, setSkills] = useState<SavedSkill[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState('');
+    const { fetchSkills, deleteSkill, isLoading: loading, setSearchQuery, searchQuery } = useLibraryStore();
+    const skills = useFilteredSkills();
     const [categoryFilter, setCategoryFilter] = useState('all');
     const { settings } = useSiteSettings();
 
@@ -31,19 +31,9 @@ export default function LibraryPage() {
     // Fetch skills on mount
     useEffect(() => {
         if (!authLoading && user) {
-            loadSkills();
-        } else if (!authLoading && !user) {
-            setLoading(false);
+            fetchSkills(user.id);
         }
-    }, [user, authLoading]);
-
-    const loadSkills = async () => {
-        if (!user) return;
-        setLoading(true);
-        const data = await fetchUserSkills(user.id);
-        setSkills(data);
-        setLoading(false);
-    };
+    }, [user, authLoading, fetchSkills]);
 
     const handleEdit = (skill: SavedSkill) => {
         router.push(`/app/builder?edit=${skill.id}`);
@@ -51,17 +41,15 @@ export default function LibraryPage() {
 
     const handleDelete = async (skillId: string) => {
         if (!confirm('Are you sure you want to delete this skill?')) return;
-        const success = await deleteSkill(skillId);
-        if (success) {
-            setSkills(skills.filter(s => s.id !== skillId));
-        }
+        await deleteSkill(skillId);
     };
 
     const handleDuplicate = async (skillId: string) => {
         if (!user) return;
         const newSkill = await duplicateSkill(skillId, user.id);
         if (newSkill) {
-            setSkills([newSkill, ...skills]);
+            // Refresh skills list to include the duplicate
+            await fetchSkills(user.id);
         }
     };
 
@@ -78,14 +66,10 @@ export default function LibraryPage() {
     // Get unique categories
     const categories = ['all', ...new Set(skills.map(s => s.category).filter(Boolean))];
 
-    // Filter skills
-    const filteredSkills = skills.filter(skill => {
-        const matchesSearch = !searchQuery ||
-            skill.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            skill.description?.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = categoryFilter === 'all' || skill.category === categoryFilter;
-        return matchesSearch && matchesCategory;
-    });
+    // Filter skills by category (search filter is already handled by useFilteredSkills)
+    const filteredSkills = categoryFilter === 'all'
+        ? skills
+        : skills.filter(skill => skill.category === categoryFilter);
 
     if (authLoading) {
         return (
