@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { MarkdownOutput } from '@/components/MarkdownOutput'
 import { cn } from '@/lib/utils'
-import { generateBundleZip } from '@/lib/utils/bundle-generator'
+import { generateBundleZip, getBundleFilename } from '@/lib/utils/bundle-generator'
 import { saveAs } from 'file-saver'
 import { toast } from 'sonner'
 
@@ -152,7 +152,7 @@ export default function PowerBundlesPage() {
         const toastId = toast.loading(`Preparing ${bundle.name} bundle...`);
         try {
             const blob = await generateBundleZip(bundle.name, bundle.skills);
-            saveAs(blob, `${bundle.id}.zip`);
+            saveAs(blob, getBundleFilename(bundle.name));
             toast.success(`${bundle.name} bundle ready!`, { id: toastId });
         } catch (error: any) {
             console.error('Bundle download failed:', error);
