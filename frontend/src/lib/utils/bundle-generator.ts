@@ -134,10 +134,13 @@ export async function generateBundleZip(bundleName: string, skillNames: string[]
     }
 
     // Fetch skill data from user_skills table (where seed data lives)
+    console.log('[Bundle Generator] Searching for skills:', skillNames);
     const { data: skillsData, error } = await supabase
         .from('user_skills')
         .select('*')
         .in('name', skillNames);
+
+    console.log('[Bundle Generator] Query result:', { count: skillsData?.length, error });
 
     if (error) {
         throw new Error(`Failed to fetch bundle skills: ${error.message}`);
