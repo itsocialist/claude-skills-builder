@@ -1,14 +1,16 @@
 # Admin Guide
 
-> **Last Updated:** 2025-12-28
-> **Version:** v2.1 (Post-Sprint 18)
+> **Last Updated:** 2025-12-31
+> **Version:** v2.2 (Post-Sprint 21)
 
 ## Table of Contents
 1. [Configuration](#configuration)
 2. [Feature Flags](#feature-flags-management)
 3. [User Management](#user-management)
 4. [Dashboard Stats](#dashboard-statistics)
-5. [Marketplace Management](#marketplace-management)
+5. [Feedback Management](#feedback-management)
+6. [Analytics](#analytics)
+7. [Marketplace Management](#marketplace-management)
 
 ---
 
@@ -200,6 +202,82 @@ Real-time analytics and platform health metrics are available at `/app/admin`.
 4. Download begins automatically
 
 > **📊 Analytics Tip:** Use the dashboard to identify usage trends, plan capacity, and measure feature adoption.
+
+---
+
+## Feedback Management
+*Introduced in Sprint 21*
+
+View user-submitted feedback at **Admin > Feedback** (`/app/admin/feedback`).
+
+### Viewing Feedback
+
+The feedback dashboard displays all submissions from the floating feedback widget.
+
+**Each entry shows:**
+- **Category:** Bug Report 🔴, Feature Request 💡, Question 🔵, or Other
+- **Message:** Full text of user feedback
+- **Email:** User's email (if provided for follow-up)
+- **Page URL:** Where the user was when they submitted
+- **Timestamp:** Relative time (e.g., "2 hours ago")
+
+### Feedback Widget
+
+A floating orange button appears in the bottom-left corner of all pages. Users can:
+1. Click the button to open the feedback form
+2. Select a category
+3. Type their message
+4. Optionally provide email for follow-up
+5. Click "Send Feedback"
+
+**Database Storage:** Feedback is stored in `public.feedback` table with RLS policies.
+
+---
+
+## Analytics
+*Introduced in Sprint 21*
+
+Real-time event tracking and user behavior analytics at **Admin > Analytics** (`/app/admin/analytics`).
+
+### Dashboard Overview
+
+The analytics dashboard provides insights into platform usage:
+
+**Stat Cards:**
+- **Total Events:** All tracked events in the selected period
+- **Total Sessions:** Unique visitor sessions
+- **Page Views:** Total page navigation events
+- **Skills Created:** New skills saved by users
+
+### Charts
+
+**Daily Active Sessions:**
+- Line chart showing unique sessions per day
+- Use to identify usage trends and peak days
+
+**Event Breakdown:**
+- Horizontal bar chart showing event types (excluding page views)
+- Events: skill_create, skill_export, template_use, feedback_submit
+
+**Top Pages:**
+- Ranked list of most visited routes
+- Use to understand user navigation patterns
+
+### Date Range Filter
+
+Click the period buttons (7d, 14d, 30d) to adjust the analysis window.
+
+### Events Tracked
+
+| Event | Description |
+|-------|-------------|
+| `page_view` | User navigates to a route |
+| `skill_create` | New skill saved to library |
+| `skill_export` | ZIP file downloaded |
+| `template_use` | Template loaded into builder |
+| `feedback_submit` | Feedback form submitted |
+
+**Database Storage:** Events are stored in `public.analytics_events` table.
 
 ---
 
