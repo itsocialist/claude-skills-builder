@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { toast } from 'sonner';
 import { Shell } from '@/components/layout/Shell';
 import { SkillCanvas } from '@/components/canvas/SkillCanvas';
 import { Card } from '@/components/ui/card';
@@ -66,8 +67,14 @@ export default function CanvasPage() {
             }
             if (result) {
                 setSaveSuccess(true);
+                toast.success('Skill saved to library');
                 setTimeout(() => setSaveSuccess(false), 3000);
+            } else {
+                toast.error('Failed to save skill');
             }
+        } catch (error) {
+            console.error('Save error:', error);
+            toast.error('Failed to save skill');
         } finally {
             setIsSaving(false);
         }

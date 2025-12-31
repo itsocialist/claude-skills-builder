@@ -98,7 +98,7 @@ export default function MarketingPage() {
                 </Link>
               </div>
               <p className="text-sm text-muted-foreground">
-                Free forever · No account needed · Download in 2 min
+                No account needed · Download in 2 min
               </p>
             </div>
 
@@ -273,7 +273,7 @@ export default function MarketingPage() {
             Ready?
           </h2>
           <p className="text-muted-foreground mb-5">
-            Takes about 2 minutes. Free forever.
+            Takes about 2 minutes.
           </p>
           <Link href="/app/wizard">
             <Button size="lg">
@@ -324,7 +324,7 @@ export default function MarketingPage() {
           </div>
           <div className="border-t border-border pt-6 text-center">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} GetClaudeSkills. Free forever.
+              © {new Date().getFullYear()} GetClaudeSkills
             </p>
           </div>
         </div>
