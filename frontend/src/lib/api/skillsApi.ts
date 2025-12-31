@@ -141,12 +141,23 @@ export async function saveSkill(userId: string, skill: Skill): Promise<SavedSkil
 export async function updateSkill(skillId: string, skill: Partial<Skill>): Promise<SavedSkill | null> {
     if (!supabase) return null;
 
+    // Only include fields that exist in the database table
+    const updateData: Record<string, unknown> = {
+        updated_at: new Date().toISOString(),
+    };
+
+    // Valid database columns for user_skills table
+    if (skill.name !== undefined) updateData.name = skill.name;
+    if (skill.description !== undefined) updateData.description = skill.description;
+    if (skill.category !== undefined) updateData.category = skill.category;
+    if (skill.tags !== undefined) updateData.tags = skill.tags;
+    if (skill.triggers !== undefined) updateData.triggers = skill.triggers;
+    if (skill.instructions !== undefined) updateData.instructions = skill.instructions;
+    if (skill.resources !== undefined) updateData.resources = skill.resources;
+
     const { data, error } = await supabase
         .from('user_skills')
-        .update({
-            ...skill,
-            updated_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq('id', skillId)
         .select()
         .single();
