@@ -6,7 +6,7 @@ import { Shell } from '@/components/layout/Shell';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { Users, FileText, Building2, TrendingUp, Settings, Shield } from 'lucide-react';
+import { Users, FileText, Building2, TrendingUp, Settings, Shield, MessageSquare, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminPage() {
@@ -137,6 +137,32 @@ export default function AdminPage() {
                         </p>
                         <Link href="/app/admin/features">
                             <Button variant="outline">Manage Flags</Button>
+                        </Link>
+                    </Card>
+
+                    <Card className="p-6">
+                        <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                            <BarChart3 className="w-5 h-5" />
+                            Analytics
+                        </h3>
+                        <p className="text-muted-foreground mb-4">
+                            View user activity, page views, and trends.
+                        </p>
+                        <Link href="/app/admin/analytics">
+                            <Button variant="outline">View Analytics</Button>
+                        </Link>
+                    </Card>
+
+                    <Card className="p-6">
+                        <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                            <MessageSquare className="w-5 h-5" />
+                            Feedback
+                        </h3>
+                        <p className="text-muted-foreground mb-4">
+                            Review user feedback and bug reports.
+                        </p>
+                        <Link href="/app/admin/feedback">
+                            <Button variant="outline">View Feedback</Button>
                         </Link>
                     </Card>
                 </div>
