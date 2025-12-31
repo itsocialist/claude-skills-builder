@@ -81,7 +81,7 @@ export default function LibraryPage() {
 
     if (authLoading) {
         return (
-            <Shell>
+            <Shell title="My Skills">
                 <div className="flex items-center justify-center h-[60vh]">
                     <Loader2 className="w-8 h-8 text-[#C15F3C] animate-spin" />
                 </div>
@@ -91,7 +91,7 @@ export default function LibraryPage() {
 
     if (!isConfigured) {
         return (
-            <Shell>
+            <Shell title="My Skills">
                 <div className="max-w-md mx-auto text-center py-20">
                     <Library className="w-16 h-16 text-gray-600 mx-auto mb-4" />
                     <h2 className="text-xl font-semibold text-white mb-2">Library Not Available</h2>
@@ -105,7 +105,7 @@ export default function LibraryPage() {
 
     if (!user) {
         return (
-            <Shell>
+            <Shell title="My Skills">
                 <div className="max-w-md mx-auto text-center py-20">
                     <Library className="w-16 h-16 text-gray-600 mx-auto mb-4" />
                     <h2 className="text-xl font-semibold text-white mb-2">Sign In to View Your Library</h2>
@@ -123,7 +123,7 @@ export default function LibraryPage() {
     }
 
     return (
-        <Shell>
+        <Shell title="My Skills">
             <div className="max-w-6xl mx-auto px-4 py-8">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
