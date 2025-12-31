@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
 import { Shell } from '@/components/layout/Shell';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -285,7 +286,7 @@ function InspectorPanel({
     );
 }
 
-export default function InspectorPage() {
+function InspectorPageContent() {
     const { user } = useAuth();
     const { skills, fetchSkills } = useLibraryStore();
     const searchParams = useSearchParams();
@@ -564,5 +565,17 @@ ${skill.instructions || ''}`;
                 </div>
             </div>
         </Shell>
+    );
+}
+
+export default function InspectorPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center h-screen">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            </div>
+        }>
+            <InspectorPageContent />
+        </Suspense>
     );
 }
