@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, Suspense } from 'react';
+import { toast } from 'sonner';
 import { useSearchParams } from 'next/navigation';
 import { useSkillStore } from '@/lib/store/skillStore';
 import { generateSkillZip } from '@/lib/utils/skill-generator';
@@ -81,8 +82,14 @@ function BuilderContent() {
             }
             if (result) {
                 setSaveSuccess(true);
+                toast.success('Skill saved to library');
                 setTimeout(() => setSaveSuccess(false), 3000);
+            } else {
+                toast.error('Failed to save skill');
             }
+        } catch (error) {
+            console.error('Save error:', error);
+            toast.error('Failed to save skill');
         } finally {
             setIsSaving(false);
         }
