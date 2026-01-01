@@ -98,18 +98,67 @@ function WizardContent() {
         }
     }, [searchParams, pathname, reset]);
 
+    // AI Typing Logic
+    const [isTyping, setIsTyping] = useState(false);
+
+    const simulateTyping = async (text: string, field: keyof typeof skill | 'triggerInput') => {
+        if (isTyping || !text) return;
+        setIsTyping(true);
+
+        let currentText = '';
+        const chunkSize = 2; // Type 2 chars at a time for speed
+
+        // Clear field first
+        if (field === 'triggerInput') setTriggerInput('');
+        else updateField(field as any, '');
+
+        for (let i = 0; i < text.length; i += chunkSize) {
+            currentText += text.slice(i, i + chunkSize);
+
+            if (field === 'triggerInput') {
+                setTriggerInput(currentText);
+            } else {
+                updateField(field as any, currentText);
+            }
+
+            // Random delay for realism
+            await new Promise(r => setTimeout(r, 10 + Math.random() * 10));
+        }
+
+        setIsTyping(false);
+    };
+
+    const handleAIAssist = async () => {
+        if (!lessonPlan || isTyping) return;
+        const module = lessonPlan.modules[0]; // Assuming single module for now
+
+        switch (step) {
+            case 0: // Description
+                await simulateTyping(module.skillTemplate.description, 'description');
+                break;
+            case 1: // Triggers
+                if (module.skillTemplate.triggers.length > 0) {
+                    await simulateTyping(module.skillTemplate.triggers[0], 'triggerInput');
+                }
+                break;
+            case 2: // Instructions
+                await simulateTyping(module.skillTemplate.instructions, 'instructions');
+                break;
+        }
+    };
+
     const handleStartLesson = (moduleIndex: number) => {
         if (!lessonPlan) return;
 
         const module = lessonPlan.modules[moduleIndex];
 
-        // Pre-fill the wizard store
+        // Only set Name, let the user "Generate" the rest
         setSkill({
             ...skill,
             name: module.skillTemplate.name,
-            description: module.skillTemplate.description,
-            triggers: module.skillTemplate.triggers,
-            instructions: module.skillTemplate.instructions
+            description: '', // Clear for AI Assist
+            triggers: [],    // Clear for AI Assist
+            instructions: '' // Clear for AI Assist
         });
 
         // Transition to wizard
@@ -190,6 +239,18 @@ function WizardContent() {
         );
     }
 
+    const AIButton = ({ onClick }: { onClick: () => void }) => (
+        <Button
+            onClick={onClick}
+            disabled={isTyping}
+            variant="ghost"
+            size="sm"
+            className="absolute right-2 top-2 h-8 px-3 text-purple-400 hover:text-purple-300 hover:bg-purple-400/10 transition-colors"
+        >
+            {isTyping ? <Loader2 className="w-4 h-4 animate-spin" /> : <div className="flex items-center gap-2"><Rocket className="w-4 h-4" /> <span>Auto-Generate</span></div>}
+        </Button>
+    );
+
     // --- Render: Wizard View ---
     return (
         <div className="container mx-auto px-4 py-8">
@@ -247,8 +308,9 @@ function WizardContent() {
                                         className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12"
                                     />
                                 </div>
-                                <div>
+                                <div className="relative">
                                     <label className="text-sm font-medium text-white/60 mb-2 block uppercase tracking-wider">Description</label>
+                                    <AIButton onClick={handleAIAssist} />
                                     <Textarea
                                         value={skill.description}
                                         onChange={(e) => updateField('description', e.target.value)}
@@ -263,14 +325,25 @@ function WizardContent() {
                         {/* Step 2: When */}
                         {step === 1 && (
                             <div className="space-y-6">
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 relative">
                                     <Input
                                         value={triggerInput}
                                         onChange={(e) => setTriggerInput(e.target.value)}
                                         onKeyDown={(e) => e.key === 'Enter' && handleAddTrigger()}
                                         placeholder="Type a trigger phrase..."
-                                        className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12"
+                                        className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12 pr-32"
                                     />
+                                    <div className="absolute right-14 top-2">
+                                        <Button
+                                            onClick={handleAIAssist}
+                                            disabled={isTyping}
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8 text-purple-400 hover:text-purple-300 hover:bg-purple-400/10"
+                                        >
+                                            <Rocket className="w-4 h-4" />
+                                        </Button>
+                                    </div>
                                     <Button onClick={handleAddTrigger} disabled={!triggerInput.trim()} size="icon" className="h-12 w-12 bg-white/10 hover:bg-white/20">
                                         <Plus className="h-5 w-5" />
                                     </Button>
@@ -299,13 +372,16 @@ function WizardContent() {
                         {step === 2 && (
                             <div className="space-y-6 relative">
                                 <SkillSnippets onInsert={handleInsertSnippet} />
-                                <Textarea
-                                    value={skill.instructions}
-                                    onChange={(e) => updateField('instructions', e.target.value)}
-                                    placeholder="Instructions for Claude..."
-                                    rows={12}
-                                    className="bg-white/5 border-white/10 text-white placeholder:text-white/20 font-mono text-sm leading-relaxed"
-                                />
+                                <div className="relative">
+                                    <AIButton onClick={handleAIAssist} />
+                                    <Textarea
+                                        value={skill.instructions}
+                                        onChange={(e) => updateField('instructions', e.target.value)}
+                                        placeholder="Instructions for Claude..."
+                                        rows={12}
+                                        className="bg-white/5 border-white/10 text-white placeholder:text-white/20 font-mono text-sm leading-relaxed pt-12"
+                                    />
+                                </div>
                             </div>
                         )}
 
