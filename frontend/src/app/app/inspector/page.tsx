@@ -67,7 +67,7 @@ function InspectorPanel({
     const canUseAI = genFlag !== 'DISABLED' && (genFlag !== 'ADMIN_ONLY' || isAdmin);
 
     return (
-        <div className="h-full flex flex-col overflow-hidden">
+        <div className="h-full flex flex-col overflow-hidden bg-gradient-to-b from-card to-background">
             {/* Tabs */}
             <div className="flex border-b border-border px-4 flex-shrink-0">
                 <button

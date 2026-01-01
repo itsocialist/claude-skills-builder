@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Shell } from '@/components/layout/Shell'
-import { Download, Package, Sparkles, Search, FileText, BarChart3, Rocket, ChevronDown, Check } from 'lucide-react'
+import { Download, Layers, Sparkles, Search, FileText, BarChart3, Rocket, ChevronDown, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { MarkdownOutput } from '@/components/MarkdownOutput'
@@ -11,137 +11,32 @@ import { cn } from '@/lib/utils'
 import { saveAs } from 'file-saver'
 import { toast } from 'sonner'
 
+import { bundles as sharedBundles } from '@/lib/constants/bundles'
+
+// Map icon strings to components for rendering
+const iconMap = {
+    Search: <Search className="w-8 h-8" />,
+    FileText: <FileText className="w-8 h-8" />,
+    BarChart3: <BarChart3 className="w-8 h-8" />,
+    Rocket: <Rocket className="w-8 h-8" />
+};
+
+const bundles = sharedBundles.map(b => ({
+    ...b,
+    icon: iconMap[b.iconName]
+}));
+
+// Re-export specific local interface if needed for strict typing in this file, or rely on shared type
 interface Bundle {
     id: string
     name: string
     tagline: string
-    icon: React.ReactNode
+    icon: React.ReactNode // Local override because we hydrated the icon
     color: string
     skills: string[]
     outputExample: string
     outputType: string
 }
-
-const bundles: Bundle[] = [
-    {
-        id: 'research-studio',
-        name: 'Research Studio',
-        tagline: 'Turn hours of research into actionable insights in minutes',
-        icon: <Search className="w-8 h-8" />,
-        color: 'from-blue-500/20 to-cyan-500/20',
-        skills: ['Competitor Analysis Framework', 'CMA Report Generator', 'Meeting Notes to Action Items'],
-        outputExample: `## Competitive Analysis: [Your Industry]
-
-### Market Position Matrix
-| Company | Pricing | Features | Market Share |
-|---------|---------|----------|--------------|
-| You     | $$$     | ★★★★☆   | 15%          |
-| Comp A  | $$      | ★★★☆☆   | 35%          |
-| Comp B  | $$$$    | ★★★★★   | 25%          |
-
-### Key Opportunities
-1. **Price positioning gap** between Comp A and B
-2. **Feature parity** achievable in Q2
-3. **Underserved segment**: SMB market
-
-### Recommended Actions
-- Launch mid-tier pricing within 30 days
-- Develop 3 differentiating features
-- Target SMB with focused campaign`,
-        outputType: 'Strategic Report'
-    },
-    {
-        id: 'content-engine',
-        name: 'Content Engine',
-        tagline: 'Create a month of content in a single afternoon',
-        icon: <FileText className="w-8 h-8" />,
-        color: 'from-purple-500/20 to-pink-500/20',
-        skills: ['Social Media Content Calendar', 'Blog Post Optimizer', 'Email Campaign Writer', 'Brand Voice Guide Creator'],
-        outputExample: `## Week 1 Content Calendar
-
-### Monday - LinkedIn
-**Type:** Carousel (5 slides)
-**Topic:** "5 Mistakes Killing Your Conversion Rate"
-**CTA:** Download our free audit checklist
-**Best time:** 8:00 AM
-
-### Tuesday - Twitter/X
-**Thread (7 tweets)**
-"Here's what 6 months of A/B testing taught us about landing pages..."
-
-### Wednesday - Instagram
-**Reel (30 sec)**
-Behind-the-scenes: How we increased signups by 47%
-
-### Thursday - Email
-**Subject:** The one metric you're probably ignoring
-**Preview:** It's not what you think...`,
-        outputType: 'Content Calendar'
-    },
-    {
-        id: 'data-analyst',
-        name: 'Data Analyst',
-        tagline: 'Transform raw data into clear, actionable dashboards',
-        icon: <BarChart3 className="w-8 h-8" />,
-        color: 'from-green-500/20 to-emerald-500/20',
-        skills: ['Code Review Assistant', 'API Documentation Writer', 'Competitor Analysis Framework'],
-        outputExample: `## Q4 Performance Dashboard
-
-### Revenue Metrics
-📈 **MRR:** $127,450 (+12% MoM)
-📊 **ARR Run Rate:** $1.53M
-💰 **ARPU:** $89 (+$7 from Q3)
-
-### User Acquisition
-| Channel    | Users  | CAC    | LTV/CAC |
-|------------|--------|--------|---------|
-| Organic    | 1,247  | $0     | ∞       |
-| Paid       | 892    | $45    | 4.2x    |
-| Referral   | 445    | $12    | 8.1x    |
-
-### Churn Analysis
-- **Monthly churn:** 3.2% (down from 4.1%)
-- **Primary driver:** Feature gaps (42%)
-- **At-risk accounts:** 23 flagged`,
-        outputType: 'Analytics Dashboard'
-    },
-    {
-        id: 'project-kickstart',
-        name: 'Project Kickstart',
-        tagline: 'Go from idea to execution-ready in one session',
-        icon: <Rocket className="w-8 h-8" />,
-        color: 'from-orange-500/20 to-red-500/20',
-        skills: ['Business Proposal Writer', 'Meeting Notes to Action Items', 'Case Study Writer', 'Product Description Writer'],
-        outputExample: `## Project: [Your Next Big Thing]
-
-### Executive Summary
-Launch a targeted MVP in 6 weeks that validates our core hypothesis with minimal resource investment.
-
-### Sprint Breakdown
-**Week 1-2:** Discovery & Design
-- User interviews (10 target customers)
-- Competitive audit
-- MVP feature set definition
-
-**Week 3-4:** Build Phase
-- Core functionality development
-- Integration with existing systems
-- Internal testing
-
-**Week 5-6:** Launch Prep
-- Beta user onboarding
-- Feedback collection system
-- Success metrics dashboard
-
-### Resource Allocation
-| Role        | Hours/Week | Duration |
-|-------------|------------|----------|
-| Product     | 20         | 6 weeks  |
-| Engineering | 40         | 4 weeks  |
-| Design      | 15         | 3 weeks  |`,
-        outputType: 'Project Brief'
-    }
-]
 
 export default function PowerBundlesPage() {
     const [expandedBundle, setExpandedBundle] = useState<string | null>(null)
@@ -180,7 +75,7 @@ export default function PowerBundlesPage() {
                 {/* Header */}
                 <div className="mb-8">
                     <div className="flex items-center gap-3 mb-2">
-                        <Package className="w-8 h-8 text-primary" />
+                        <Layers className="w-8 h-8 text-primary" />
                         <h1 className="text-3xl font-bold text-foreground">Power Bundles</h1>
                     </div>
                     <p className="text-muted-foreground max-w-2xl">
@@ -191,7 +86,7 @@ export default function PowerBundlesPage() {
 
                 {/* Bundles Grid */}
                 <div className="py-8">
-                    <div className="grid gap-6 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                         {bundles.map((bundle) => (
                             <Card
                                 key={bundle.id}
@@ -203,7 +98,7 @@ export default function PowerBundlesPage() {
                                 {/* Bundle Header */}
                                 <div className="p-5 border-b border-border">
                                     <div className="flex items-start justify-between">
-                                        <div className="flex items-center gap-3">
+                                        <Link href={`/bundles/${bundle.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                                             <div className="p-2 rounded-lg bg-primary/10 text-primary">
                                                 {bundle.icon}
                                             </div>
@@ -211,10 +106,15 @@ export default function PowerBundlesPage() {
                                                 <h2 className="text-lg font-bold text-foreground">{bundle.name}</h2>
                                                 <p className="text-sm text-muted-foreground">{bundle.tagline}</p>
                                             </div>
+                                        </Link>
+                                        <div className="flex flex-col items-center justify-center bg-muted badge-rect px-3 py-1.5 min-w-[3.5rem]">
+                                            <span className="text-lg font-bold text-foreground leading-none">
+                                                {bundle.skills.length}
+                                            </span>
+                                            <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
+                                                skills
+                                            </span>
                                         </div>
-                                        <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">
-                                            {bundle.skills.length} skills
-                                        </span>
                                     </div>
                                 </div>
 
@@ -266,7 +166,7 @@ export default function PowerBundlesPage() {
 
                                 {/* CTA */}
                                 <div className="p-4 bg-card">
-                                    <Button className="max-w-[70%] w-full mx-auto" onClick={() => handleDownload(bundle)}>
+                                    <Button className="w-full" onClick={() => handleDownload(bundle)}>
                                         <Download className="w-4 h-4 mr-2" />
                                         Get This Bundle
                                     </Button>

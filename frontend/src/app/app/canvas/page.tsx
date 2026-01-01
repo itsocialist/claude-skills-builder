@@ -409,13 +409,13 @@ export default function CanvasPage() {
     }
 
     return (
-        <Shell title={skill.name || 'Visual Canvas'} inspector={inspectorContent}>
+        <Shell title={skill.name || 'Visual Canvas'} inspector={inspectorContent} fullWidth>
             <div className="h-full flex relative">
                 {/* Node Palette Sidebar */}
                 <NodePalette />
 
                 {/* Main Canvas Area - needs explicit height for ReactFlow */}
-                <div className="flex-1 relative" style={{ height: 'calc(100vh - 120px)' }}>
+                <div className="flex-1 relative bg-gradient-to-b from-card to-background" style={{ height: 'calc(100vh - 120px)' }}>
                     {/* Toolbar overlay */}
                     <div className="absolute top-4 left-4 z-10 flex gap-2 bg-background/80 backdrop-blur border border-border p-1 rounded-lg">
                         <Button

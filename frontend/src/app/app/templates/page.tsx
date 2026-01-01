@@ -88,15 +88,16 @@ export default function TemplatesPage() {
 
                     <div className="flex flex-wrap gap-2">
                         {CATEGORIES.map((category) => (
-                            <Button
+                            <button
                                 key={category}
-                                variant={selectedCategory === category ? 'default' : 'ghost'}
-                                size="sm"
                                 onClick={() => setSelectedCategory(category)}
-                                className="rounded-full"
+                                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${selectedCategory === category
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                    }`}
                             >
                                 {category}
-                            </Button>
+                            </button>
                         ))}
                     </div>
                 </div>
@@ -108,13 +109,13 @@ export default function TemplatesPage() {
 
                 {/* Templates Grid */}
                 {loading ? (
-                    <div className="grid md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-6">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {[1, 2, 3, 4, 5, 6].map((i) => (
                             <Card key={i} className="h-[200px] animate-pulse bg-card/50" />
                         ))}
                     </div>
                 ) : (
-                    <div className="grid md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-6">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredTemplates.map((template) => (
                             <TemplateCard
                                 key={template.id}
@@ -146,6 +147,6 @@ export default function TemplatesPage() {
                 open={sheetOpen}
                 onOpenChange={setSheetOpen}
             />
-        </Shell>
+        </Shell >
     );
 }

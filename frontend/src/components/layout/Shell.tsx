@@ -26,9 +26,10 @@ interface ShellProps {
         status: 'valid' | 'warning' | 'error';
         message: string;
     };
+    fullWidth?: boolean;
 }
 
-export function Shell({ children, inspector, title, onTitleChange, validation }: ShellProps) {
+export function Shell({ children, inspector, title, onTitleChange, validation, fullWidth = false }: ShellProps) {
     const { user, isConfigured } = useAuth();
     const { settings } = useSiteSettings();
     const pathname = usePathname();
@@ -340,9 +341,9 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                     <RecentSkills />
                 </aside>
 
-                {/* Main Content - Centered 70% width */}
-                <main className="flex-1 min-w-0 overflow-y-auto bg-background relative">
-                    <div className="mx-auto w-full lg:w-[70%] p-4 md:p-8">
+                {/* Main Content - Centered 70% width or Full Width */}
+                <main className="flex-1 min-w-0 overflow-y-auto bg-gradient-to-b from-card to-background relative">
+                    <div className={fullWidth ? "w-full h-full" : "mx-auto w-full lg:w-[70%] p-4 md:p-8"}>
                         {children}
                     </div>
                 </main>

@@ -154,6 +154,16 @@
   }
 }
 
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+    
+    .badge-rect {
+        @apply rounded-md;
+    }
+}
+
 /* Floating animation for thought bubbles */
 @keyframes float {
 

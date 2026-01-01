@@ -96,7 +96,7 @@ export default function WizardPage() {
     return (
         <Shell title="Quick Start Wizard">
             <FloatingIdeas />
-            <div className="container mx-auto py-8 max-w-2xl relative z-10">
+            <div className="container mx-auto py-8 max-w-4xl relative z-10">
                 {/* Progress */}
                 <div className="flex items-center justify-center mb-8 gap-1">
                     {STEPS.map((s, i) => {
@@ -141,7 +141,7 @@ export default function WizardPage() {
                                     value={skill.description}
                                     onChange={(e) => updateField('description', e.target.value)}
                                     placeholder="Generate professional real estate listings with compelling descriptions."
-                                    rows={3}
+                                    rows={8}
                                 />
                             </div>
                             <div>

@@ -389,7 +389,7 @@ export function SkillCanvas({ onNodeSelect }: SkillCanvasProps) {
                 nodeTypes={nodeTypes}
                 fitView
                 proOptions={{ hideAttribution: true }}
-                className="bg-background"
+                className="bg-transparent"
             >
                 <Controls
                     className="!bg-card !border-border !shadow-lg [&>button]:!bg-card [&>button]:!border-border [&>button]:!fill-foreground [&>button:hover]:!bg-accent"

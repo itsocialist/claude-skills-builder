@@ -9,7 +9,7 @@ interface MarketplaceHeroProps {
 
 export function MarketplaceHero({ searchQuery, onSearchChange }: MarketplaceHeroProps) {
     return (
-        <div className="bg-gradient-to-b from-card to-background py-16 md:py-24">
+        <div className="py-16 md:py-24">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 {/* Tagline */}
                 <div className="flex items-center justify-center gap-2 mb-4">
