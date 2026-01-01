@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Play, Home, Briefcase, TrendingUp, MessageSquare } from 'lucide-react';
@@ -9,10 +10,20 @@ import { DemoGallery } from '@/components/marketing/DemoGallery';
 import { FAQAccordion } from '@/components/marketing/FAQAccordion';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
 import { useOnboarding } from '@/lib/hooks/useOnboarding';
+import { useAuth } from '@/components/auth/AuthProvider';
 
 export default function MarketingPage() {
+  const router = useRouter();
+  const { user, loading } = useAuth();
   const { hasSeenOnboarding, markAsComplete } = useOnboarding();
   const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Redirect authenticated users to app
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace('/app');
+    }
+  }, [user, loading, router]);
 
   useEffect(() => {
     // Show onboarding after a short delay to avoid flash on mount
@@ -30,6 +41,11 @@ export default function MarketingPage() {
     markAsComplete();
     setShowOnboarding(false);
   };
+
+  // Show loading or nothing while checking auth
+  if (loading || user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background">{
