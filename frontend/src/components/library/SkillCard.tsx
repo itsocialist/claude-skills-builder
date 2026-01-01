@@ -36,11 +36,11 @@ export function SkillCard({ skill, onEdit, onDelete, onDuplicate, onExport, onIn
     return (
         <div className="bg-[#2a2a2a] border border-[#3a3a3a] rounded-xl p-4 hover:border-[#C15F3C]/50 transition-all group">
             {/* Header */}
-            <div className="flex items-start justify-between mb-3">
+            <div className="flex items-start justify-between mb-1">
                 <div className="flex-1 min-w-0">
                     <h3 className="text-white font-medium truncate">{skill.name}</h3>
                     {skill.category && (
-                        <span className="text-xs text-[#C15F3C] bg-[#C15F3C]/10 px-2 py-0.5 rounded-full mt-1 inline-block">
+                        <span className="text-xs text-[#C15F3C] bg-[#C15F3C]/10 px-2 py-0.5 rounded-full mt-0.5 inline-block">
                             {skill.category}
                         </span>
                     )}
