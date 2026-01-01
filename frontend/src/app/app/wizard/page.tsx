@@ -391,10 +391,10 @@ function WizardContent() {
                             transition={{ duration: 0.3 }}
                             className="flex-grow flex flex-col"
                         >
-                            <h2 className="text-3xl font-light text-white mb-8 text-center">{step === 4 ? "Congratulations!" : currentStep?.question}</h2>
+                            <h2 className="text-3xl font-light text-white mb-8 text-center">{step >= visibleSteps.length ? "Congratulations!" : currentStep?.question}</h2>
 
-                            {/* Step 1: What */}
-                            {step === 0 && (
+                            {/* Step: What (Identity) */}
+                            {currentStep?.id === 'what' && (
                                 <div className="space-y-8">
                                     <FlowInput
                                         label="Skill Name"
@@ -421,8 +421,8 @@ function WizardContent() {
                                 </div>
                             )}
 
-                            {/* Step 2: When */}
-                            {step === 1 && (
+                            {/* Step: When (Triggers) */}
+                            {currentStep?.id === 'when' && (
                                 <div className="space-y-6">
                                     <div className="relative">
                                         <FlowTextarea
@@ -476,8 +476,8 @@ function WizardContent() {
                                 </div>
                             )}
 
-                            {/* Step 3: How */}
-                            {step === 2 && (
+                            {/* Step: How (Instructions) */}
+                            {currentStep?.id === 'how' && (
                                 <div className="space-y-6 relative">
                                     <SkillSnippets onInsert={handleInsertSnippet} />
                                     <div className="relative">
@@ -496,40 +496,44 @@ function WizardContent() {
                                 </div>
                             )}
 
-                            {/* Step 4: Files */}
-                            {step === 3 && (
+                            {/* Step: Files (Resources) */}
+                            {currentStep?.id === 'files' && (
                                 <div className="space-y-6">
                                     <ResourceManager
                                         resources={skill.resources || []}
                                         onAdd={(resource) => addResource(resource)}
                                         onRemove={(id) => removeResource(id)}
                                     />
+                                </div>
+                            )}
 
-                                    <div className="pt-8 mt-8 border-t border-white/10 flex flex-col gap-3">
-                                        <Button onClick={handleDownload} size="lg" className="h-14 w-full bg-primary hover:bg-primary/90 text-lg shadow-lg shadow-primary/20">
-                                            <Download className="h-5 w-5 mr-3" />
-                                            Complete & Download
+                            {/* Completion Actions - Show on last step of any experience level */}
+                            {isLastStep && (
+                                <div className="pt-8 mt-8 border-t border-white/10 flex flex-col gap-3">
+                                    <Button onClick={handleDownload} size="lg" className="h-14 w-full bg-primary hover:bg-primary/90 text-lg shadow-lg shadow-primary/20">
+                                        <Download className="h-5 w-5 mr-3" />
+                                        Complete & Download
+                                    </Button>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <Button variant="outline" onClick={() => router.push('/butler')} className="h-12 border-white/10 text-white/70 hover:bg-white/5 hover:text-white">
+                                            <ChevronLeft className="h-4 w-4 mr-2" />
+                                            Back to Butler
                                         </Button>
-                                        <div className="grid grid-cols-2 gap-3">
-                                            <Button variant="outline" onClick={handleSkipUpload} className="h-12 border-white/10 text-white/70 hover:bg-white/5 hover:text-white">
-                                                Skip Upload
-                                            </Button>
-                                            <Button variant="outline" onClick={handleContinueInBuilder} className="h-12 border-white/10 text-white hover:bg-white/5">
-                                                <Hammer className="h-4 w-4 mr-2" />
-                                                Open in Builder
-                                            </Button>
-                                        </div>
+                                        <Button variant="outline" onClick={handleContinueInBuilder} className="h-12 border-white/10 text-white hover:bg-white/5">
+                                            <Hammer className="h-4 w-4 mr-2" />
+                                            Open in Builder
+                                        </Button>
                                     </div>
                                 </div>
                             )}
 
-                            {/* Step 4: Installation Guide (Post-Download) */}
-                            {step === 4 && (
+                            {/* Step: Completion (Post-Wizard) */}
+                            {step >= visibleSteps.length && (
                                 <InstallationGuide onExit={handleExitWizard} />
                             )}
 
-                            {/* Navigation */}
-                            {step < 3 && (
+                            {/* Navigation - show on all but the last step */}
+                            {!isLastStep && step < visibleSteps.length && (
                                 <div className="flex justify-between mt-auto pt-12">
                                     <Button
                                         variant="ghost"
@@ -556,7 +560,7 @@ function WizardContent() {
 
                 {/* Floating Overview - Positioned relative to container but fixed on screen via component styles */}
                 {
-                    step < 4 && (
+                    step < visibleSteps.length && (
                         <FlowProgressOverview steps={wizardSteps} currentStepIndex={step} />
                     )
                 }

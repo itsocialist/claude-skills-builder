@@ -13,7 +13,7 @@ import { MarkdownOutput } from '@/components/MarkdownOutput';
 import { toast } from 'sonner';
 import { saveAs } from 'file-saver';
 import { Search, FileText, BarChart3, Rocket } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase';
 
 interface SkillPreview {
     title: string;
@@ -41,7 +41,6 @@ export default function BundleDetailPage() {
         async function fetchSkillPreviews() {
             if (!bundle) return;
 
-            const supabase = createClient();
             const { data, error } = await supabase
                 .from('market_listings')
                 .select('title, preview_image_url, slug')

@@ -144,7 +144,7 @@ export default function PowerBundlesPage() {
 
                                         {/* CTA */}
                                         <div className="p-4 bg-card mt-auto">
-                                            <Button className="w-full" variant="secondary">
+                                            <Button className="w-full">
                                                 View Bundle
                                             </Button>
                                         </div>
