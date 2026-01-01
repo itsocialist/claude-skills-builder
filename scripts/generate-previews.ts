@@ -212,9 +212,32 @@ async function capturePreview(
     await new Promise(resolve => setTimeout(resolve, 500)); // Extra settle time
 
     // Capture the preview container
+    // Capture the preview container with a max height limit (simulating "one page")
     const element = await page.$('#preview-container > div');
+    const MAX_HEIGHT = 1000;
+
     if (element) {
-        await element.screenshot({ path: outputPath, type: 'png' });
+        const box = await element.boundingBox();
+        if (box) {
+            // If content is too tall, clip it
+            if (box.height > MAX_HEIGHT) {
+                await page.screenshot({
+                    path: outputPath,
+                    type: 'png',
+                    clip: {
+                        x: box.x,
+                        y: box.y,
+                        width: box.width,
+                        height: MAX_HEIGHT
+                    }
+                });
+            } else {
+                await element.screenshot({ path: outputPath, type: 'png' });
+            }
+        } else {
+            // Fallback
+            await element.screenshot({ path: outputPath, type: 'png' });
+        }
     } else {
         await page.screenshot({ path: outputPath, type: 'png' });
     }

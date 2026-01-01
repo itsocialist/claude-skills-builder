@@ -31,34 +31,39 @@ export function PreviewLightbox({ src, alt, isOpen, onClose }: PreviewLightboxPr
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8 animate-in fade-in duration-200"
+            className="fixed inset-0 z-50 overflow-y-auto animate-in fade-in duration-200"
             onClick={onClose}
         >
             {/* Backdrop */}
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
 
-            {/* Close button */}
-            <button
-                onClick={onClose}
-                className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-                aria-label="Close preview"
-            >
-                <X className="w-6 h-6" />
-            </button>
+            {/* Scrollable Container */}
+            <div className="min-h-full w-full flex items-center justify-center p-4 sm:p-8">
+                {/* Image container */}
+                <div
+                    className="relative max-w-5xl w-full animate-in zoom-in-95 duration-200"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    {/* Close button (inside container for better visibility on white images, or fixed?) 
+                        Let's keep it fixed relative to viewport for easy closing 
+                    */}
+                    <button
+                        onClick={onClose}
+                        className="fixed top-4 right-4 z-[60] p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                        aria-label="Close preview"
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
 
-            {/* Image container */}
-            <div
-                className="relative max-w-5xl max-h-[90vh] animate-in zoom-in-95 duration-200"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <img
-                    src={src}
-                    alt={alt}
-                    className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
-                />
-                <p className="text-center text-white/70 text-sm mt-3">
-                    Click anywhere or press Escape to close
-                </p>
+                    <img
+                        src={src}
+                        alt={alt}
+                        className="w-full h-auto rounded-lg shadow-2xl bg-white"
+                    />
+                    <p className="text-center text-white/70 text-sm mt-3 pb-8">
+                        Click outside or press Escape to close
+                    </p>
+                </div>
             </div>
         </div>
     );

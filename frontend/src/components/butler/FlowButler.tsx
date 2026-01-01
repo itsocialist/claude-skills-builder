@@ -374,7 +374,7 @@ function FlowStepGoal({
     );
 }
 
-// Step: Experience
+// Step: Experience - uses TextScrollOptions
 function FlowStepExperience({
     value,
     onChange,
@@ -384,47 +384,46 @@ function FlowStepExperience({
     onChange: (v: number) => void;
     onNext: () => void;
 }) {
-    const labels = ['Just starting', 'Some experience', 'Power user'];
-    const labelIndex = value < 33 ? 0 : value < 66 ? 1 : 2;
+    const options = [
+        { id: 'novice', label: 'Just starting', emoji: '🌱' },
+        { id: 'intermediate', label: 'Some experience', emoji: '🚀' },
+        { id: 'expert', label: 'Power user', emoji: '⚡' },
+    ];
+
+    const currentId = value < 33 ? 'novice' : value < 66 ? 'intermediate' : 'expert';
+
+    const handleSelect = (id: string) => {
+        const val = id === 'novice' ? 0 : id === 'intermediate' ? 50 : 100;
+        onChange(val);
+    };
 
     return (
         <motion.div
-            className="text-center max-w-2xl w-full"
+            className="text-center max-w-4xl w-full"
             variants={slideUp}
             initial="initial"
             animate="animate"
             exit="exit"
         >
-            <h1 className="text-4xl md:text-5xl font-light text-foreground mb-6">
+            <h1 className="text-4xl md:text-5xl font-light text-foreground mb-16">
                 <TypewriterText
                     text="How familiar are you with AI assistants?"
                     highlightWord="AI assistants"
                     speed={30}
                 />
             </h1>
-            <p className="text-2xl text-muted-foreground mb-12">{labels[labelIndex]}</p>
 
-            <div className="mx-auto max-w-md mb-12">
-                <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={value}
-                    onChange={(e) => onChange(parseInt(e.target.value))}
-                    className="w-full h-2 bg-muted rounded-full appearance-none cursor-pointer accent-primary"
-                    style={{
-                        background: `linear-gradient(to right, hsl(var(--primary)) ${value}%, hsl(var(--muted)) ${value}%)`,
-                    }}
+            <div className="mb-12">
+                <TextScrollOptions
+                    options={options}
+                    selectedId={currentId}
+                    onSelect={handleSelect}
                 />
-                <div className="flex justify-between mt-4 text-sm text-muted-foreground">
-                    <span>New to this</span>
-                    <span>Expert</span>
-                </div>
             </div>
 
             <motion.button
                 onClick={onNext}
-                className="px-8 py-4 bg-primary text-primary-foreground rounded-full text-lg font-medium"
+                className="px-8 py-4 rounded-full text-lg font-medium backdrop-blur-sm border bg-primary/85 text-primary-foreground border-primary/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_12px_rgba(193,95,60,0.25)]"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
             >
@@ -472,29 +471,29 @@ function FlowStepReveal({
                 {recommendations.map((bundle, i) => (
                     <motion.div
                         key={bundle.id}
-                        className="p-6 rounded-2xl border border-border bg-card/80 text-left"
+                        className="p-6 rounded-2xl border border-primary/20 bg-card/40 backdrop-blur-md text-left transition-all hover:bg-card/60 hover:border-primary/40 shadow-lg hover:shadow-primary/10"
                         variants={fadeRevealChild}
-                        whileHover={{ scale: 1.02, borderColor: 'rgba(193, 95, 60, 0.5)' }}
+                        whileHover={{ scale: 1.02 }}
                     >
                         <div className="flex items-center gap-4 mb-4">
-                            <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${bundle.color} flex items-center justify-center`}>
+                            <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${bundle.color} flex items-center justify-center shadow-inner`}>
                                 <span className="text-2xl text-white">
                                     <FluentEmoji emoji={i === 0 ? '🎯' : '⚡'} size="lg" />
                                 </span>
                             </div>
                             <div>
-                                <h3 className="text-xl font-semibold">{bundle.name}</h3>
+                                <h3 className="text-xl font-semibold text-foreground">{bundle.name}</h3>
                                 <p className="text-sm text-muted-foreground">{bundle.skills.length} skills</p>
                             </div>
                         </div>
-                        <p className="text-muted-foreground">{bundle.tagline}</p>
+                        <p className="text-muted-foreground/80 leading-relaxed">{bundle.tagline}</p>
                     </motion.div>
                 ))}
             </motion.div>
 
             <motion.button
                 onClick={onComplete}
-                className="px-8 py-4 bg-primary text-primary-foreground rounded-full text-lg font-medium"
+                className="px-8 py-4 rounded-full text-lg font-medium backdrop-blur-sm border bg-primary/85 text-primary-foreground border-primary/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_12px_rgba(193,95,60,0.25)]"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
             >
