@@ -78,8 +78,8 @@ export function FlowBackground({
                 particlesRef.current.push({
                     x,
                     y,
-                    vx: (Math.random() - 0.5) * particleSpeed,
-                    vy: (Math.random() - 0.5) * particleSpeed,
+                    vx: (Math.random() - 0.5) * particleSpeed * 2 + (Math.random() - 0.5) * 0.3,
+                    vy: (Math.random() - 0.5) * particleSpeed * 2 + (Math.random() - 0.5) * 0.3,
                     radius: Math.random() * 2 + 1,
                     originalX: x,
                     originalY: y,
@@ -131,12 +131,16 @@ export function FlowBackground({
                 // Apply velocity with damping
                 particle.x += particle.vx;
                 particle.y += particle.vy;
-                particle.vx *= 0.99;
-                particle.vy *= 0.99;
+                particle.vx *= 0.995; // Less damping for more drift
+                particle.vy *= 0.995;
 
-                // Return to original position gently
-                particle.vx += (particle.originalX - particle.x) * 0.001;
-                particle.vy += (particle.originalY - particle.y) * 0.001;
+                // Add subtle random drift for organic movement
+                particle.vx += (Math.random() - 0.5) * 0.02;
+                particle.vy += (Math.random() - 0.5) * 0.02;
+
+                // Very gentle return to original position (almost none)
+                particle.vx += (particle.originalX - particle.x) * 0.0002;
+                particle.vy += (particle.originalY - particle.y) * 0.0002;
 
                 // Wrap around edges relative to camera (infinite scroll)
                 if (particle.x < 0) particle.x = width;

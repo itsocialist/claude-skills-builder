@@ -20,6 +20,7 @@ export { FlowTransition } from './FlowTransition';
 
 // Butler Overlay
 export { FlowButlerOverlay } from './FlowButlerOverlay';
+export { FlowButton } from './FlowButton';
 
 // AI Recommendations
 export { useAIRecommendations } from './primitives/useAIRecommendations';

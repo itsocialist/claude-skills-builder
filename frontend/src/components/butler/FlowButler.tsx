@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronDown, Sparkles } from 'lucide-react';
+import { X, ChevronDown, Sparkles, Check } from 'lucide-react';
 import {
     slideUp,
     fadeReveal,
@@ -14,7 +14,7 @@ import {
 } from '@/lib/butler/flow-animations';
 import { bundles } from '@/lib/constants/bundles';
 import { FluentEmoji } from '@/components/ui/fluent-emoji';
-import { FlowBackground, useAIRecommendations, TextScrollOptions, VisualOrbOptions } from '@/components/flow';
+import { FlowBackground, FlowButton, useAIRecommendations, TextScrollOptions, VisualOrbOptions } from '@/components/flow';
 import { TypewriterText } from '@/components/ui/typewriter-text';
 
 interface FlowButlerProps {
@@ -294,18 +294,16 @@ function FlowStepWelcome({ onNext }: { onNext: () => void }) {
                 A few quick questions to personalize your experience
             </motion.p>
 
-            {/* Button - Pill style matching reveal */}
-            <motion.button
+            {/* Button - Glass style */}
+            <FlowButton
+                variant="glass"
                 onClick={onNext}
-                className="px-8 py-4 rounded-full text-lg font-medium backdrop-blur-sm border bg-primary/85 text-primary-foreground border-primary/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_12px_rgba(193,95,60,0.25)]"
                 initial={{ opacity: 0, y: 20, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.55, ease: "easeOut", delay: staggerDelay * 4 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
             >
                 Let's begin
-            </motion.button>
+            </FlowButton>
         </motion.div>
     );
 }
@@ -429,14 +427,9 @@ function FlowStepExperience({
                 />
             </div>
 
-            <motion.button
-                onClick={onNext}
-                className="px-8 py-4 rounded-full text-lg font-medium backdrop-blur-sm border bg-primary/85 text-primary-foreground border-primary/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_12px_rgba(193,95,60,0.25)]"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-            >
+            <FlowButton variant="glass" onClick={onNext}>
                 Show me my skills
-            </motion.button>
+            </FlowButton>
         </motion.div>
     );
 }
