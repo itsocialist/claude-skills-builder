@@ -14,7 +14,7 @@ import {
 } from '@/lib/butler/flow-animations';
 import { bundles } from '@/lib/constants/bundles';
 import { FluentEmoji } from '@/components/ui/fluent-emoji';
-import { FlowBackground, useAIRecommendations } from '@/components/flow';
+import { FlowBackground, useAIRecommendations, TextScrollOptions, VisualOrbOptions } from '@/components/flow';
 import { TypewriterText } from '@/components/ui/typewriter-text';
 
 interface FlowButlerProps {
@@ -302,120 +302,74 @@ function FlowStepWelcome({ onNext }: { onNext: () => void }) {
     );
 }
 
-// Step: Role
+// Step: Role - uses TextScrollOptions (horizontal arc scroll)
 function FlowStepRole({
     selected,
     onSelect,
-    focusIndex,
-    onFocusChange
 }: {
     selected: string;
     onSelect: (id: string) => void;
     focusIndex: number;
     onFocusChange: (index: number) => void;
 }) {
+    const options = ROLES.map(r => ({ id: r.id, label: r.label, emoji: r.emoji }));
+
     return (
         <motion.div
-            className="text-center max-w-3xl w-full"
+            className="text-center max-w-4xl w-full"
             variants={slideUp}
             initial="initial"
             animate="animate"
             exit="exit"
         >
-            <h1 className="text-4xl md:text-5xl font-light text-foreground mb-12">
+            <h1 className="text-4xl md:text-5xl font-light text-foreground mb-16">
                 <TypewriterText
                     text="What's your superpower?"
                     highlightWord="superpower"
                     speed={35}
                 />
             </h1>
-            <motion.div
-                className="grid grid-cols-2 md:grid-cols-3 gap-4"
-                variants={fadeReveal}
-                initial="initial"
-                animate="animate"
-            >
-                {ROLES.map((role, index) => (
-                    <motion.button
-                        key={role.id}
-                        onClick={() => onSelect(role.id)}
-                        onMouseEnter={() => onFocusChange(index)}
-                        className={`p-6 rounded-2xl border-2 transition-all duration-200 ${selected === role.id
-                            ? 'border-primary bg-primary/10'
-                            : focusIndex === index
-                                ? 'border-primary/70 bg-card/80 ring-2 ring-primary/30 ring-offset-2 ring-offset-background'
-                                : 'border-border bg-card/50 hover:border-primary/50'
-                            }`}
-                        variants={fadeRevealChild}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                    >
-                        <span className="text-3xl mb-2 block text-primary">
-                            <FluentEmoji emoji={role.emoji} size="xl" />
-                        </span>
-                        <span className="text-lg font-medium">{role.label}</span>
-                    </motion.button>
-                ))}
-            </motion.div>
+            <TextScrollOptions
+                options={options}
+                selectedId={selected}
+                onSelect={onSelect}
+            />
         </motion.div>
     );
 }
 
-// Step: Goal
+// Step: Goal - uses VisualOrbOptions (3D orbs with connections)
 function FlowStepGoal({
     selected,
     onSelect,
-    focusIndex,
-    onFocusChange
 }: {
     selected: string;
     onSelect: (id: string) => void;
     focusIndex: number;
     onFocusChange: (index: number) => void;
 }) {
+    const options = GOALS.map(g => ({ id: g.id, label: g.label, emoji: g.emoji }));
+
     return (
         <motion.div
-            className="text-center max-w-3xl w-full"
+            className="text-center max-w-4xl w-full"
             variants={slideUp}
             initial="initial"
             animate="animate"
             exit="exit"
         >
-            <h1 className="text-4xl md:text-5xl font-light text-foreground mb-12">
+            <h1 className="text-4xl md:text-5xl font-light text-foreground mb-8">
                 <TypewriterText
                     text="What would you love to accomplish?"
                     highlightWord="accomplish"
                     speed={30}
                 />
             </h1>
-            <motion.div
-                className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                variants={fadeReveal}
-                initial="initial"
-                animate="animate"
-            >
-                {GOALS.map((goal, index) => (
-                    <motion.button
-                        key={goal.id}
-                        onClick={() => onSelect(goal.id)}
-                        onMouseEnter={() => onFocusChange(index)}
-                        className={`p-6 rounded-2xl border-2 text-left transition-all duration-200 ${selected === goal.id
-                            ? 'border-primary bg-primary/10'
-                            : focusIndex === index
-                                ? 'border-primary/70 bg-card/80 ring-2 ring-primary/30 ring-offset-2 ring-offset-background'
-                                : 'border-border bg-card/50 hover:border-primary/50'
-                            }`}
-                        variants={fadeRevealChild}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                    >
-                        <span className="text-3xl mb-2 block text-primary">
-                            <FluentEmoji emoji={goal.emoji} size="xl" />
-                        </span>
-                        <span className="text-xl font-medium">{goal.label}</span>
-                    </motion.button>
-                ))}
-            </motion.div>
+            <VisualOrbOptions
+                options={options}
+                selectedId={selected}
+                onSelect={onSelect}
+            />
         </motion.div>
     );
 }
