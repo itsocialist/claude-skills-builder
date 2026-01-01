@@ -189,13 +189,13 @@ export function VisualOrbOptions({
                                 setFocusIndex(index);
                                 onSelect(option.id);
                             }}
-                            className={`absolute flex flex-col items-center justify-center w-28 h-28 rounded-full transition-colors ${isFocused
-                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30'
-                                    : 'bg-muted/80 text-muted-foreground hover:bg-muted'
+                            className={`absolute flex flex-col items-center justify-center w-24 h-24 rounded-lg transition-all backdrop-blur-sm border ${isFocused
+                                    ? 'bg-primary/85 text-primary-foreground border-primary/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_12px_rgba(193,95,60,0.25)]'
+                                    : 'bg-card/40 text-muted-foreground border-border/40 hover:bg-card/60 hover:border-border/70'
                                 }`}
                             animate={{
-                                scale: isFocused ? 1.15 : 0.85,
-                                opacity: isFocused ? 1 : 0.7,
+                                scale: isFocused ? 1.1 : 0.88,
+                                opacity: isFocused ? 1 : 0.65,
                             }}
                             transition={{
                                 type: 'spring',
@@ -208,12 +208,12 @@ export function VisualOrbOptions({
                                 transform: 'translate(-50%, -50%)',
                                 zIndex: style.zIndex,
                             }}
-                            whileHover={{ scale: isFocused ? 1.2 : 0.95 }}
+                            whileHover={{ scale: isFocused ? 1.12 : 0.92 }}
                         >
                             {option.emoji && (
-                                <span className="text-2xl mb-1">{option.emoji}</span>
+                                <span className="text-xl mb-1 opacity-85">{option.emoji}</span>
                             )}
-                            <span className="text-sm font-medium text-center px-2">
+                            <span className="text-xs font-medium text-center px-2">
                                 {option.label}
                             </span>
                         </motion.button>

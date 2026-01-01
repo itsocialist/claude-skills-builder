@@ -96,15 +96,15 @@ export function TextScrollOptions({
                                 setFocusIndex(index);
                                 onSelect(option.id);
                             }}
-                            className={`absolute whitespace-nowrap px-6 py-3 rounded-full text-lg font-medium transition-colors ${isFocused
-                                    ? 'bg-primary text-primary-foreground'
-                                    : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                            className={`absolute whitespace-nowrap px-5 py-2.5 rounded-md text-sm font-medium transition-all backdrop-blur-sm border ${isFocused
+                                    ? 'bg-primary/90 text-primary-foreground border-primary/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2)]'
+                                    : 'bg-card/40 text-muted-foreground border-border/50 hover:bg-card/60 hover:border-border'
                                 }`}
                             animate={{
-                                x: (index - focusIndex) * 200,
-                                z: -Math.abs(index - focusIndex) * 150,
-                                scale: Math.max(0.6, 1 - Math.abs(index - focusIndex) * 0.15),
-                                opacity: Math.max(0, 1 - Math.abs(index - focusIndex) * 0.35),
+                                x: (index - focusIndex) * 180,
+                                z: -Math.abs(index - focusIndex) * 120,
+                                scale: Math.max(0.7, 1 - Math.abs(index - focusIndex) * 0.12),
+                                opacity: Math.max(0.15, 1 - Math.abs(index - focusIndex) * 0.4),
                             }}
                             transition={{
                                 type: 'spring',
@@ -115,9 +115,9 @@ export function TextScrollOptions({
                                 zIndex: style.zIndex,
                                 filter: style.filter,
                             }}
-                            whileHover={{ scale: isFocused ? 1.05 : 0.7 }}
+                            whileHover={{ scale: isFocused ? 1.03 : 0.75 }}
                         >
-                            {option.emoji && <span className="mr-2">{option.emoji}</span>}
+                            {option.emoji && <span className="mr-2 opacity-80">{option.emoji}</span>}
                             {option.label}
                         </motion.button>
                     );
