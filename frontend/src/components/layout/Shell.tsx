@@ -340,9 +340,9 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                     <RecentSkills />
                 </aside>
 
-                {/* Main Content - Centered when no inspector on desktop */}
-                <main className={`flex-1 min-w-0 overflow-y-auto bg-background relative ${inspector ? '' : 'lg:flex lg:justify-center'}`}>
-                    <div className={`p-4 md:p-8 ${inspector ? '' : 'lg:max-w-4xl lg:w-full'}`}>
+                {/* Main Content - 70% width on desktop */}
+                <main className="flex-1 min-w-0 overflow-y-auto bg-background relative lg:max-w-[70%]">
+                    <div className="p-4 md:p-8">
                         {children}
                     </div>
                 </main>
