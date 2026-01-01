@@ -286,15 +286,15 @@ function FlowStepWelcome({ onNext }: { onNext: () => void }) {
                 A few quick questions to personalize your experience
             </motion.p>
 
-            {/* Button */}
+            {/* Button - Orange glass style */}
             <motion.button
                 onClick={onNext}
-                className="px-8 py-4 bg-primary text-primary-foreground rounded-full text-lg font-medium"
+                className="px-6 py-3 rounded-md text-sm font-medium backdrop-blur-sm border bg-primary/85 text-primary-foreground border-primary/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_12px_rgba(193,95,60,0.25)]"
                 initial={{ opacity: 0, y: 20, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.55, ease: "easeOut", delay: staggerDelay * 4 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
             >
                 Let's begin
             </motion.button>
