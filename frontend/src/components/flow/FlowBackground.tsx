@@ -205,12 +205,12 @@ export function FlowBackground({
                 ref={canvasRef}
                 className={cn('absolute inset-0 w-full h-full', className)}
             />
-            {/* Animated glow that follows step */}
+            {/* Animated glow that follows step - BRIGHT */}
             <motion.div
                 className="absolute inset-0 pointer-events-none"
                 animate={{
-                    background: `radial-gradient(ellipse 80% 60% at ${glowPosRef.current.x}% ${glowPosRef.current.y}%, rgba(193, 95, 60, 0.15) 0%, rgba(193, 95, 60, 0.05) 40%, transparent 70%)`,
-                    opacity: [0.15, 0.25, 0.15],
+                    background: `radial-gradient(ellipse 80% 60% at ${glowPosRef.current.x}% ${glowPosRef.current.y}%, rgba(193, 95, 60, 0.30) 0%, rgba(193, 95, 60, 0.12) 40%, transparent 70%)`,
+                    opacity: [0.40, 0.65, 0.40],
                     scale: [1, 1.08, 1],
                 }}
                 transition={{
@@ -219,7 +219,7 @@ export function FlowBackground({
                     repeat: Infinity,
                 }}
                 style={{
-                    background: `radial-gradient(ellipse 80% 60% at ${glowPosRef.current.x}% ${glowPosRef.current.y}%, rgba(193, 95, 60, 0.15) 0%, rgba(193, 95, 60, 0.05) 40%, transparent 70%)`,
+                    background: `radial-gradient(ellipse 80% 60% at ${glowPosRef.current.x}% ${glowPosRef.current.y}%, rgba(193, 95, 60, 0.30) 0%, rgba(193, 95, 60, 0.12) 40%, transparent 70%)`,
                 }}
             />
         </>
