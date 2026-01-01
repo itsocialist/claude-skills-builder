@@ -18,40 +18,53 @@ import {
 import { FlowInput } from '@/components/flow/inputs/FlowInput';
 import { FlowTextarea } from '@/components/flow/inputs/FlowTextarea';
 import { FlowProgressOverview } from '@/components/flow/overview/FlowProgressOverview';
-import { FlowBackground } from '@/components/flow/FlowBackground';
+import { FlowBackground, FlowTransition, FlowButlerOverlay } from '@/components/flow';
 import { Button } from '@/components/ui/button';
 
 // --- Constants ---
-const STEPS = [
+// minExperience: 0-100, steps with higher values are skipped for beginners
+const ALL_STEPS = [
     {
         id: 'what',
         title: 'What',
         icon: Lightbulb,
         question: 'Define the Identity',
-        help: 'All skills start with a clear name and purpose. This tells Claude what "hat" to wear.'
+        help: 'All skills start with a clear name and purpose. This tells Claude what "hat" to wear.',
+        minExperience: 0, // Always shown
     },
     {
         id: 'when',
         title: 'When',
         icon: MessageSquare,
         question: 'Set the Triggers',
-        help: 'Triggers are the "wake words" for your skill. What should the user say to activate this?'
+        help: 'Triggers are the "wake words" for your skill. What should the user say to activate this?',
+        minExperience: 50, // Skip for beginners
     },
     {
         id: 'how',
         title: 'How',
         icon: FileText,
         question: 'Teach the Behavior',
-        help: 'This is the brain of the skill. Provide step-by-step instructions on how to process the request.'
+        help: 'This is the brain of the skill. Provide step-by-step instructions on how to process the request.',
+        minExperience: 0, // Always shown
     },
     {
         id: 'files',
         title: 'Files',
         icon: Paperclip,
         question: 'Add Context',
-        help: 'Upload templates, examples, or data files that Claude needs to do the job right.'
+        help: 'Upload templates, examples, or data files that Claude needs to do the job right.',
+        minExperience: 75, // Advanced only
     },
 ];
+
+// Filter steps based on user experience (0-100)
+function getVisibleSteps(experience: number = 50) {
+    return ALL_STEPS.filter(step => step.minExperience <= experience);
+}
+
+// Default to showing all steps for now (can be updated based on lessonPlan experience)
+const STEPS = ALL_STEPS;
 
 const TRIGGER_EXAMPLES = [
     'Create a property listing for...',
@@ -73,15 +86,19 @@ function WizardContent() {
     const [lessonPlan, setLessonPlan] = useState<LessonPlan | null>(null);
     const [step, setStep] = useState(0);
     const [triggerInput, setTriggerInput] = useState('');
+    const [userExperience, setUserExperience] = useState(100); // Default to full wizard
     const lastPathnameRef = useRef<string | null>(null);
 
+    // Dynamic steps based on user experience (beginners see fewer steps)
+    const visibleSteps = getVisibleSteps(userExperience);
+
     // Wizard progress steps for the overview
-    const wizardSteps = [
-        { id: 'identity', label: 'Identity', isCompleted: step > 0, isActive: step === 0 },
-        { id: 'details', label: 'Core Behavior', isCompleted: step > 1, isActive: step === 1 },
-        { id: 'knowledge', label: 'Context', isCompleted: step > 2, isActive: step === 2 },
-        { id: 'review', label: 'Review & Install', isCompleted: step > 3, isActive: step === 3 },
-    ];
+    const wizardSteps = visibleSteps.map((s, i) => ({
+        id: s.id,
+        label: s.title,
+        isCompleted: step > i,
+        isActive: step === i,
+    }));
 
     // 1. Initial Load & Logic
     useEffect(() => {
@@ -91,10 +108,12 @@ function WizardContent() {
 
         // If we have Flow params, enter "AI Mode"
         if (role && goal) {
+            const expValue = parseInt(experience || '50');
+            setUserExperience(expValue);
             setMode('analyzing');
 
             // Artificial delay for "Manifesting"
-            generateLessonPlan(role, goal, parseInt(experience || '50'))
+            generateLessonPlan(role, goal, expValue)
                 .then(plan => {
                     setLessonPlan(plan);
                     setMode('plan');
@@ -281,13 +300,13 @@ function WizardContent() {
         }
     };
 
-    const currentStep = STEPS[step] || STEPS[STEPS.length - 1];
-    const isLastStep = step === STEPS.length - 1;
+    const currentStep = visibleSteps[step] || visibleSteps[visibleSteps.length - 1];
+    const isLastStep = step === visibleSteps.length - 1;
 
     // --- Render: Analyzing State ---
     if (mode === 'analyzing') {
         return (
-            <>
+            <FlowButlerOverlay stage="analyze">
                 <FlowBackground stepIndex={step} />
                 <div className="flex flex-col items-center justify-center min-h-screen relative z-10">
                     <div className="w-full max-w-md text-center">
@@ -296,21 +315,21 @@ function WizardContent() {
                         <p className="text-white/50">Analyzing compatibility profiles</p>
                     </div>
                 </div>
-            </>
+            </FlowButlerOverlay>
         );
     }
 
     // --- Render: Plan View ---
     if (mode === 'plan' && lessonPlan) {
         return (
-            <>
+            <FlowButlerOverlay stage="plan">
                 <FlowBackground stepIndex={step} />
                 <div className="container mx-auto px-4 py-8 relative z-10">
-                    <GlassTerminal title="LESSON_PLAN_RECEIVED" helpText="Select a module to begin your guided implementation.">
+                    <GlassTerminal title="LESSON_PLAN_RECEIVED">
                         <PlanView plan={lessonPlan} onStart={handleStartLesson} onExit={handleExitPlan} />
                     </GlassTerminal>
                 </div>
-            </>
+            </FlowButlerOverlay>
         );
     }
 
@@ -328,17 +347,16 @@ function WizardContent() {
 
     // --- Render: Wizard View ---
     return (
-        <>
+        <FlowButlerOverlay stage="wizard" message={currentStep?.help}>
             <FlowBackground stepIndex={step} />
             <div className="container mx-auto px-4 py-8 relative z-10">
                 <GlassTerminal
-                    title={step === 4 ? "INSTALLATION_GUIDE" : `STEP_${step + 1}_OF_${STEPS.length}`}
-                    helpText={step === 4 ? "Follow these steps to activate your new skill in Claude." : currentStep.help}
+                    title={step >= visibleSteps.length ? "INSTALLATION_GUIDE" : `STEP_${step + 1}_OF_${visibleSteps.length}`}
                 >
                     {/* Progress */}
-                    {step < 4 && (
+                    {step < visibleSteps.length && (
                         <div className="flex items-center justify-center mb-12 gap-1">
-                            {STEPS.map((s, i) => {
+                            {visibleSteps.map((s, i) => {
                                 const Icon = s.icon;
                                 const isActive = i === step;
                                 const isCompleted = i < step;
@@ -355,7 +373,7 @@ function WizardContent() {
                                         >
                                             {isCompleted ? <Check className="h-5 w-5" /> : <Icon className="h-5 w-5" />}
                                         </div>
-                                        {i < STEPS.length - 1 && (
+                                        {i < visibleSteps.length - 1 && (
                                             <div className={`w-12 h-px mx-2 transition-colors duration-300 ${isCompleted ? 'bg-primary' : 'bg-white/10'}`} />
                                         )}
                                     </div>
@@ -543,7 +561,7 @@ function WizardContent() {
                     )
                 }
             </div>
-        </>
+        </FlowButlerOverlay>
     );
 }
 

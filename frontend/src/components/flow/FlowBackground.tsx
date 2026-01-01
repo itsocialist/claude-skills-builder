@@ -109,9 +109,9 @@ export function FlowBackground({
             panOffsetRef.current += (targetPanRef.current - panOffsetRef.current) * 0.08;
             const currentPan = panOffsetRef.current;
 
-            // Lerp glow position
-            glowPosRef.current.x += (targetGlowRef.current.x - glowPosRef.current.x) * 0.05;
-            glowPosRef.current.y += (targetGlowRef.current.y - glowPosRef.current.y) * 0.05;
+            // Lerp glow position - slower for smoother transitions
+            glowPosRef.current.x += (targetGlowRef.current.x - glowPosRef.current.x) * 0.02;
+            glowPosRef.current.y += (targetGlowRef.current.y - glowPosRef.current.y) * 0.02;
 
             const mouse = mouseRef.current;
 

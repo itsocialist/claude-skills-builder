@@ -1,6 +1,8 @@
 'use client';
 
 import { useParams, notFound } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Shell } from '@/components/layout/Shell';
 import { bundles as sharedBundles } from '@/lib/constants/bundles';
 import { Package, Download, Check, ArrowLeft, Layers, Sparkles } from 'lucide-react';
@@ -11,6 +13,13 @@ import { MarkdownOutput } from '@/components/MarkdownOutput';
 import { toast } from 'sonner';
 import { saveAs } from 'file-saver';
 import { Search, FileText, BarChart3, Rocket } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
+
+interface SkillPreview {
+    title: string;
+    preview_image_url: string | null;
+    slug: string;
+}
 
 // Map icon strings to components for rendering (reused)
 const iconMap: Record<string, React.ReactNode> = {
@@ -23,8 +32,31 @@ const iconMap: Record<string, React.ReactNode> = {
 export default function BundleDetailPage() {
     const params = useParams();
     const id = params?.id as string;
+    const [skillPreviews, setSkillPreviews] = useState<Record<string, SkillPreview>>({});
 
     const bundle = sharedBundles.find(b => b.id === id);
+
+    // Fetch preview images for skills in this bundle
+    useEffect(() => {
+        async function fetchSkillPreviews() {
+            if (!bundle) return;
+
+            const supabase = createClient();
+            const { data, error } = await supabase
+                .from('market_listings')
+                .select('title, preview_image_url, slug')
+                .in('title', bundle.skills);
+
+            if (data && !error) {
+                const previewMap: Record<string, SkillPreview> = {};
+                data.forEach(skill => {
+                    previewMap[skill.title] = skill;
+                });
+                setSkillPreviews(previewMap);
+            }
+        }
+        fetchSkillPreviews();
+    }, [bundle]);
 
     if (!bundle) {
         notFound();
@@ -114,12 +146,42 @@ export default function BundleDetailPage() {
                             </div>
                         </div>
                         <div className="space-y-3">
-                            {skills.map(skill => (
-                                <div key={skill} className="flex items-center gap-2 text-sm">
-                                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
-                                    <span>{skill}</span>
-                                </div>
-                            ))}
+                            {skills.map(skill => {
+                                const preview = skillPreviews[skill];
+                                const hasPreview = preview?.preview_image_url;
+
+                                const skillContent = (
+                                    <div
+                                        className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${preview?.slug ? 'hover:bg-muted/50 cursor-pointer' : ''}`}
+                                    >
+                                        {/* Thumbnail or fallback */}
+                                        <div className="relative w-12 h-9 rounded overflow-hidden bg-muted/50 flex-shrink-0 border border-border/50">
+                                            {hasPreview ? (
+                                                <Image
+                                                    src={preview.preview_image_url!}
+                                                    alt={skill}
+                                                    fill
+                                                    sizes="48px"
+                                                    className="object-cover object-top"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center">
+                                                    <Check className="w-4 h-4 text-green-500" />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <span className="text-sm font-medium">{skill}</span>
+                                    </div>
+                                );
+
+                                return preview?.slug ? (
+                                    <Link key={skill} href={`/marketplace/${preview.slug}`}>
+                                        {skillContent}
+                                    </Link>
+                                ) : (
+                                    <div key={skill}>{skillContent}</div>
+                                );
+                            })}
                         </div>
                     </Card>
                 </div>

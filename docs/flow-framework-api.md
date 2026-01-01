@@ -99,6 +99,39 @@ Horizontal arc scroll with "Liquid Focus Lens" and Z-depth fading.
 
 ---
 
+## Transition & Overlay Components
+
+### FlowTransition
+Animate between different mode states (analyze, plan, wizard) with seamless morphing.
+
+```tsx
+import { FlowTransition } from '@/components/flow';
+
+<FlowTransition mode={currentMode}>
+  {mode === 'analyze' && <AnalyzeView />}
+  {mode === 'plan' && <PlanView />}
+  {mode === 'wizard' && <WizardView />}
+</FlowTransition>
+```
+
+### FlowButlerOverlay
+Persistent communication layer with contextual typewriter guidance.
+
+```tsx
+import { FlowButlerOverlay } from '@/components/flow';
+
+<FlowButlerOverlay 
+  stage="wizard" 
+  message="Building your skill step by step."
+>
+  <WizardContent />
+</FlowButlerOverlay>
+```
+
+**Stage Options**: `analyze` | `plan` | `wizard` | `complete`
+
+---
+
 ## Hooks
 
 ### useFlow

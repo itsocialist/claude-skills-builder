@@ -15,6 +15,12 @@ export { FlowSlide, FlowButton, FlowQuestion } from './FlowSlide';
 // Background & Atmosphere
 export { FlowBackground } from './FlowBackground';
 
+// Transitions
+export { FlowTransition } from './FlowTransition';
+
+// Butler Overlay
+export { FlowButlerOverlay } from './FlowButlerOverlay';
+
 // AI Recommendations
 export { useAIRecommendations } from './primitives/useAIRecommendations';
 
