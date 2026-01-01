@@ -85,6 +85,12 @@ export function TextScrollOptions({
             <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none" />
             <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none" />
 
+            {/* Static glass highlight - stays fixed in center */}
+            <div
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none px-10 py-5 rounded-md border border-primary/40 shadow-[0_0_30px_rgba(193,95,60,0.2)]"
+                style={{ minWidth: '160px', minHeight: '56px', zIndex: 5 }}
+            />
+
             <div
                 className="relative flex items-center justify-center"
                 style={{ transformStyle: 'preserve-3d' }}
@@ -104,9 +110,9 @@ export function TextScrollOptions({
                                 setFocusIndex(index);
                                 onSelect(option.id);
                             }}
-                            className={`absolute whitespace-nowrap px-7 py-3.5 rounded-md text-base font-medium transition-all backdrop-blur-sm border ${isFocused
-                                    ? 'bg-primary/85 text-primary-foreground border-primary/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_12px_rgba(193,95,60,0.25)]'
-                                    : 'bg-card/30 text-muted-foreground/80 border-border/30 hover:bg-card/50 hover:border-border/50'
+                            className={`absolute whitespace-nowrap px-4 py-2 text-base font-medium transition-colors ${isFocused
+                                    ? 'text-primary-foreground'
+                                    : 'text-muted-foreground/60'
                                 }`}
                             animate={{
                                 x: distance * 180,
