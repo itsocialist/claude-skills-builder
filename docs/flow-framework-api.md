@@ -1,8 +1,8 @@
-# Flow Framework API (v2.1: Liquid Glass)
+# Flow Framework API (v2.2: Glass Buttons)
 
 A declarative, cinematic presentation system for guided user experiences, featuring the "Liquid Glass" / "Minority Report" aesthetic.
 
-**Sprint 25 Updates**: FlowTransition, FlowButlerOverlay, slower glow lerp, adaptive step filtering.
+**Sprint 25 Updates**: FlowButton component, FlowTransition, FlowButlerOverlay, slower glow lerp, adaptive step filtering.
 
 ## Quick Start
 
@@ -179,6 +179,36 @@ border
 border-primary/50 
 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]
 ```
+
+### FlowButton Component *(New in Sprint 25)*
+Reusable button component with standardized variants.
+
+```tsx
+import { FlowButton } from '@/components/flow';
+
+// Glass variant (default) - translucent frosted
+<FlowButton variant="glass" onClick={handleClick}>
+  Let's begin
+</FlowButton>
+
+// Primary variant - solid terracotta for active states
+<FlowButton variant="primary" onClick={handleSubmit}>
+  Continue
+</FlowButton>
+
+// Ghost variant - minimal for secondary actions
+<FlowButton variant="ghost" size="sm">
+  Skip
+</FlowButton>
+```
+
+**Props:**
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `variant` | `'glass' \| 'primary' \| 'ghost'` | `'glass'` | Button style variant |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'lg'` | Button size |
+| `isAnimated` | `boolean` | `true` | Enable hover/tap animations |
+| `disabled` | `boolean` | `false` | Disable button |
 
 ### Universal Translucency
 All major UI containers (cards, options, buttons) MUST use `backdrop-filter` and `bg-opacity` < 1.0 to maintain the ethereal aesthetic.

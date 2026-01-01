@@ -1,7 +1,7 @@
 # User Guide
 
-> **Last Updated:** 2025-12-30
-> **Version:** v2.2 (Post-Sprint 19)
+> **Last Updated:** 2026-01-01
+> **Version:** v2.3 (Post-Sprint 25)
 
 ## Table of Contents
 1. [Getting Started](#getting-started)
