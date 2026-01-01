@@ -478,16 +478,17 @@ function WizardContent() {
 
                             {/* Step: How (Instructions) */}
                             {currentStep?.id === 'how' && (
-                                <div className="space-y-6 relative">
+                                <div className="flex-1 flex flex-col min-h-[400px]">
                                     <SkillSnippets onInsert={handleInsertSnippet} />
-                                    <div className="relative">
+                                    <div className="relative flex-1 flex flex-col">
                                         <FlowTextarea
                                             label="Instructions"
                                             placeholder="Detailed instructions for Claude..."
                                             value={skill.instructions}
                                             onChange={(e) => updateField('instructions', e.target.value)}
-                                            className="min-h-[300px] font-mono text-sm leading-relaxed"
+                                            className="font-mono text-sm leading-relaxed"
                                             description="How should the AI behave? Be specific."
+                                            fillParent
                                         />
                                         <div className="absolute right-4 top-4">
                                             <AIButton onClick={handleAIAssist} />

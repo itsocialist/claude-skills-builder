@@ -11,10 +11,11 @@ export interface FlowTextareaProps
     description?: string;
     error?: string;
     minHeight?: string;
+    fillParent?: boolean;
 }
 
 export const FlowTextarea = React.forwardRef<HTMLTextAreaElement, FlowTextareaProps>(
-    ({ className, label, description, error, onFocus, onBlur, minHeight = "min-h-[120px]", ...props }, ref) => {
+    ({ className, label, description, error, onFocus, onBlur, minHeight = "min-h-[120px]", fillParent = false, ...props }, ref) => {
         const [isFocused, setIsFocused] = React.useState(false);
         const [hasValue, setHasValue] = React.useState(!!props.value);
 
@@ -34,7 +35,7 @@ export const FlowTextarea = React.forwardRef<HTMLTextAreaElement, FlowTextareaPr
         };
 
         return (
-            <div className="relative group w-full mb-8">
+            <div className={cn("relative group w-full", fillParent ? "flex-1 flex flex-col h-full" : "mb-8")}>
                 <motion.div
                     className={cn(
                         "relative transition-all duration-500",
@@ -56,7 +57,7 @@ export const FlowTextarea = React.forwardRef<HTMLTextAreaElement, FlowTextareaPr
                     <textarea
                         className={cn(
                             "flex w-full bg-transparent px-4 py-4 text-lg transition-colors placeholder:text-muted-foreground/30 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 resize-y",
-                            minHeight
+                            fillParent ? "flex-1 h-full" : minHeight
                         )}
                         ref={ref}
                         onFocus={handleFocus}
