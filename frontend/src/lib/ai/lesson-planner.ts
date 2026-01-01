@@ -15,6 +15,8 @@ export interface LessonPlan {
     title: string;
     description: string;
     modules: LessonModule[];
+    role?: string;
+    goal?: string;
 }
 
 // Pre-defined templates for the "AI" to "generate"
@@ -128,9 +130,16 @@ export async function generateLessonPlan(role: string, goal: string, experience:
     // Simple mapping logic
     const key = `${role}-${goal}`.toLowerCase();
 
-    // Partial matches
-    if (role === 'marketer' || goal === 'content') return PLANS['marketer-content'];
-    if (role === 'developer' || goal === 'automate') return PLANS['developer-automate'];
+    let plan = PLANS['default'];
 
-    return PLANS['default'];
+    // Partial matches
+    if (role === 'marketer' || goal === 'content') plan = PLANS['marketer-content'];
+    if (role === 'developer' || goal === 'automate') plan = PLANS['developer-automate'];
+
+    // Inject context
+    return {
+        ...plan,
+        role,
+        goal
+    };
 }
