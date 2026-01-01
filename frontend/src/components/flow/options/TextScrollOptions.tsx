@@ -78,16 +78,24 @@ export function TextScrollOptions({
     return (
         <div
             ref={containerRef}
-            className={`relative h-32 flex items-center justify-center overflow-hidden ${className}`}
-            style={{ perspective: '1000px' }}
+            className={`relative h-40 flex items-center justify-center ${className}`}
+            style={{ perspective: '1200px' }}
         >
+            {/* Gradient mask overlays for smooth fade */}
+            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none" />
+
             <div
                 className="relative flex items-center justify-center"
                 style={{ transformStyle: 'preserve-3d' }}
             >
                 {options.map((option, index) => {
                     const isFocused = index === focusIndex;
-                    const style = getItemStyle(index);
+                    const distance = index - focusIndex;
+                    const absDistance = Math.abs(distance);
+
+                    // Rotate cards around the arc (negative distance = rotate left, positive = rotate right)
+                    const rotateY = distance * 25; // degrees of rotation
 
                     return (
                         <motion.button
@@ -101,10 +109,10 @@ export function TextScrollOptions({
                                     : 'bg-card/30 text-muted-foreground/80 border-border/30 hover:bg-card/50 hover:border-border/50'
                                 }`}
                             animate={{
-                                x: (index - focusIndex) * 200,
-                                z: -Math.abs(index - focusIndex) * 100,
-                                scale: Math.max(0.75, 1 - Math.abs(index - focusIndex) * 0.1),
-                                opacity: Math.max(0.2, 1 - Math.abs(index - focusIndex) * 0.35),
+                                x: distance * 180,
+                                z: -absDistance * 80,
+                                rotateY: rotateY,
+                                scale: Math.max(0.8, 1 - absDistance * 0.08),
                             }}
                             transition={{
                                 type: 'spring',
@@ -113,10 +121,10 @@ export function TextScrollOptions({
                                 mass: 0.8,
                             }}
                             style={{
-                                zIndex: style.zIndex,
-                                filter: style.filter,
+                                zIndex: 10 - absDistance,
+                                transformStyle: 'preserve-3d',
                             }}
-                            whileHover={{ scale: isFocused ? 1.02 : 0.78 }}
+                            whileHover={{ scale: isFocused ? 1.02 : 0.82 }}
                         >
                             {option.emoji && <span className="mr-2">{option.emoji}</span>}
                             {option.label}
@@ -137,3 +145,4 @@ export function TextScrollOptions({
 }
 
 export default TextScrollOptions;
+
