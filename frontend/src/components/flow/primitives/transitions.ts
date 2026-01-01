@@ -93,12 +93,12 @@ export const breathe: Variants = {
  * Maps step index to glow anchor position (percentage)
  */
 export const GLOW_POSITIONS = [
-    { x: 85, y: 85 },  // 0: welcome - bottom-right
-    { x: 90, y: 60 },  // 1: role - mid-right
-    { x: 85, y: 35 },  // 2: goal - upper-right
-    { x: 50, y: 20 },  // 3: experience - top-center
+    { x: 95, y: 95 },  // 0: welcome - corner bottom-right
+    { x: 95, y: 55 },  // 1: role - mid-right edge
+    { x: 95, y: 25 },  // 2: goal - upper-right corner
+    { x: 50, y: 15 },  // 3: experience - top-center
     { x: 50, y: 50 },  // 4: reveal - center (radial burst)
-    { x: 30, y: 30 },  // 5: guided tour - upper-left (spotlight)
+    { x: 25, y: 25 },  // 5: guided tour - upper-left (spotlight)
 ] as const;
 
 /**

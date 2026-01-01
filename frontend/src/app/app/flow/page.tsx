@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import { FlowButler } from '@/components/butler/FlowButler';
 import { Shell } from '@/components/layout/Shell';
@@ -8,12 +9,18 @@ import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
 
 export default function FlowButlerPage() {
+    const router = useRouter();
     const [isOpen, setIsOpen] = useState(true);
 
     const handleComplete = (preferences: any) => {
         console.log('Flow completed with preferences:', preferences);
-        setIsOpen(false);
-        // Could redirect to dashboard or show confirmation
+        // Navigate to wizard with preferences
+        const params = new URLSearchParams({
+            role: preferences.role || '',
+            goal: preferences.goal || '',
+            experience: String(preferences.experience || 50),
+        });
+        router.push(`/app/wizard?${params.toString()}`);
     };
 
     return (

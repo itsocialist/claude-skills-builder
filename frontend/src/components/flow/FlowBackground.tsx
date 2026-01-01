@@ -205,23 +205,19 @@ export function FlowBackground({
                 ref={canvasRef}
                 className={cn('absolute inset-0 w-full h-full', className)}
             />
-            {/* Animated glow that follows step - BRIGHT */}
-            <motion.div
-                className="absolute inset-0 pointer-events-none"
-                animate={{
-                    background: `radial-gradient(ellipse 80% 60% at ${glowPosRef.current.x}% ${glowPosRef.current.y}%, rgba(193, 95, 60, 0.30) 0%, rgba(193, 95, 60, 0.12) 40%, transparent 70%)`,
-                    opacity: [0.40, 0.65, 0.40],
-                    scale: [1, 1.08, 1],
-                }}
-                transition={{
-                    duration: 6,
-                    ease: 'easeInOut',
-                    repeat: Infinity,
-                }}
+            {/* Animated glow - CSS animation for smooth continuous sine wave */}
+            <div
+                className="absolute inset-0 pointer-events-none animate-[glow-pulse_8s_ease-in-out_infinite]"
                 style={{
-                    background: `radial-gradient(ellipse 80% 60% at ${glowPosRef.current.x}% ${glowPosRef.current.y}%, rgba(193, 95, 60, 0.30) 0%, rgba(193, 95, 60, 0.12) 40%, transparent 70%)`,
+                    background: `radial-gradient(ellipse 80% 60% at ${glowPosRef.current.x}% ${glowPosRef.current.y}%, rgba(193, 95, 60, 0.35) 0%, rgba(193, 95, 60, 0.15) 40%, transparent 70%)`,
                 }}
             />
+            <style jsx>{`
+                @keyframes glow-pulse {
+                    0%, 100% { opacity: 0.5; transform: scale(1); }
+                    50% { opacity: 0.8; transform: scale(1.06); }
+                }
+            `}</style>
         </>
     );
 }
