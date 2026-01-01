@@ -27,8 +27,11 @@ function parseSkillContent(content: string): ValidationResult {
     const warnings: string[] = [];
     const info: ValidationResult['info'] = {};
 
-    // Check for YAML frontmatter
-    const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+    // Normalize line endings and trim
+    const normalizedContent = content.replace(/\r\n/g, '\n').trim();
+
+    // Check for YAML frontmatter - more flexible regex
+    const frontmatterMatch = normalizedContent.match(/^---\s*\n([\s\S]*?)\n---/);
 
     if (!frontmatterMatch) {
         errors.push('Missing YAML frontmatter (---...---)');
@@ -51,12 +54,26 @@ function parseSkillContent(content: string): ValidationResult {
             warnings.push('Missing recommended field: description');
         }
 
-        // Parse triggers
-        const triggersMatch = frontmatter.match(/triggers:\s*\n((?:\s+-\s*.+\n?)+)/);
-        if (triggersMatch) {
-            const triggers = triggersMatch[1]
+        // Parse triggers - support both YAML list and inline array formats
+        const triggersListMatch = frontmatter.match(/triggers:\s*\n((?:\s+-\s*.+\n?)+)/);
+        const triggersInlineMatch = frontmatter.match(/triggers:\s*\[([^\]]+)\]/);
+
+        if (triggersListMatch) {
+            // YAML list format: triggers:\n  - "item"
+            const triggers = triggersListMatch[1]
                 .split('\n')
                 .map(line => line.replace(/^\s*-\s*["']?/, '').replace(/["']?\s*$/, ''))
+                .filter(t => t.length > 0);
+            info.triggers = triggers;
+
+            if (triggers.length === 0) {
+                warnings.push('Triggers array is empty');
+            }
+        } else if (triggersInlineMatch) {
+            // Inline array format: triggers: ["item1", "item2"]
+            const triggers = triggersInlineMatch[1]
+                .split(',')
+                .map(t => t.trim().replace(/^["']/, '').replace(/["']$/, ''))
                 .filter(t => t.length > 0);
             info.triggers = triggers;
 
