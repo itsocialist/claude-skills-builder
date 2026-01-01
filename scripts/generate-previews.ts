@@ -69,7 +69,6 @@ async function main() {
     const { data: listings, error } = await supabase
         .from('market_listings')
         .select('id, skill_id, title, description, category, preview_image_url, example_output')
-        .is('preview_image_url', null)
         .eq('listing_status', 'active');
 
     if (error) {
@@ -200,7 +199,7 @@ async function capturePreview(
     outputPath: string
 ): Promise<void> {
     const page = await browser.newPage();
-    await page.setViewport({ width: 1200, height: 800, deviceScaleFactor: 2 });
+    await page.setViewport({ width: 1200, height: 800, deviceScaleFactor: 3 });
 
     // Encode content as base64 for URL safety
     const encodedContent = Buffer.from(content).toString('base64');

@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 
 /**
- * TextScrollOptions - Horizontal arc scroll selector
- * Options scroll on arc along Z-axis, fade at ends, full strength at center
+ * TextScrollOptions - Liquid Glass Typeform-inspired selector
+ * Dream-state floating text with ethereal blur and glow effects
  */
 
 interface Option {
@@ -49,48 +49,46 @@ export function TextScrollOptions({
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [focusIndex, options, onSelect]);
 
-    // Calculate position and style for each option based on distance from focus
-    const getItemStyle = (index: number) => {
-        const distance = index - focusIndex;
-        const absDistance = Math.abs(distance);
-
-        // Arc position - items curve away on Z-axis
-        const zOffset = -absDistance * 150; // Push back 150px per step
-        const xOffset = distance * 200;     // Horizontal spread
-
-        // Opacity fades at edges
-        const opacity = Math.max(0, 1 - absDistance * 0.35);
-
-        // Scale decreases with distance
-        const scale = Math.max(0.6, 1 - absDistance * 0.15);
-
-        // Blur increases at edges
-        const blur = absDistance * 2;
-
-        return {
-            transform: `translateX(${xOffset}px) translateZ(${zOffset}px) scale(${scale})`,
-            opacity,
-            filter: `blur(${blur}px)`,
-            zIndex: 10 - absDistance,
-        };
-    };
-
     return (
         <div
             ref={containerRef}
-            className={`relative h-40 flex items-center justify-center ${className}`}
-            style={{ perspective: '1200px' }}
+            className={`relative h-48 flex items-center justify-center overflow-hidden ${className}`}
+            style={{ perspective: '1500px' }}
         >
-            {/* Gradient mask overlays for smooth fade */}
-            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none" />
+            {/* Ethereal gradient masks - liquid fade */}
+            <div className="absolute left-0 top-0 bottom-0 w-40 bg-gradient-to-r from-background via-background/80 to-transparent z-30 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-40 bg-gradient-to-l from-background via-background/80 to-transparent z-30 pointer-events-none" />
 
-            {/* Static glass highlight - stays fixed in center */}
-            <div
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none px-10 py-5 rounded-md border border-primary/40 shadow-[0_0_30px_rgba(193,95,60,0.2)]"
-                style={{ minWidth: '160px', minHeight: '56px', zIndex: 5 }}
-            />
+            {/* Liquid glass focus lens - minority report style */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none">
+                <motion.div
+                    className="w-48 h-16 rounded-2xl"
+                    style={{
+                        background: 'linear-gradient(135deg, rgba(193,95,60,0.08) 0%, rgba(193,95,60,0.02) 50%, rgba(193,95,60,0.06) 100%)',
+                        backdropFilter: 'blur(8px)',
+                        border: '1px solid rgba(193,95,60,0.25)',
+                        boxShadow: `
+                            0 0 60px rgba(193,95,60,0.15),
+                            inset 0 1px 0 rgba(255,255,255,0.1),
+                            inset 0 -1px 0 rgba(0,0,0,0.1)
+                        `,
+                    }}
+                    animate={{
+                        boxShadow: [
+                            '0 0 60px rgba(193,95,60,0.15), inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.1)',
+                            '0 0 80px rgba(193,95,60,0.2), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.1)',
+                            '0 0 60px rgba(193,95,60,0.15), inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.1)',
+                        ],
+                    }}
+                    transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                    }}
+                />
+            </div>
 
+            {/* Floating options - dream state */}
             <div
                 className="relative flex items-center justify-center"
                 style={{ transformStyle: 'preserve-3d' }}
@@ -100,9 +98,6 @@ export function TextScrollOptions({
                     const distance = index - focusIndex;
                     const absDistance = Math.abs(distance);
 
-                    // Rotate cards around the arc (negative distance = rotate left, positive = rotate right)
-                    const rotateY = distance * 25; // degrees of rotation
-
                     return (
                         <motion.button
                             key={option.id}
@@ -110,45 +105,64 @@ export function TextScrollOptions({
                                 setFocusIndex(index);
                                 onSelect(option.id);
                             }}
-                            className={`absolute whitespace-nowrap px-4 py-2 text-base font-medium transition-colors ${isFocused
-                                    ? 'text-primary-foreground'
-                                    : 'text-muted-foreground/60'
-                                }`}
+                            className="absolute whitespace-nowrap cursor-pointer select-none"
                             animate={{
-                                x: distance * 180,
-                                z: -absDistance * 80,
-                                rotateY: rotateY,
-                                scale: Math.max(0.8, 1 - absDistance * 0.08),
+                                x: distance * 160,
+                                z: -absDistance * 100,
+                                rotateY: distance * 20,
+                                scale: isFocused ? 1 : Math.max(0.7, 1 - absDistance * 0.15),
+                                opacity: isFocused ? 1 : Math.max(0.3, 1 - absDistance * 0.35),
                             }}
                             transition={{
                                 type: 'spring',
-                                stiffness: 120,
-                                damping: 20,
-                                mass: 0.8,
+                                stiffness: 80,
+                                damping: 18,
+                                mass: 1,
                             }}
                             style={{
-                                zIndex: 10 - absDistance,
+                                zIndex: isFocused ? 20 : 10 - absDistance,
                                 transformStyle: 'preserve-3d',
                             }}
-                            whileHover={{ scale: isFocused ? 1.02 : 0.82 }}
                         >
-                            {option.emoji && <span className="mr-2">{option.emoji}</span>}
-                            {option.label}
+                            <motion.span
+                                className={`
+                                    inline-block px-6 py-3 rounded-xl text-lg font-medium
+                                    transition-all duration-300
+                                    ${isFocused
+                                        ? 'text-primary-foreground'
+                                        : 'text-muted-foreground/50'
+                                    }
+                                `}
+                                style={{
+                                    textShadow: isFocused
+                                        ? '0 0 30px rgba(193,95,60,0.5), 0 0 60px rgba(193,95,60,0.3)'
+                                        : 'none',
+                                    filter: isFocused ? 'none' : `blur(${absDistance * 0.5}px)`,
+                                }}
+                                whileHover={{
+                                    scale: 1.05,
+                                    textShadow: '0 0 40px rgba(193,95,60,0.6), 0 0 80px rgba(193,95,60,0.4)',
+                                }}
+                            >
+                                {option.emoji && <span className="mr-2 opacity-80">{option.emoji}</span>}
+                                {option.label}
+                            </motion.span>
                         </motion.button>
                     );
                 })}
             </div>
 
-            {/* Visual arc separator */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full max-w-md h-px bg-gradient-to-r from-transparent via-border/40 to-transparent" />
-
-            {/* Navigation hint - below separator, light typography */}
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-[10px] tracking-wide font-light text-muted-foreground/60">
-                ← → navigate · enter select
-            </div>
+            {/* Subtle navigation hint - whisper typography */}
+            <motion.div
+                className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[10px] tracking-widest uppercase font-light text-muted-foreground/40"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1, duration: 1 }}
+            >
+                ← → select
+            </motion.div>
         </div>
     );
 }
 
 export default TextScrollOptions;
-

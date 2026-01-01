@@ -273,7 +273,10 @@ export default function SkillDetailPage() {
                 <Card className="mb-6 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 overflow-hidden">
                     <div className="relative flex">
                         {/* Preview Image - Left Half */}
-                        <div className="w-1/2 p-6">
+                        <div
+                            className="w-1/2 p-6 cursor-zoom-in group/preview"
+                            onClick={() => setShowPreviewLightbox(true)}
+                        >
                             <div className="relative aspect-[4/3] flex items-center justify-center">
                                 <div
                                     className="relative w-full h-full rounded-md"
@@ -285,8 +288,14 @@ export default function SkillDetailPage() {
                                     <img
                                         src={listing.preview_image_url}
                                         alt={`Preview of ${listing.title}`}
-                                        className="w-full h-full object-cover object-top rounded-md ring-1 ring-black/5"
+                                        className="w-full h-full object-cover object-top rounded-md ring-1 ring-black/5 transition-transform group-hover/preview:scale-[1.02]"
                                     />
+                                    {/* Click hint */}
+                                    <div className="absolute inset-0 bg-black/0 group-hover/preview:bg-black/10 transition-colors rounded-md flex items-center justify-center">
+                                        <span className="opacity-0 group-hover/preview:opacity-100 text-white text-sm font-medium transition-opacity bg-black/60 px-3 py-1.5 rounded-full">
+                                            Click to enlarge
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -300,6 +309,16 @@ export default function SkillDetailPage() {
                         </div>
                     </div>
                 </Card>
+            )}
+
+            {/* Preview Lightbox */}
+            {listing.preview_image_url && (
+                <PreviewLightbox
+                    src={listing.preview_image_url}
+                    alt={`Full preview of ${listing.title}`}
+                    isOpen={showPreviewLightbox}
+                    onClose={() => setShowPreviewLightbox(false)}
+                />
             )}
 
             {/* Description - only if no preview image */}

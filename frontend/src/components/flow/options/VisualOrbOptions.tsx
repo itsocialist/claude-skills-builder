@@ -4,9 +4,9 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 /**
- * VisualOrbOptions - 3D orb selector with particle connections
- * 4 options as labeled orbs connected like particles
- * Focused option moves forward on Z-axis, others animate to back
+ * VisualOrbOptions - Liquid Glass 3D orb selector
+ * Ethereal floating orbs with canvas particle connections
+ * Minority Report / dream-state inspired aesthetics
  */
 
 interface Option {
@@ -24,10 +24,10 @@ interface VisualOrbOptionsProps {
 
 // Orb positions in normalized space (-1 to 1)
 const ORB_POSITIONS = [
-    { x: -0.6, y: -0.4 },  // Top-left
-    { x: 0.6, y: -0.4 },   // Top-right
-    { x: -0.6, y: 0.5 },   // Bottom-left
-    { x: 0.6, y: 0.5 },    // Bottom-right
+    { x: -0.55, y: -0.35 },  // Top-left
+    { x: 0.55, y: -0.35 },   // Top-right
+    { x: -0.55, y: 0.45 },   // Bottom-left
+    { x: 0.55, y: 0.45 },    // Bottom-right
 ];
 
 export function VisualOrbOptions({
@@ -41,6 +41,7 @@ export function VisualOrbOptions({
     const containerRef = useRef<HTMLDivElement>(null);
     const orbPositionsRef = useRef<{ x: number; y: number; z: number }[]>([]);
     const animationRef = useRef<number>(0);
+    const timeRef = useRef(0);
 
     // Initialize orb positions
     useEffect(() => {
@@ -77,7 +78,7 @@ export function VisualOrbOptions({
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [focusIndex, options, onSelect]);
 
-    // Draw particle connections on canvas
+    // Draw ethereal particle connections on canvas
     useEffect(() => {
         const canvas = canvasRef.current;
         const container = containerRef.current;
@@ -95,21 +96,19 @@ export function VisualOrbOptions({
         const animate = () => {
             const { width, height } = canvas;
             ctx.clearRect(0, 0, width, height);
+            timeRef.current += 0.01;
 
             const centerX = width / 2;
             const centerY = height / 2;
-            const scale = Math.min(width, height) * 0.35;
+            const scale = Math.min(width, height) * 0.38;
 
-            // Update Z positions based on focus
+            // Update Z positions with smooth interpolation
             orbPositionsRef.current.forEach((pos, i) => {
-                const targetZ = i === focusIndex ? 1 : -0.5;
-                pos.z += (targetZ - pos.z) * 0.1;
+                const targetZ = i === focusIndex ? 1 : -0.3;
+                pos.z += (targetZ - pos.z) * 0.08;
             });
 
-            // Draw connections between orbs
-            ctx.strokeStyle = 'rgba(193, 95, 60, 0.15)';
-            ctx.lineWidth = 1;
-
+            // Draw ethereal connections between orbs
             for (let i = 0; i < orbPositionsRef.current.length; i++) {
                 for (let j = i + 1; j < orbPositionsRef.current.length; j++) {
                     const p1 = orbPositionsRef.current[i];
@@ -120,17 +119,42 @@ export function VisualOrbOptions({
                     const x2 = centerX + p2.x * scale;
                     const y2 = centerY + p2.y * scale;
 
-                    // Fade based on Z distance
-                    const avgZ = (p1.z + p2.z) / 2;
-                    const opacity = 0.1 + avgZ * 0.1;
+                    // Pulsing opacity based on focus and time
+                    const baseFocus = (i === focusIndex || j === focusIndex) ? 0.25 : 0.08;
+                    const pulse = Math.sin(timeRef.current * 2 + i + j) * 0.05;
+                    const opacity = baseFocus + pulse;
+
+                    // Create gradient line for liquid effect
+                    const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
+                    gradient.addColorStop(0, `rgba(193, 95, 60, ${opacity})`);
+                    gradient.addColorStop(0.5, `rgba(193, 95, 60, ${opacity * 1.5})`);
+                    gradient.addColorStop(1, `rgba(193, 95, 60, ${opacity})`);
 
                     ctx.beginPath();
-                    ctx.strokeStyle = `rgba(193, 95, 60, ${opacity})`;
+                    ctx.strokeStyle = gradient;
+                    ctx.lineWidth = (i === focusIndex || j === focusIndex) ? 1.5 : 0.8;
                     ctx.moveTo(x1, y1);
                     ctx.lineTo(x2, y2);
                     ctx.stroke();
                 }
             }
+
+            // Draw subtle glow particles along connections
+            orbPositionsRef.current.forEach((pos, i) => {
+                if (i === focusIndex) {
+                    const x = centerX + pos.x * scale;
+                    const y = centerY + pos.y * scale;
+
+                    // Ambient glow around focused orb
+                    const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, 60);
+                    glowGradient.addColorStop(0, 'rgba(193, 95, 60, 0.15)');
+                    glowGradient.addColorStop(0.5, 'rgba(193, 95, 60, 0.05)');
+                    glowGradient.addColorStop(1, 'rgba(193, 95, 60, 0)');
+
+                    ctx.fillStyle = glowGradient;
+                    ctx.fillRect(x - 60, y - 60, 120, 120);
+                }
+            });
 
             animationRef.current = requestAnimationFrame(animate);
         };
@@ -144,43 +168,26 @@ export function VisualOrbOptions({
         };
     }, [focusIndex]);
 
-    // Calculate orb visual properties
-    const getOrbStyle = (index: number) => {
-        const pos = ORB_POSITIONS[index] || { x: 0, y: 0 };
-        const isFocused = index === focusIndex;
-
-        // Z-depth affects scale and brightness
-        const zScale = isFocused ? 1.15 : 0.85;
-        const zOffset = isFocused ? 50 : -30;
-
-        return {
-            left: `${50 + pos.x * 35}%`,
-            top: `${50 + pos.y * 35}%`,
-            transform: `translate(-50%, -50%) translateZ(${zOffset}px) scale(${zScale})`,
-            zIndex: isFocused ? 10 : 5,
-        };
-    };
-
     return (
         <div
             ref={containerRef}
             className={`relative h-80 w-full ${className}`}
-            style={{ perspective: '800px' }}
+            style={{ perspective: '1000px' }}
         >
-            {/* Connection lines canvas */}
+            {/* Ethereal connection lines canvas */}
             <canvas
                 ref={canvasRef}
                 className="absolute inset-0 w-full h-full pointer-events-none"
             />
 
-            {/* Orbs */}
+            {/* Liquid glass orbs */}
             <div
                 className="absolute inset-0"
                 style={{ transformStyle: 'preserve-3d' }}
             >
                 {options.slice(0, 4).map((option, index) => {
                     const isFocused = index === focusIndex;
-                    const style = getOrbStyle(index);
+                    const pos = ORB_POSITIONS[index] || { x: 0, y: 0 };
 
                     return (
                         <motion.button
@@ -189,42 +196,90 @@ export function VisualOrbOptions({
                                 setFocusIndex(index);
                                 onSelect(option.id);
                             }}
-                            className={`absolute flex flex-col items-center justify-center w-24 h-24 rounded-lg transition-all backdrop-blur-sm border ${isFocused
-                                ? 'bg-primary/85 text-primary-foreground border-primary/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_12px_rgba(193,95,60,0.25)]'
-                                : 'bg-card/40 text-muted-foreground border-border/40 hover:bg-card/60 hover:border-border/70'
-                                }`}
+                            className="absolute flex flex-col items-center justify-center cursor-pointer"
                             animate={{
-                                scale: isFocused ? 1.1 : 0.88,
-                                opacity: isFocused ? 1 : 0.65,
+                                scale: isFocused ? 1 : 0.85,
+                                z: isFocused ? 80 : -20,
                             }}
                             transition={{
                                 type: 'spring',
-                                stiffness: 400,
-                                damping: 25,
+                                stiffness: 80,
+                                damping: 18,
+                                mass: 1,
                             }}
                             style={{
-                                left: style.left,
-                                top: style.top,
+                                left: `${50 + pos.x * 38}%`,
+                                top: `${50 + pos.y * 38}%`,
                                 transform: 'translate(-50%, -50%)',
-                                zIndex: style.zIndex,
+                                zIndex: isFocused ? 10 : 5,
                             }}
-                            whileHover={{ scale: isFocused ? 1.12 : 0.92 }}
+                            whileHover={{ scale: isFocused ? 1.05 : 0.9 }}
                         >
-                            {option.emoji && (
-                                <span className="text-xl mb-1 opacity-85">{option.emoji}</span>
-                            )}
-                            <span className="text-xs font-medium text-center px-2">
-                                {option.label}
-                            </span>
+                            {/* Liquid glass orb container */}
+                            <motion.div
+                                className="w-28 h-28 rounded-2xl flex flex-col items-center justify-center"
+                                animate={{
+                                    opacity: isFocused ? 1 : 0.5,
+                                }}
+                                style={{
+                                    background: isFocused
+                                        ? 'linear-gradient(135deg, rgba(193,95,60,0.2) 0%, rgba(193,95,60,0.08) 50%, rgba(193,95,60,0.15) 100%)'
+                                        : 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 50%, rgba(255,255,255,0.03) 100%)',
+                                    backdropFilter: 'blur(12px)',
+                                    border: isFocused
+                                        ? '1px solid rgba(193,95,60,0.4)'
+                                        : '1px solid rgba(255,255,255,0.08)',
+                                    boxShadow: isFocused
+                                        ? `
+                                            0 0 40px rgba(193,95,60,0.2),
+                                            0 0 80px rgba(193,95,60,0.1),
+                                            inset 0 1px 0 rgba(255,255,255,0.15),
+                                            inset 0 -1px 0 rgba(0,0,0,0.1)
+                                        `
+                                        : `
+                                            0 4px 20px rgba(0,0,0,0.1),
+                                            inset 0 1px 0 rgba(255,255,255,0.05)
+                                        `,
+                                }}
+                            >
+                                {option.emoji && (
+                                    <motion.span
+                                        className="text-2xl mb-2"
+                                        animate={{
+                                            opacity: isFocused ? 1 : 0.6,
+                                            scale: isFocused ? 1.1 : 1,
+                                        }}
+                                        style={{
+                                            filter: isFocused ? 'drop-shadow(0 0 8px rgba(193,95,60,0.5))' : 'none',
+                                        }}
+                                    >
+                                        {option.emoji}
+                                    </motion.span>
+                                )}
+                                <motion.span
+                                    className={`text-xs font-medium text-center px-2 transition-colors ${isFocused ? 'text-primary-foreground' : 'text-muted-foreground/60'
+                                        }`}
+                                    style={{
+                                        textShadow: isFocused ? '0 0 20px rgba(193,95,60,0.4)' : 'none',
+                                    }}
+                                >
+                                    {option.label}
+                                </motion.span>
+                            </motion.div>
                         </motion.button>
                     );
                 })}
             </div>
 
-            {/* Navigation hint - light typography */}
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] tracking-wide font-light text-muted-foreground/60">
-                arrows navigate · enter select
-            </div>
+            {/* Whisper navigation hint */}
+            <motion.div
+                className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] tracking-widest uppercase font-light text-muted-foreground/40"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1, duration: 1 }}
+            >
+                arrows select
+            </motion.div>
         </div>
     );
 }
