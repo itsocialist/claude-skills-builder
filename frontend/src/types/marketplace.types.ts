@@ -17,6 +17,10 @@ export interface MarketplaceListing {
     average_rating?: number;
     review_count?: number;
 
+    // Preview fields
+    preview_image_url?: string | null;
+    example_output?: string | null;
+
     // Optional joined creator info
     creator?: {
         username: string | null;

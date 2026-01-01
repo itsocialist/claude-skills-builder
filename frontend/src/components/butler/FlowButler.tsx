@@ -14,7 +14,7 @@ import {
 } from '@/lib/butler/flow-animations';
 import { bundles } from '@/lib/constants/bundles';
 import { FluentEmoji } from '@/components/ui/fluent-emoji';
-import { OrganicBackground } from '@/components/ui/organic-background';
+import { FlowBackground } from '@/components/flow';
 import { TypewriterText } from '@/components/ui/typewriter-text';
 
 interface FlowButlerProps {
@@ -158,34 +158,17 @@ export function FlowButler({ onClose, onComplete }: FlowButlerProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
         >
-            {/* Organic particle background with parallax */}
+            {/* Animated background with particles + glow that moves with steps */}
             <div className="absolute inset-0">
-                <OrganicBackground
+                <FlowBackground
+                    stepIndex={currentIndex}
                     particleCount={60}
                     connectionDistance={120}
                     particleSpeed={0.3}
                     colorHue={17}
                     opacity={0.2}
-                    panOffset={currentIndex * 100}
                 />
             </div>
-
-            {/* Subtle gradient overlay - lower right with undulating pulse */}
-            <motion.div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                    background: 'radial-gradient(ellipse 80% 60% at 85% 85%, rgba(193, 95, 60, 0.15) 0%, rgba(193, 95, 60, 0.05) 40%, transparent 70%)',
-                }}
-                animate={{
-                    opacity: [0.15, 0.25, 0.15],
-                    scale: [1, 1.08, 1],
-                }}
-                transition={{
-                    duration: 6,
-                    ease: "easeInOut",
-                    repeat: Infinity,
-                }}
-            />
 
             {/* Close button */}
             <button

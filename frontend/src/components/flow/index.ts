@@ -1,0 +1,42 @@
+'use client';
+
+/**
+ * Flow Framework - Module Exports
+ * Declarative, cinematic presentation system for guided experiences
+ */
+
+// Core Provider & Context
+export { FlowProvider, useFlow, useFlowProgress } from './FlowProvider';
+export type { FlowContextType, FlowSlideConfig, FlowProviderProps } from './FlowProvider';
+
+// Slide Components
+export { FlowSlide, FlowButton, FlowQuestion } from './FlowSlide';
+
+// Background & Atmosphere
+export { FlowBackground } from './FlowBackground';
+
+// Animation Primitives
+export {
+    // Transition presets
+    slideUp,
+    slideDown,
+    fadeIn,
+    scaleIn,
+    popIn,
+    staggerContainer,
+    staggerItem,
+    breathe,
+
+    // Glow & parallax
+    GLOW_POSITIONS,
+    getGlowPosition,
+    PARALLAX_OFFSET_PER_STEP,
+
+    // Config
+    DURATION,
+    EASING,
+    transitionPresets,
+    getSlideTransition,
+} from './primitives/transitions';
+
+export type { TransitionPreset } from './primitives/transitions';
