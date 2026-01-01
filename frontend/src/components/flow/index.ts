@@ -10,7 +10,7 @@ export { FlowProvider, useFlow, useFlowProgress } from './FlowProvider';
 export type { FlowContextType, FlowSlideConfig, FlowProviderProps } from './FlowProvider';
 
 // Slide Components
-export { FlowSlide, FlowButton, FlowQuestion } from './FlowSlide';
+export { FlowSlide, FlowQuestion } from './FlowSlide';
 
 // Background & Atmosphere
 export { FlowBackground } from './FlowBackground';
@@ -20,6 +20,8 @@ export { FlowTransition } from './FlowTransition';
 
 // Butler Overlay
 export { FlowButlerOverlay } from './FlowButlerOverlay';
+
+// Button Component
 export { FlowButton } from './FlowButton';
 
 // AI Recommendations
