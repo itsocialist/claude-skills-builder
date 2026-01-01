@@ -18,6 +18,10 @@ export { FlowBackground } from './FlowBackground';
 // AI Recommendations
 export { useAIRecommendations } from './primitives/useAIRecommendations';
 
+// Option Presentation Types
+export { TextScrollOptions, VisualOrbOptions } from './options';
+export type { OptionPresentationType } from './options';
+
 // Animation Primitives
 export {
     // Transition presets
