@@ -340,9 +340,9 @@ export function Shell({ children, inspector, title, onTitleChange, validation }:
                     <RecentSkills />
                 </aside>
 
-                {/* Main Content - 70% width on desktop */}
-                <main className="flex-1 min-w-0 overflow-y-auto bg-background relative lg:max-w-[70%]">
-                    <div className="p-4 md:p-8">
+                {/* Main Content - Centered 70% width */}
+                <main className="flex-1 min-w-0 overflow-y-auto bg-background relative">
+                    <div className="mx-auto w-full lg:w-[70%] p-4 md:p-8">
                         {children}
                     </div>
                 </main>

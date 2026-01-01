@@ -68,7 +68,7 @@ export function TemplateCard({ template, variant = 'default', className, onClick
                 <Button
                     variant={isCompact ? 'outline' : 'default'}
                     size={isCompact ? 'sm' : 'default'}
-                    className="w-full"
+                    className="max-w-[70%] w-full mx-auto"
                     onClick={(e) => {
                         e.stopPropagation();
                         onClick();
@@ -81,7 +81,7 @@ export function TemplateCard({ template, variant = 'default', className, onClick
                     <Button
                         variant={isCompact ? 'outline' : 'default'}
                         size={isCompact ? 'sm' : 'default'}
-                        className="w-full"
+                        className="max-w-[70%] w-full mx-auto"
                     >
                         View Template
                     </Button>

@@ -108,13 +108,13 @@ export default function TemplatesPage() {
 
                 {/* Templates Grid */}
                 {loading ? (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-6">
                         {[1, 2, 3, 4, 5, 6].map((i) => (
                             <Card key={i} className="h-[200px] animate-pulse bg-card/50" />
                         ))}
                     </div>
                 ) : (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-6">
                         {filteredTemplates.map((template) => (
                             <TemplateCard
                                 key={template.id}

@@ -444,7 +444,6 @@ ${skill.instructions || ''}`;
             <div className="p-6 space-y-4">
                 {/* Header - Compact */}
                 <div className="mb-2">
-                    <h1 className="text-xl font-bold text-foreground">Skill Inspector</h1>
                     <p className="text-sm text-muted-foreground">
                         Validate and analyze SKILL.md files or ZIP packages
                     </p>
@@ -558,7 +557,12 @@ ${skill.instructions || ''}`;
                     <textarea
                         value={skillContent}
                         onChange={(e) => setSkillContent(e.target.value)}
-                        placeholder="---&#10;name: My Skill&#10;description: A helpful skill&#10;---&#10;&#10;# Instructions..."
+                        placeholder={`---
+name: My Skill
+description: A helpful skill
+---
+
+# Instructions...`}
                         className="w-full h-96 px-3 py-2 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground resize-none font-mono text-sm"
                     />
                 </div>

@@ -191,7 +191,7 @@ export default function PowerBundlesPage() {
 
                 {/* Bundles Grid */}
                 <div className="py-8">
-                    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                    <div className="grid gap-6 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
                         {bundles.map((bundle) => (
                             <Card
                                 key={bundle.id}
@@ -266,12 +266,8 @@ export default function PowerBundlesPage() {
 
                                 {/* CTA */}
                                 <div className="p-4 bg-card">
-                                    <Button
-                                        className="w-full gap-2"
-                                        size="lg"
-                                        onClick={() => handleDownload(bundle)}
-                                    >
-                                        <Download className="w-4 h-4" />
+                                    <Button className="max-w-[70%] w-full mx-auto" onClick={() => handleDownload(bundle)}>
+                                        <Download className="w-4 h-4 mr-2" />
                                         Get This Bundle
                                     </Button>
                                 </div>
