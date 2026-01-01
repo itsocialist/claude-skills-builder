@@ -1,6 +1,6 @@
-# Flow Framework API
+# Flow Framework API (v2: Liquid Glass)
 
-A declarative, cinematic presentation system for guided user experiences.
+A declarative, cinematic presentation system for guided user experiences, featuring the "Liquid Glass" / "Minority Report" aesthetic.
 
 ## Quick Start
 
@@ -54,48 +54,48 @@ Animated particles + glow that follows step.
 
 ---
 
-## Option Presentation Types
+## Option Presentation Types (Liquid Glass)
 
 ### TextScrollOptions
-Horizontal arc scroll with Z-depth fading.
+Horizontal arc scroll with "Liquid Focus Lens" and Z-depth fading.
 
 ```tsx
 <TextScrollOptions
   options={[
-    { id: 'dev', label: 'Developer', emoji: '💻' },
-    { id: 'mkt', label: 'Marketer', emoji: '📣' },
+    { id: 'dev', label: 'Developer' },
+    { id: 'mkt', label: 'Marketer' },
   ]}
   selectedId={selected}
   onSelect={(id) => setSelected(id)}
 />
 ```
 
-**Behavior:**
-- Options scroll on arc along Z-axis
-- Fade at edges, full opacity at center
-- Arrow keys navigate, Enter selects
+**Architecture (Dream State):**
+- **Liquid Focus Lens**: A static `div` at `z-index: 0` with `backdrop-filter: blur(8px)` and gradient borders.
+- **Floating Text**: Options render in a `preserve-3d` context at `z-index: 10`.
+- **Visibility**: Focused text (`z-50`) sits physically *in front* of the lens to prevent blurring. Unfocused text (`z-30`) gets ethereal blur filters.
+- **Physics**: Softer spring config (`stiffness: 80`, `damping: 18`) for "floating" sensation.
 
 ### VisualOrbOptions
-3D orbs with particle connections.
+3D orbs with ethereal particle connections.
 
 ```tsx
 <VisualOrbOptions
   options={[
-    { id: 'content', label: 'Create content', emoji: '✍️' },
-    { id: 'research', label: 'Research', emoji: '🔍' },
-    { id: 'automate', label: 'Automate', emoji: '⚡' },
-    { id: 'learn', label: 'Learn AI', emoji: '🧠' },
+    { id: 'content', label: 'Create content' },
+    { id: 'research', label: 'Research' },
+    { id: 'automate', label: 'Automate' },
+    { id: 'learn', label: 'Learn AI' },
   ]}
   selectedId={selected}
   onSelect={(id) => setSelected(id)}
 />
 ```
 
-**Behavior:**
-- 4 orbs connected like particles
-- Focused orb moves forward on Z-axis
-- Canvas draws particle connections
-- Arrow keys navigate in 2D grid
+**Features:**
+- **Liquid Orbs**: Backdrop blur containers with gradient fills.
+- **Living Connections**: Canvas-drawn lines that "breathe" (pulse opacity) with time.
+- **Holographic Focus**: Focused element casts a radioactive/holographic radial glow.
 
 ---
 
@@ -116,7 +116,7 @@ const {
 ```
 
 ### useAIRecommendations
-Get personalized bundle recommendations.
+Get personalized bundle recommendations based on user inputs.
 
 ```tsx
 const { bundles, getRecommendations, isLoading } = useAIRecommendations();
@@ -128,6 +128,24 @@ await getRecommendations({
 });
 // bundles now contains ranked recommendations
 ```
+
+---
+
+## Styling Standards
+
+### Liquid Glass Buttons
+Buttons should appear as translucent glass shards with distinct borders.
+**Class Pattern**:
+```css
+backdrop-blur-sm 
+bg-primary/85 
+border 
+border-primary/50 
+shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]
+```
+
+### Universal Translucency
+All major UI containers (cards, options, buttons) MUST use `backdrop-filter` and `bg-opacity` < 1.0 to maintain the ethereal aesthetic.
 
 ---
 
@@ -152,11 +170,7 @@ import { slideUp, fadeIn, scaleIn, popIn, breathe } from '@/components/flow';
 ```tsx
 import { GLOW_POSITIONS, getGlowPosition } from '@/components/flow';
 
-// Glow follows step progression
-// Step 0: bottom-right (95%, 95%)
-// Step 1: mid-right (95%, 55%)
-// Step 2: upper-right (95%, 25%)
-// ...moves toward center
+// Glow follows step progression moving toward center
 ```
 
 ---
@@ -167,12 +181,35 @@ import { GLOW_POSITIONS, getGlowPosition } from '@/components/flow';
 type OptionPresentationType = 
   | 'visual-card'   // Standard grid (default)
   | 'visual-orb'    // 3D orbs
-  | 'text-scroll'   // Arc scroll
-  | 'text-3space';  // 3D floating text
+  | 'text-scroll'   // Arc scroll (Liquid Lens)
+  | 'text-3space';  // 3D floating text (Planned)
 
 interface Option {
   id: string;
   label: string;
-  emoji?: string;
+  // emoji removed in v2
 }
 ```
+
+---
+
+## AI Agent Context
+
+**Directives for Code Generation:**
+
+1.  **Component Selection**:
+    - **Single Choice (2-6 items)**: Use `<TextScrollOptions />`.
+    - **Categorical Choice (4 items)**: Use `<VisualOrbOptions />` (Best for quadrant-style choices).
+    - **Range/Slider**: Do **NOT** use `<input type="range">`. Use mapped `<TextScrollOptions />` (e.g., Low/Med/High).
+
+2.  **Slide Structure**:
+    - Always wrap step content in `<FlowSlide>`.
+    - Use `<TypewriterText />` for the main question heading.
+
+3.  **Styling Enforcement**:
+    - Never use solid background buttons. Apply the **Liquid Glass** classes to all primary actions.
+    - Ensure all containers use `backdrop-blur`.
+
+4.  **Z-Index Handling**:
+    - `TextScrollOptions` handles its own Z-indexing. Do not manually override `z-index` on its parent unless creating a modal overlay.
+

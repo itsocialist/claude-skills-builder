@@ -85,37 +85,17 @@ export default function MarketplacePage() {
         <Shell title="Skill Marketplace" fullWidth>
             <div className="min-h-full">
                 {/* Hero Section */}
+                {/* Sticky Hero Section with Filters */}
                 <MarketplaceHero
                     searchQuery={searchQuery}
                     onSearchChange={setSearchQuery}
+                    categories={categories}
+                    selectedCategory={selectedCategory}
+                    onCategoryChange={setSelectedCategory}
                 />
 
-                {/* Category Filters - Immediately under hero */}
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <div className="flex flex-wrap gap-2">
-                        <button
-                            onClick={() => setSelectedCategory(null)}
-                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${!selectedCategory
-                                ? 'bg-primary text-primary-foreground'
-                                : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                                }`}
-                        >
-                            All
-                        </button>
-                        {categories.map(cat => (
-                            <button
-                                key={cat}
-                                onClick={() => setSelectedCategory(cat)}
-                                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${selectedCategory === cat
-                                    ? 'bg-primary text-primary-foreground'
-                                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                                    }`}
-                            >
-                                {cat}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+                {/* Content Padding */}
+                <div className="pt-8"></div>
 
                 {/* Featured Bundles Section */}
                 {featuredBundles.length > 0 && (

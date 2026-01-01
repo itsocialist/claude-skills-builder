@@ -64,7 +64,7 @@ export function TypewriterText({
 
     return (
         <motion.span
-            className={`whitespace-nowrap ${className}`}
+            className={`whitespace-pre-wrap ${className}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}

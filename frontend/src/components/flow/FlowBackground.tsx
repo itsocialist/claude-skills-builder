@@ -11,7 +11,7 @@ import { getGlowPosition, PARALLAX_OFFSET_PER_STEP } from './primitives/transiti
  */
 
 interface FlowBackgroundProps {
-    stepIndex: number;
+    stepIndex?: number;
     particleCount?: number;
     connectionDistance?: number;
     particleSpeed?: number;
@@ -31,7 +31,7 @@ interface Particle {
 }
 
 export function FlowBackground({
-    stepIndex,
+    stepIndex = 0,
     particleCount = 60,
     connectionDistance = 120,
     particleSpeed = 0.3,

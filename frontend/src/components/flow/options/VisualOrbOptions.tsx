@@ -12,7 +12,6 @@ import { motion } from 'framer-motion';
 interface Option {
     id: string;
     label: string;
-    emoji?: string;
 }
 
 interface VisualOrbOptionsProps {
@@ -171,7 +170,7 @@ export function VisualOrbOptions({
     return (
         <div
             ref={containerRef}
-            className={`relative h-80 w-full ${className}`}
+            className={`relative h-[450px] w-full ${className}`}
             style={{ perspective: '1000px' }}
         >
             {/* Ethereal connection lines canvas */}
@@ -242,20 +241,6 @@ export function VisualOrbOptions({
                                         `,
                                 }}
                             >
-                                {option.emoji && (
-                                    <motion.span
-                                        className="text-2xl mb-2"
-                                        animate={{
-                                            opacity: isFocused ? 1 : 0.6,
-                                            scale: isFocused ? 1.1 : 1,
-                                        }}
-                                        style={{
-                                            filter: isFocused ? 'drop-shadow(0 0 8px rgba(193,95,60,0.5))' : 'none',
-                                        }}
-                                    >
-                                        {option.emoji}
-                                    </motion.span>
-                                )}
                                 <motion.span
                                     className={`text-xs font-medium text-center px-2 transition-colors ${isFocused ? 'text-primary-foreground' : 'text-muted-foreground/60'
                                         }`}

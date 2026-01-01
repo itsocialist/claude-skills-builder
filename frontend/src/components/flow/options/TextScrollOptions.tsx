@@ -11,7 +11,6 @@ import { motion } from 'framer-motion';
 interface Option {
     id: string;
     label: string;
-    emoji?: string;
 }
 
 interface TextScrollOptionsProps {
@@ -29,6 +28,17 @@ export function TextScrollOptions({
 }: TextScrollOptionsProps) {
     const [focusIndex, setFocusIndex] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    // Responsive check
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    const itemSpacing = isMobile ? 280 : 400;
 
     // Keyboard navigation
     useEffect(() => {
@@ -52,17 +62,13 @@ export function TextScrollOptions({
     return (
         <div
             ref={containerRef}
-            className={`relative h-48 flex items-center justify-center overflow-hidden ${className}`}
+            className={`relative h-96 flex items-center justify-center overflow-hidden ${className}`}
             style={{ perspective: '1500px' }}
         >
-            {/* Ethereal gradient masks - liquid fade */}
-            <div className="absolute left-0 top-0 bottom-0 w-40 bg-gradient-to-r from-background via-background/80 to-transparent z-30 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-40 bg-gradient-to-l from-background via-background/80 to-transparent z-30 pointer-events-none" />
-
             {/* Liquid glass focus lens - minority report style */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none">
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none">
                 <motion.div
-                    className="w-48 h-16 rounded-2xl"
+                    className="w-[85vw] md:w-72 h-24 rounded-2xl"
                     style={{
                         background: 'linear-gradient(135deg, rgba(193,95,60,0.08) 0%, rgba(193,95,60,0.02) 50%, rgba(193,95,60,0.06) 100%)',
                         backdropFilter: 'blur(8px)',
@@ -90,7 +96,7 @@ export function TextScrollOptions({
 
             {/* Floating options - dream state */}
             <div
-                className="relative flex items-center justify-center"
+                className="relative flex items-center justify-center z-10"
                 style={{ transformStyle: 'preserve-3d' }}
             >
                 {options.map((option, index) => {
@@ -107,7 +113,7 @@ export function TextScrollOptions({
                             }}
                             className="absolute whitespace-nowrap cursor-pointer select-none"
                             animate={{
-                                x: distance * 160,
+                                x: distance * itemSpacing,
                                 z: -absDistance * 100,
                                 rotateY: distance * 20,
                                 scale: isFocused ? 1 : Math.max(0.7, 1 - absDistance * 0.15),
@@ -120,13 +126,13 @@ export function TextScrollOptions({
                                 mass: 1,
                             }}
                             style={{
-                                zIndex: isFocused ? 20 : 10 - absDistance,
+                                zIndex: isFocused ? 50 : 30 - absDistance,
                                 transformStyle: 'preserve-3d',
                             }}
                         >
                             <motion.span
                                 className={`
-                                    inline-block px-6 py-3 rounded-xl text-lg font-medium
+                                    inline-block px-8 py-5 rounded-xl text-2xl font-medium
                                     transition-all duration-300
                                     ${isFocused
                                         ? 'text-primary-foreground'
@@ -144,7 +150,6 @@ export function TextScrollOptions({
                                     textShadow: '0 0 40px rgba(193,95,60,0.6), 0 0 80px rgba(193,95,60,0.4)',
                                 }}
                             >
-                                {option.emoji && <span className="mr-2 opacity-80">{option.emoji}</span>}
                                 {option.label}
                             </motion.span>
                         </motion.button>

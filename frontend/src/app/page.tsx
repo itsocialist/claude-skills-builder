@@ -4,19 +4,24 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Play, Home, Briefcase, TrendingUp, MessageSquare } from 'lucide-react';
+import { ArrowRight, Play, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DemoGallery } from '@/components/marketing/DemoGallery';
 import { FAQAccordion } from '@/components/marketing/FAQAccordion';
 import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
 import { useOnboarding } from '@/lib/hooks/useOnboarding';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { PublicSkillCard } from '@/components/marketplace/PublicSkillCard';
+import { supabase } from '@/lib/supabase';
+import { MarketplaceListing } from '@/types/marketplace.types';
 
 export default function MarketingPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const { hasSeenOnboarding, markAsComplete } = useOnboarding();
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [featuredSkills, setFeaturedSkills] = useState<MarketplaceListing[]>([]);
+  const [isLoadingSkills, setIsLoadingSkills] = useState(true);
 
   // Redirect authenticated users to app
   useEffect(() => {
@@ -32,6 +37,36 @@ export default function MarketingPage() {
     }, 500);
     return () => clearTimeout(timer);
   }, [hasSeenOnboarding]);
+
+  // Fetch Featured Skills
+  useEffect(() => {
+    async function fetchSkills() {
+      if (!supabase) return;
+
+      // Try getting featured first, fallback to latest active
+      let { data, error } = await supabase
+        .from('market_listings')
+        .select('*')
+        .eq('listing_status', 'active')
+        .eq('featured', true)
+        .limit(4);
+
+      if (error || !data || data.length === 0) {
+        const fallback = await supabase
+          .from('market_listings')
+          .select('*')
+          .eq('listing_status', 'active')
+          .limit(4);
+        data = fallback.data;
+      }
+
+      if (data) {
+        setFeaturedSkills(data);
+      }
+      setIsLoadingSkills(false);
+    }
+    fetchSkills();
+  }, []);
 
   const handleOnboardingClose = () => {
     setShowOnboarding(false);
@@ -134,44 +169,36 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      {/* Templates - 4 columns on large, 2 on medium (breaks the 3-pattern) */}
+      {/* Featured Skills / Templates Section */}
       <section className="py-10 bg-card border-y border-border">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-foreground">
-              Industry Templates
-            </h2>
-            <Link href="/app/templates" className="text-sm text-primary hover:underline">
-              View all →
+            <div className="flex items-center gap-2">
+              <Layers className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-bold text-foreground">
+                Featured Templates
+              </h2>
+            </div>
+            <Link href="/marketplace" className="text-sm text-primary hover:underline">
+              View Marketplace →
             </Link>
           </div>
 
-          {/* 2 columns on md, 4 on lg - NOT 3 */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <Link href="/app/templates/property-listing" className="block p-4 rounded-lg border border-border bg-background hover:border-primary transition-colors">
-              <Home className="h-5 w-5 text-primary mb-2" />
-              <div className="font-medium text-foreground text-sm">Property Listing</div>
-              <div className="text-xs text-muted-foreground">Real Estate</div>
-            </Link>
-
-            <Link href="/app/templates/business-proposal" className="block p-4 rounded-lg border border-border bg-background hover:border-primary transition-colors">
-              <Briefcase className="h-5 w-5 text-primary mb-2" />
-              <div className="font-medium text-foreground text-sm">Client Brief</div>
-              <div className="text-xs text-muted-foreground">Consulting</div>
-            </Link>
-
-            <Link href="/app/templates/competitor-analysis" className="block p-4 rounded-lg border border-border bg-background hover:border-primary transition-colors">
-              <TrendingUp className="h-5 w-5 text-primary mb-2" />
-              <div className="font-medium text-foreground text-sm">Market Analysis</div>
-              <div className="text-xs text-muted-foreground">Business</div>
-            </Link>
-
-            <Link href="/app/templates/email-drafter" className="block p-4 rounded-lg border border-border bg-background hover:border-primary transition-colors">
-              <MessageSquare className="h-5 w-5 text-primary mb-2" />
-              <div className="font-medium text-foreground text-sm">Email Templates</div>
-              <div className="text-xs text-muted-foreground">Communication</div>
-            </Link>
-          </div>
+          {isLoadingSkills ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="h-[300px] bg-muted/20 animate-pulse rounded-xl border border-border/50"></div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {featuredSkills.map(skill => (
+                <div key={skill.id} className="h-full">
+                  <PublicSkillCard listing={skill} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

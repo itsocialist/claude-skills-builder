@@ -31,19 +31,19 @@ interface UserPreferences {
 type FlowStep = 'welcome' | 'role' | 'goal' | 'experience' | 'reveal';
 
 const ROLES = [
-    { id: 'marketer', label: 'Marketer', emoji: '📣' },
-    { id: 'developer', label: 'Developer', emoji: '💻' },
-    { id: 'manager', label: 'Manager', emoji: '📊' },
-    { id: 'creator', label: 'Creator', emoji: '✨' },
-    { id: 'researcher', label: 'Researcher', emoji: '🔬' },
-    { id: 'other', label: 'Something else', emoji: '🌟' },
+    { id: 'marketer', label: 'Marketer' },
+    { id: 'developer', label: 'Developer' },
+    { id: 'manager', label: 'Manager' },
+    { id: 'creator', label: 'Creator' },
+    { id: 'researcher', label: 'Researcher' },
+    { id: 'other', label: 'Something else' },
 ];
 
 const GOALS = [
-    { id: 'content', label: 'Create content faster', emoji: '✍️' },
-    { id: 'research', label: 'Research & analyze', emoji: '🔍' },
-    { id: 'automate', label: 'Automate workflows', emoji: '⚡' },
-    { id: 'learn', label: 'Learn & explore AI', emoji: '🧠' },
+    { id: 'content', label: 'Create content faster' },
+    { id: 'research', label: 'Research & analyze' },
+    { id: 'automate', label: 'Automate workflows' },
+    { id: 'learn', label: 'Learn & explore AI' },
 ];
 
 export function FlowButler({ onClose, onComplete }: FlowButlerProps) {
@@ -215,16 +215,23 @@ export function FlowButler({ onClose, onComplete }: FlowButlerProps) {
                 </AnimatePresence>
             </div>
 
-            {/* Continue hint */}
+            {/* Continue hint with separator */}
             {step !== 'reveal' && (
                 <motion.div
-                    className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center text-muted-foreground"
+                    className="absolute bottom-8 left-0 right-0 flex flex-col items-center justify-center pointer-events-none"
                     variants={continueHint}
                     initial="initial"
                     animate="animate"
                 >
-                    <span className="text-sm mb-1">Arrow keys to navigate • Enter to select</span>
-                    <ChevronDown className="h-5 w-5" />
+                    {/* Light orange line separator */}
+                    <div className="w-64 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent mb-6" />
+
+                    <div className="flex flex-col items-center text-muted-foreground/60">
+                        <span className="text-xs tracking-widest uppercase font-medium mb-1">
+                            Arrow keys to navigate <span className="mx-2 text-primary/40">•</span> Enter to select
+                        </span>
+                        <ChevronDown className="h-4 w-4 opacity-50" />
+                    </div>
                 </motion.div>
             )}
         </motion.div>
@@ -238,7 +245,7 @@ function FlowStepWelcome({ onNext }: { onNext: () => void }) {
 
     return (
         <motion.div
-            className="text-center max-w-2xl"
+            className="text-center max-w-2xl px-4"
             variants={slideUp}
             initial="initial"
             animate="animate"
@@ -261,7 +268,7 @@ function FlowStepWelcome({ onNext }: { onNext: () => void }) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, ease: "easeOut", delay: staggerDelay * 1 }}
             >
-                <h1 className="text-5xl md:text-6xl font-light text-foreground leading-tight">
+                <h1 className="text-4xl md:text-6xl font-light text-foreground leading-tight">
                     Let's find your
                 </h1>
             </motion.div>
@@ -273,7 +280,7 @@ function FlowStepWelcome({ onNext }: { onNext: () => void }) {
                 transition={{ duration: 0.55, ease: "easeOut", delay: staggerDelay * 2 }}
                 className="mb-6"
             >
-                <span className="text-5xl md:text-6xl text-primary font-medium">perfect skills</span>
+                <span className="text-4xl md:text-6xl text-primary font-medium">perfect skills</span>
             </motion.div>
 
             {/* Subtitle */}
@@ -312,7 +319,7 @@ function FlowStepRole({
     focusIndex: number;
     onFocusChange: (index: number) => void;
 }) {
-    const options = ROLES.map(r => ({ id: r.id, label: r.label, emoji: r.emoji }));
+    const options = ROLES.map(r => ({ id: r.id, label: r.label }));
 
     return (
         <motion.div
@@ -322,7 +329,7 @@ function FlowStepRole({
             animate="animate"
             exit="exit"
         >
-            <h1 className="text-4xl md:text-5xl font-light text-foreground mb-16">
+            <h1 className="text-3xl md:text-5xl font-light text-foreground mb-16 px-4">
                 <TypewriterText
                     text="What's your superpower?"
                     highlightWord="superpower"
@@ -348,7 +355,7 @@ function FlowStepGoal({
     focusIndex: number;
     onFocusChange: (index: number) => void;
 }) {
-    const options = GOALS.map(g => ({ id: g.id, label: g.label, emoji: g.emoji }));
+    const options = GOALS.map(g => ({ id: g.id, label: g.label }));
 
     return (
         <motion.div
@@ -358,7 +365,7 @@ function FlowStepGoal({
             animate="animate"
             exit="exit"
         >
-            <h1 className="text-4xl md:text-5xl font-light text-foreground mb-8">
+            <h1 className="text-3xl md:text-5xl font-light text-foreground mb-8 px-4">
                 <TypewriterText
                     text="What would you love to accomplish?"
                     highlightWord="accomplish"
@@ -385,9 +392,9 @@ function FlowStepExperience({
     onNext: () => void;
 }) {
     const options = [
-        { id: 'novice', label: 'Just starting', emoji: '🌱' },
-        { id: 'intermediate', label: 'Some experience', emoji: '🚀' },
-        { id: 'expert', label: 'Power user', emoji: '⚡' },
+        { id: 'novice', label: 'Just starting' },
+        { id: 'intermediate', label: 'Some experience' },
+        { id: 'expert', label: 'Power user' },
     ];
 
     const currentId = value < 33 ? 'novice' : value < 66 ? 'intermediate' : 'expert';
@@ -405,7 +412,7 @@ function FlowStepExperience({
             animate="animate"
             exit="exit"
         >
-            <h1 className="text-4xl md:text-5xl font-light text-foreground mb-16">
+            <h1 className="text-3xl md:text-5xl font-light text-foreground mb-16 px-4">
                 <TypewriterText
                     text="How familiar are you with AI assistants?"
                     highlightWord="AI assistants"
@@ -455,7 +462,7 @@ function FlowStepReveal({
             >
                 <Sparkles className="h-12 w-12 text-primary mx-auto mb-6" />
             </motion.div>
-            <h1 className="text-4xl md:text-5xl font-light text-foreground mb-4">
+            <h1 className="text-3xl md:text-5xl font-light text-foreground mb-4 px-4">
                 Perfect match found
             </h1>
             <p className="text-xl text-muted-foreground mb-12">
@@ -477,9 +484,7 @@ function FlowStepReveal({
                     >
                         <div className="flex items-center gap-4 mb-4">
                             <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${bundle.color} flex items-center justify-center shadow-inner`}>
-                                <span className="text-2xl text-white">
-                                    <FluentEmoji emoji={i === 0 ? '🎯' : '⚡'} size="lg" />
-                                </span>
+                                <Sparkles className="h-6 w-6 text-white" />
                             </div>
                             <div>
                                 <h3 className="text-xl font-semibold text-foreground">{bundle.name}</h3>

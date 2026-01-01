@@ -33,13 +33,13 @@ const RENDERER_BASE_URL = process.env.RENDERER_URL || 'http://localhost:3001/int
 // Category to visual type mapping
 const CATEGORY_TYPE_MAP: Record<string, string> = {
     'Real Estate': 'email',
-    'Marketing': 'document',
-    'Business': 'document',
-    'Content Writing': 'document',
-    'Technical': 'code',
-    'Personal': 'document',
-    'Analytics': 'dashboard',
-    'default': 'document'
+    'Marketing': 'claude',
+    'Business': 'word',
+    'Content Writing': 'word',
+    'Technical': 'ide',
+    'Personal': 'browser',
+    'Analytics': 'browser',
+    'default': 'word'
 };
 
 interface MarketListing {
@@ -136,14 +136,15 @@ async function main() {
             // Upload to Supabase storage
             console.log(`  ☁️ Uploading to storage...`);
             const imageUrl = await uploadToStorage(supabase, screenshotPath, listing.id);
+            const cacheBustedUrl = `${imageUrl}?t=${Date.now()}`;
 
             // Update listing with image URL
             await supabase
                 .from('market_listings')
-                .update({ preview_image_url: imageUrl })
+                .update({ preview_image_url: cacheBustedUrl })
                 .eq('id', listing.id);
 
-            console.log(`  ✅ Done! Preview: ${imageUrl}`);
+            console.log(`  ✅ Done! Preview: ${cacheBustedUrl}`);
 
         } catch (err) {
             console.error(`  ❌ Failed:`, err);
@@ -199,11 +200,12 @@ async function capturePreview(
     outputPath: string
 ): Promise<void> {
     const page = await browser.newPage();
-    await page.setViewport({ width: 1200, height: 800, deviceScaleFactor: 3 });
+    await page.setViewport({ width: 800, height: 1000, deviceScaleFactor: 3 });
+    await page.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'light' }]);
 
     // Encode content as base64 for URL safety
     const encodedContent = Buffer.from(content).toString('base64');
-    const url = `${RENDERER_BASE_URL}?type=${type}&title=${encodeURIComponent(title)}&content=${encodedContent}`;
+    const url = `${RENDERER_BASE_URL}?type=${type}&title=${encodeURIComponent(title)}&content=${encodeURIComponent(encodedContent)}`;
 
     await page.goto(url, { waitUntil: 'networkidle0' });
 
@@ -211,35 +213,14 @@ async function capturePreview(
     await page.waitForSelector('#preview-container', { timeout: 10000 });
     await new Promise(resolve => setTimeout(resolve, 500)); // Extra settle time
 
-    // Capture the preview container
-    // Capture the preview container with a max height limit (simulating "one page")
+    // Capture the preview container - full height
     const element = await page.$('#preview-container > div');
-    const MAX_HEIGHT = 1000;
 
     if (element) {
-        const box = await element.boundingBox();
-        if (box) {
-            // If content is too tall, clip it
-            if (box.height > MAX_HEIGHT) {
-                await page.screenshot({
-                    path: outputPath,
-                    type: 'png',
-                    clip: {
-                        x: box.x,
-                        y: box.y,
-                        width: box.width,
-                        height: MAX_HEIGHT
-                    }
-                });
-            } else {
-                await element.screenshot({ path: outputPath, type: 'png' });
-            }
-        } else {
-            // Fallback
-            await element.screenshot({ path: outputPath, type: 'png' });
-        }
+        await element.screenshot({ path: outputPath, type: 'png' });
     } else {
-        await page.screenshot({ path: outputPath, type: 'png' });
+        // Fallback to full page if selector fails
+        await page.screenshot({ path: outputPath, type: 'png', fullPage: true });
     }
 
     await page.close();

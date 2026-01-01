@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { Shell } from '@/components/layout/Shell';
 import { MarkdownOutput } from '@/components/MarkdownOutput';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -173,231 +174,233 @@ export default function SkillDetailPage() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {/* Back Link */}
-            <Link
-                href="/marketplace"
-                className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6"
-            >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Marketplace
-            </Link>
+        <Shell title={listing.title || 'Skill Details'} fullWidth>
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {/* Back Link */}
+                <Link
+                    href="/marketplace"
+                    className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6"
+                >
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to Marketplace
+                </Link>
 
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-8">
-                <div>
-                    <div className="flex items-center gap-3 mb-2">
-                        <h1 className="text-3xl font-bold text-foreground">{listing.title}</h1>
-                        {listing.is_verified && (
-                            <BadgeCheck className="w-6 h-6 text-primary" />
+                {/* Header */}
+                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-8">
+                    <div>
+                        <div className="flex items-center gap-3 mb-2">
+                            <h1 className="text-3xl font-bold text-foreground">{listing.title}</h1>
+                            {listing.is_verified && (
+                                <BadgeCheck className="w-6 h-6 text-primary" />
+                            )}
+                        </div>
+                        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mb-3">
+                            {listing.category && (
+                                <span className="inline-block px-3 py-1 bg-muted rounded-full text-foreground/80 font-medium">
+                                    {listing.category}
+                                </span>
+                            )}
+                            {creatorProfile?.username && (
+                                <Link href={`/creator/${creatorProfile.username}`} className="flex items-center gap-1 hover:text-primary transition-colors">
+                                    <span>by @{creatorProfile.username}</span>
+                                </Link>
+                            )}
+                        </div>
+                        {listing.average_rating !== undefined && listing.average_rating > 0 && (
+                            <div className="flex items-center gap-2 mb-2">
+                                <StarRating rating={listing.average_rating} size={18} readOnly />
+                                <span className="text-sm text-muted-foreground font-medium">
+                                    {listing.average_rating} ({listing.review_count || 0} reviews)
+                                </span>
+                            </div>
                         )}
                     </div>
-                    <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mb-3">
-                        {listing.category && (
-                            <span className="inline-block px-3 py-1 bg-muted rounded-full text-foreground/80 font-medium">
-                                {listing.category}
-                            </span>
-                        )}
-                        {creatorProfile?.username && (
-                            <Link href={`/creator/${creatorProfile.username}`} className="flex items-center gap-1 hover:text-primary transition-colors">
-                                <span>by @{creatorProfile.username}</span>
-                            </Link>
-                        )}
+
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-3">
+                        {/* Share Menu */}
+                        <div className="relative">
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => setShowShareMenu(!showShareMenu)}
+                            >
+                                <Share2 className="w-4 h-4" />
+                            </Button>
+                            {showShareMenu && (
+                                <div className="absolute right-0 mt-2 p-2 bg-card border border-border rounded-lg shadow-lg z-10 flex items-center gap-2">
+                                    <TwitterShareButton url={shareUrl} title={listing.title}>
+                                        <TwitterIcon size={32} round />
+                                    </TwitterShareButton>
+                                    <LinkedinShareButton url={shareUrl} title={listing.title}>
+                                        <LinkedinIcon size={32} round />
+                                    </LinkedinShareButton>
+                                    <button
+                                        onClick={handleCopyLink}
+                                        className="p-2 hover:bg-muted rounded-full transition-colors"
+                                        title="Copy link"
+                                    >
+                                        <Copy className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Install Button */}
+                        <Button onClick={handleInstall} disabled={installing} className="gap-2">
+                            {installing ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <Download className="w-4 h-4" />
+                            )}
+                            {user ? 'Install to Library' : 'Sign in to Install'}
+                        </Button>
                     </div>
-                    {listing.average_rating !== undefined && listing.average_rating > 0 && (
-                        <div className="flex items-center gap-2 mb-2">
-                            <StarRating rating={listing.average_rating} size={18} readOnly />
-                            <span className="text-sm text-muted-foreground font-medium">
-                                {listing.average_rating} ({listing.review_count || 0} reviews)
-                            </span>
+                </div>
+
+                {/* Stats Row */}
+                <div className="flex items-center gap-6 text-sm text-muted-foreground mb-8 pb-8 border-b border-border">
+                    <div className="flex items-center gap-2">
+                        <Download className="w-4 h-4" />
+                        <span>{listing.install_count} installs</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        <span>Added {new Date(listing.created_at).toLocaleDateString()}</span>
+                    </div>
+                </div>
+
+                {/* Preview Image with Description Overlay */}
+                {listing.preview_image_url && (
+                    <Card className="mb-6 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 overflow-hidden">
+                        <div className="relative flex">
+                            {/* Preview Image - Left Half */}
+                            <div
+                                className="w-1/2 p-6 cursor-zoom-in group/preview"
+                                onClick={() => setShowPreviewLightbox(true)}
+                            >
+                                <div className="relative aspect-[4/3] flex items-center justify-center">
+                                    <div
+                                        className="relative w-full h-full rounded-md"
+                                        style={{
+                                            transform: 'rotate(-2deg)',
+                                            boxShadow: '-12px 12px 30px rgba(0, 0, 0, 0.25), -4px 4px 10px rgba(0, 0, 0, 0.1)',
+                                        }}
+                                    >
+                                        <img
+                                            src={listing.preview_image_url}
+                                            alt={`Preview of ${listing.title}`}
+                                            className="w-full h-full object-cover object-top rounded-md ring-1 ring-black/5 transition-transform group-hover/preview:scale-[1.02]"
+                                        />
+                                        {/* Click hint */}
+                                        <div className="absolute inset-0 bg-black/0 group-hover/preview:bg-black/10 transition-colors rounded-md flex items-center justify-center">
+                                            <span className="opacity-0 group-hover/preview:opacity-100 text-white text-sm font-medium transition-opacity bg-black/60 px-3 py-1.5 rounded-full">
+                                                Click to enlarge
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Description Overlay - Right Half */}
+                            <div className="w-1/2 p-6 flex flex-col justify-center bg-gradient-to-l from-background/95 via-background/90 to-transparent">
+                                <h2 className="text-lg font-semibold text-foreground mb-3">About this skill</h2>
+                                <div className="text-foreground/80 leading-relaxed text-sm max-h-48 overflow-y-auto">
+                                    <MarkdownOutput content={listing.description || 'No description provided.'} />
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+                )}
+
+                {/* Preview Lightbox */}
+                {listing.preview_image_url && (
+                    <PreviewLightbox
+                        src={listing.preview_image_url}
+                        alt={`Full preview of ${listing.title}`}
+                        isOpen={showPreviewLightbox}
+                        onClose={() => setShowPreviewLightbox(false)}
+                    />
+                )}
+
+                {/* Description - only if no preview image */}
+                {!listing.preview_image_url && (
+                    <Card className="p-6 mb-6">
+                        <h2 className="text-lg font-semibold text-foreground mb-3">Description</h2>
+                        <div className="text-foreground/80 leading-relaxed">
+                            <MarkdownOutput content={listing.description || 'No description provided.'} />
+                        </div>
+                    </Card>
+                )}
+
+                {/* Triggers */}
+                {skillDetails?.triggers && skillDetails.triggers.length > 0 && (
+                    <Card className="p-6 mb-6">
+                        <h2 className="text-lg font-semibold text-foreground mb-3">Example Prompts</h2>
+                        <div className="flex flex-wrap gap-2">
+                            {skillDetails.triggers.map((trigger, i) => (
+                                <span
+                                    key={i}
+                                    className="px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-sm"
+                                >
+                                    {trigger}
+                                </span>
+                            ))}
+                        </div>
+                    </Card>
+                )}
+
+                {/* Instructions Preview */}
+                {skillDetails?.instructions && (
+                    <Card className="p-6 mb-6">
+                        <h2 className="text-lg font-semibold text-foreground mb-3">Instructions Preview</h2>
+                        <div className="bg-muted rounded-lg p-4 max-h-96 overflow-y-auto">
+                            <MarkdownOutput content={skillDetails.instructions} />
+                        </div>
+                    </Card>
+                )}
+
+                {/* Reviews Section */}
+                <div className="mt-12">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl font-bold">Reviews</h2>
+                        {user && <ReviewModal skillId={listing.id} onReviewSubmitted={() => fetchListing()} />}
+                    </div>
+
+                    {reviews.length === 0 ? (
+                        <Card className="p-8 text-center text-muted-foreground bg-muted/20 border-dashed">
+                            No reviews yet. Be the first to share your experience!
+                        </Card>
+                    ) : (
+                        <div className="space-y-4">
+                            {reviews.map((review) => (
+                                <Card key={review.id} className="p-6">
+                                    <div className="flex items-start justify-between mb-2">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold overflow-hidden">
+                                                {review.user?.avatar_url ? (
+                                                    <img src={review.user.avatar_url} alt={review.user.username} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    review.user?.username?.[0]?.toUpperCase() || '?'
+                                                )}
+                                            </div>
+                                            <div>
+                                                <span className="font-semibold text-sm">@{review.user?.username || 'user'}</span>
+                                                <div className="text-xs text-muted-foreground">{new Date(review.created_at).toLocaleDateString()}</div>
+                                            </div>
+                                        </div>
+                                        <StarRating rating={review.rating} size={14} readOnly />
+                                    </div>
+                                    {review.comment && (
+                                        <p className="text-sm text-foreground/90 mt-2">{review.comment}</p>
+                                    )}
+                                </Card>
+                            ))}
                         </div>
                     )}
                 </div>
-
-                {/* Action Buttons */}
-                <div className="flex items-center gap-3">
-                    {/* Share Menu */}
-                    <div className="relative">
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => setShowShareMenu(!showShareMenu)}
-                        >
-                            <Share2 className="w-4 h-4" />
-                        </Button>
-                        {showShareMenu && (
-                            <div className="absolute right-0 mt-2 p-2 bg-card border border-border rounded-lg shadow-lg z-10 flex items-center gap-2">
-                                <TwitterShareButton url={shareUrl} title={listing.title}>
-                                    <TwitterIcon size={32} round />
-                                </TwitterShareButton>
-                                <LinkedinShareButton url={shareUrl} title={listing.title}>
-                                    <LinkedinIcon size={32} round />
-                                </LinkedinShareButton>
-                                <button
-                                    onClick={handleCopyLink}
-                                    className="p-2 hover:bg-muted rounded-full transition-colors"
-                                    title="Copy link"
-                                >
-                                    <Copy className="w-4 h-4" />
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Install Button */}
-                    <Button onClick={handleInstall} disabled={installing} className="gap-2">
-                        {installing ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                            <Download className="w-4 h-4" />
-                        )}
-                        {user ? 'Install to Library' : 'Sign in to Install'}
-                    </Button>
-                </div>
             </div>
-
-            {/* Stats Row */}
-            <div className="flex items-center gap-6 text-sm text-muted-foreground mb-8 pb-8 border-b border-border">
-                <div className="flex items-center gap-2">
-                    <Download className="w-4 h-4" />
-                    <span>{listing.install_count} installs</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    <span>Added {new Date(listing.created_at).toLocaleDateString()}</span>
-                </div>
-            </div>
-
-            {/* Preview Image with Description Overlay */}
-            {listing.preview_image_url && (
-                <Card className="mb-6 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 overflow-hidden">
-                    <div className="relative flex">
-                        {/* Preview Image - Left Half */}
-                        <div
-                            className="w-1/2 p-6 cursor-zoom-in group/preview"
-                            onClick={() => setShowPreviewLightbox(true)}
-                        >
-                            <div className="relative aspect-[4/3] flex items-center justify-center">
-                                <div
-                                    className="relative w-full h-full rounded-md"
-                                    style={{
-                                        transform: 'rotate(-2deg)',
-                                        boxShadow: '-12px 12px 30px rgba(0, 0, 0, 0.25), -4px 4px 10px rgba(0, 0, 0, 0.1)',
-                                    }}
-                                >
-                                    <img
-                                        src={listing.preview_image_url}
-                                        alt={`Preview of ${listing.title}`}
-                                        className="w-full h-full object-cover object-top rounded-md ring-1 ring-black/5 transition-transform group-hover/preview:scale-[1.02]"
-                                    />
-                                    {/* Click hint */}
-                                    <div className="absolute inset-0 bg-black/0 group-hover/preview:bg-black/10 transition-colors rounded-md flex items-center justify-center">
-                                        <span className="opacity-0 group-hover/preview:opacity-100 text-white text-sm font-medium transition-opacity bg-black/60 px-3 py-1.5 rounded-full">
-                                            Click to enlarge
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Description Overlay - Right Half */}
-                        <div className="w-1/2 p-6 flex flex-col justify-center bg-gradient-to-l from-background/95 via-background/90 to-transparent">
-                            <h2 className="text-lg font-semibold text-foreground mb-3">About this skill</h2>
-                            <div className="text-foreground/80 leading-relaxed text-sm max-h-48 overflow-y-auto">
-                                <MarkdownOutput content={listing.description || 'No description provided.'} />
-                            </div>
-                        </div>
-                    </div>
-                </Card>
-            )}
-
-            {/* Preview Lightbox */}
-            {listing.preview_image_url && (
-                <PreviewLightbox
-                    src={listing.preview_image_url}
-                    alt={`Full preview of ${listing.title}`}
-                    isOpen={showPreviewLightbox}
-                    onClose={() => setShowPreviewLightbox(false)}
-                />
-            )}
-
-            {/* Description - only if no preview image */}
-            {!listing.preview_image_url && (
-                <Card className="p-6 mb-6">
-                    <h2 className="text-lg font-semibold text-foreground mb-3">Description</h2>
-                    <div className="text-foreground/80 leading-relaxed">
-                        <MarkdownOutput content={listing.description || 'No description provided.'} />
-                    </div>
-                </Card>
-            )}
-
-            {/* Triggers */}
-            {skillDetails?.triggers && skillDetails.triggers.length > 0 && (
-                <Card className="p-6 mb-6">
-                    <h2 className="text-lg font-semibold text-foreground mb-3">Example Prompts</h2>
-                    <div className="flex flex-wrap gap-2">
-                        {skillDetails.triggers.map((trigger, i) => (
-                            <span
-                                key={i}
-                                className="px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-sm"
-                            >
-                                {trigger}
-                            </span>
-                        ))}
-                    </div>
-                </Card>
-            )}
-
-            {/* Instructions Preview */}
-            {skillDetails?.instructions && (
-                <Card className="p-6 mb-6">
-                    <h2 className="text-lg font-semibold text-foreground mb-3">Instructions Preview</h2>
-                    <div className="bg-muted rounded-lg p-4 max-h-96 overflow-y-auto">
-                        <MarkdownOutput content={skillDetails.instructions} />
-                    </div>
-                </Card>
-            )}
-
-            {/* Reviews Section */}
-            <div className="mt-12">
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-bold">Reviews</h2>
-                    {user && <ReviewModal skillId={listing.id} onReviewSubmitted={() => fetchListing()} />}
-                </div>
-
-                {reviews.length === 0 ? (
-                    <Card className="p-8 text-center text-muted-foreground bg-muted/20 border-dashed">
-                        No reviews yet. Be the first to share your experience!
-                    </Card>
-                ) : (
-                    <div className="space-y-4">
-                        {reviews.map((review) => (
-                            <Card key={review.id} className="p-6">
-                                <div className="flex items-start justify-between mb-2">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold overflow-hidden">
-                                            {review.user?.avatar_url ? (
-                                                <img src={review.user.avatar_url} alt={review.user.username} className="w-full h-full object-cover" />
-                                            ) : (
-                                                review.user?.username?.[0]?.toUpperCase() || '?'
-                                            )}
-                                        </div>
-                                        <div>
-                                            <span className="font-semibold text-sm">@{review.user?.username || 'user'}</span>
-                                            <div className="text-xs text-muted-foreground">{new Date(review.created_at).toLocaleDateString()}</div>
-                                        </div>
-                                    </div>
-                                    <StarRating rating={review.rating} size={14} readOnly />
-                                </div>
-                                {review.comment && (
-                                    <p className="text-sm text-foreground/90 mt-2">{review.comment}</p>
-                                )}
-                            </Card>
-                        ))}
-                    </div>
-                )}
-            </div>
-        </div>
+        </Shell>
     );
 }
 

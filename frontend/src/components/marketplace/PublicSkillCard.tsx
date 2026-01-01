@@ -14,8 +14,29 @@ export function PublicSkillCard({ listing }: PublicSkillCardProps) {
     return (
         <Link href={`/marketplace/${listing.slug}`}>
             <Card className="p-0 h-full hover:border-primary/50 transition-colors cursor-pointer group flex flex-col overflow-hidden">
+                {/* Header - Moved to Top */}
+                <div className="p-5 pb-3">
+                    <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                                <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                                    {listing.title}
+                                </h3>
+                                {listing.is_verified && (
+                                    <BadgeCheck className="w-4 h-4 text-primary flex-shrink-0" />
+                                )}
+                            </div>
+                            {listing.category && (
+                                <span className="text-xs text-muted-foreground">
+                                    {listing.category}
+                                </span>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
                 {/* Preview Image - Floating Paper Effect */}
-                <div className="relative w-full aspect-[16/10] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 overflow-hidden">
+                <div className="relative w-full aspect-[16/10] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 overflow-hidden border-y border-border/50">
                     {listing.preview_image_url ? (
                         <div
                             className="absolute -bottom-4 -right-4 w-[95%] h-[95%] rounded-md transition-all duration-300 group-hover:-translate-y-1"
@@ -42,26 +63,7 @@ export function PublicSkillCard({ listing }: PublicSkillCardProps) {
                     )}
                 </div>
 
-                <div className="p-5 flex flex-col flex-1">
-                    {/* Header */}
-                    <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                                <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">
-                                    {listing.title}
-                                </h3>
-                                {listing.is_verified && (
-                                    <BadgeCheck className="w-4 h-4 text-primary flex-shrink-0" />
-                                )}
-                            </div>
-                            {listing.category && (
-                                <span className="text-xs text-muted-foreground">
-                                    {listing.category}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-
+                <div className="p-5 pt-4 flex flex-col flex-1">
                     {/* Description - 2 lines max */}
                     <p className="text-sm text-muted-foreground line-clamp-2 mb-4 flex-1">
                         {listing.description || 'No description provided.'}
