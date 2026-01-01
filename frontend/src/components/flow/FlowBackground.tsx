@@ -138,11 +138,12 @@ export function FlowBackground({
                 particle.vx += (particle.originalX - particle.x) * 0.001;
                 particle.vy += (particle.originalY - particle.y) * 0.001;
 
-                // Wrap around edges
+                // Wrap around edges relative to camera (infinite scroll)
                 if (particle.x < 0) particle.x = width;
                 if (particle.x > width) particle.x = 0;
-                if (particle.y < 0) particle.y = height;
-                if (particle.y > height) particle.y = 0;
+
+                if (particle.y < currentPan) particle.y += height;
+                if (particle.y > currentPan + height) particle.y -= height;
 
                 // Draw with parallax offset
                 const drawY = particle.y - currentPan;

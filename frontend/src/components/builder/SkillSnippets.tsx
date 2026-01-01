@@ -1,8 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from '@/components/ui/button';
-import { Wand2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Wand2, ChevronDown } from 'lucide-react';
 
 interface SnippetItem {
     name: string;
@@ -71,34 +78,34 @@ interface SkillSnippetsProps {
 }
 
 export function SkillSnippets({ onInsert }: SkillSnippetsProps) {
-    const [isExpanded, setIsExpanded] = useState(false);
-
     return (
         <div className="mb-4">
-            <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-                <Wand2 className="h-4 w-4" />
-                <span>Insert Snippet</span>
-                {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            </button>
-
-            {isExpanded && (
-                <div className="mt-3 flex flex-wrap gap-2">
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors hover:bg-white/10"
+                    >
+                        <Wand2 className="h-4 w-4" />
+                        <span>Insert Template</span>
+                        <ChevronDown className="h-3 w-3 opacity-50" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-56 bg-black/80 backdrop-blur-xl border-white/10 text-white">
+                    <DropdownMenuLabel className="text-white/50 text-xs uppercase tracking-wider">Templates</DropdownMenuLabel>
+                    <DropdownMenuSeparator className="bg-white/10" />
                     {SNIPPETS.map((snippet) => (
-                        <Button
+                        <DropdownMenuItem
                             key={snippet.name}
-                            variant="outline"
-                            size="sm"
                             onClick={() => onInsert(snippet.content)}
-                            className="text-xs"
+                            className="text-white/80 focus:text-white focus:bg-white/20 cursor-pointer"
                         >
                             {snippet.name}
-                        </Button>
+                        </DropdownMenuItem>
                     ))}
-                </div>
-            )}
+                </DropdownMenuContent>
+            </DropdownMenu>
         </div>
     );
 }

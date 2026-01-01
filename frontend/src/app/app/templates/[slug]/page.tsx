@@ -9,6 +9,7 @@ import { getTemplateById } from '@/lib/api/templateApi';
 import { useSkillStore } from '@/lib/store/skillStore';
 import { Template } from '@/types/skill.types';
 import { CheckCircle, ChevronDown, ChevronUp, ArrowLeft, Download } from 'lucide-react';
+import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -212,6 +213,29 @@ ${template.instructions}
                             {template.description}
                         </p>
                     </div>
+
+                    {/* Preview Image - Floating Paper Effect */}
+                    {template.preview_image_url && (
+                        <Card className="p-6 overflow-hidden">
+                            <div className="relative w-full aspect-[16/10] bg-muted/30 rounded-lg overflow-hidden">
+                                <div
+                                    className="absolute inset-4 transform transition-all duration-500 hover:scale-[1.02] hover:-rotate-1 origin-bottom-left"
+                                    style={{
+                                        boxShadow: '-8px 8px 20px rgba(0, 0, 0, 0.15), -3px 3px 8px rgba(0, 0, 0, 0.05)',
+                                    }}
+                                >
+                                    <Image
+                                        src={template.preview_image_url}
+                                        alt={`Preview of ${template.name}`}
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, 700px"
+                                        className="object-cover object-top rounded-sm ring-1 ring-black/5"
+                                    />
+                                </div>
+                            </div>
+                            <p className="text-sm text-muted-foreground text-center mt-3">Example Output Preview</p>
+                        </Card>
+                    )}
 
                     {/* What You Get */}
                     <Card className="p-6">

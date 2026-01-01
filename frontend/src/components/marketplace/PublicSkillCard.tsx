@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Download, BadgeCheck } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { MarketplaceListing } from '@/types/marketplace.types';
@@ -45,10 +46,12 @@ export function PublicSkillCard({ listing }: PublicSkillCardProps) {
                                 boxShadow: '-8px 8px 20px rgba(0, 0, 0, 0.25), -2px 2px 6px rgba(0, 0, 0, 0.1)',
                             }}
                         >
-                            <img
+                            <Image
                                 src={listing.preview_image_url}
                                 alt={`Preview of ${listing.title}`}
-                                className="w-full h-full object-cover object-top rounded-md ring-1 ring-black/5"
+                                fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                className="object-cover object-top rounded-md ring-1 ring-black/5"
                             />
                         </div>
                     ) : (

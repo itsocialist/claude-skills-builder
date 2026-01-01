@@ -8,6 +8,8 @@ import { getProfileByUsername, getProfileListings } from '@/lib/profiles';
 import { PublicSkillCard } from '@/components/marketplace/PublicSkillCard';
 import { Loader2, Globe, Twitter, Github, MapPin, Calendar, User } from 'lucide-react';
 import { format } from 'date-fns';
+import { motion } from 'framer-motion';
+import { FadeInStagger, fadeInItem } from '@/components/animations/FadeIn';
 
 export default function CreatorProfilePage() {
     const params = useParams();
@@ -127,11 +129,13 @@ export default function CreatorProfilePage() {
                         <p className="text-muted-foreground">This creator hasn&apos;t published any skills yet.</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <FadeInStagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {listings.map(listing => (
-                            <PublicSkillCard key={listing.id} listing={listing} />
+                            <motion.div key={listing.id} variants={fadeInItem}>
+                                <PublicSkillCard listing={listing} />
+                            </motion.div>
                         ))}
-                    </div>
+                    </FadeInStagger>
                 )}
             </div>
         </div>

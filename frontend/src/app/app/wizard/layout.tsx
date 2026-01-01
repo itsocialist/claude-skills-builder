@@ -1,5 +1,3 @@
-import { FlowBackground } from '@/components/flow/FlowBackground';
-
 export default function WizardLayout({
     children,
 }: {
@@ -7,10 +5,11 @@ export default function WizardLayout({
 }) {
     return (
         <div className="relative min-h-screen overflow-hidden bg-background">
-            <FlowBackground stepIndex={4} />
+            {/* FlowBackground is rendered in page.tsx to access dynamic step state */}
             <div className="relative z-10 min-h-screen flex flex-col">
                 {children}
             </div>
         </div>
     );
 }
+

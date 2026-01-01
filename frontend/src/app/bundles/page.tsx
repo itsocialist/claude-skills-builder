@@ -10,6 +10,8 @@ import { PreviewMarkdown } from '@/components/marketplace/PreviewMarkdown'
 import { cn } from '@/lib/utils'
 import { saveAs } from 'file-saver'
 import { toast } from 'sonner'
+import { motion } from 'framer-motion'
+import { FadeInStagger, fadeInItem } from '@/components/animations/FadeIn'
 
 import { bundles as sharedBundles } from '@/lib/constants/bundles'
 
@@ -86,94 +88,95 @@ export default function PowerBundlesPage() {
 
                 {/* Bundles Grid */}
                 <div className="py-8">
-                    <div className="grid gap-6 md:grid-cols-2 max-w-5xl mx-auto">
+                    <FadeInStagger className="grid gap-6 md:grid-cols-2 max-w-5xl mx-auto">
                         {bundles.map((bundle) => (
-                            <Card
-                                key={bundle.id}
-                                className={cn(
-                                    "overflow-hidden transition-all duration-300",
-                                    expandedBundle === bundle.id && "ring-2 ring-primary"
-                                )}
-                            >
-                                {/* Bundle Header */}
-                                <div className="p-4 border-b border-border">
-                                    {/* Top row: Icon + Skills Badge */}
-                                    <div className="flex items-start justify-between mb-3">
-                                        <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                                            {bundle.icon}
-                                        </div>
-                                        <div className="flex flex-col items-center justify-center bg-muted badge-rect px-3 py-1.5 min-w-[3.5rem]">
-                                            <span className="text-lg font-bold text-foreground leading-none">
-                                                {bundle.skills.length}
-                                            </span>
-                                            <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
-                                                skills
-                                            </span>
-                                        </div>
-                                    </div>
-                                    {/* Bottom row: Name + Description */}
-                                    <Link href={`/bundles/${bundle.id}`} className="block hover:opacity-80 transition-opacity">
-                                        <h2 className="text-lg font-bold text-foreground">{bundle.name}</h2>
-                                        <p className="text-sm text-muted-foreground mt-1">{bundle.tagline}</p>
-                                    </Link>
-                                </div>
-
-                                {/* Skills List */}
-                                <div className="p-4 border-b border-border">
-                                    <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">
-                                        Included Skills
-                                    </p>
-                                    <div className="flex flex-wrap gap-2">
-                                        {bundle.skills.map((skill) => (
-                                            <span
-                                                key={skill}
-                                                className="text-xs bg-muted px-2 py-1 rounded flex items-center gap-1"
-                                            >
-                                                <Check className="w-3 h-3 text-green-500" />
-                                                {skill}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Output Preview Toggle */}
-                                <button
-                                    onClick={() => setExpandedBundle(expandedBundle === bundle.id ? null : bundle.id)}
-                                    className="w-full p-4 flex items-center justify-between text-left hover:bg-muted/50 transition-colors"
+                            <motion.div key={bundle.id} variants={fadeInItem}>
+                                <Card
+                                    className={cn(
+                                        "overflow-hidden transition-all duration-300 h-full",
+                                        expandedBundle === bundle.id && "ring-2 ring-primary"
+                                    )}
                                 >
-                                    <div className="flex items-center gap-2">
-                                        <Sparkles className="w-4 h-4 text-primary" />
-                                        <span className="text-sm font-medium text-foreground">
-                                            See Example {bundle.outputType}
-                                        </span>
+                                    {/* Bundle Header */}
+                                    <div className="p-4 border-b border-border">
+                                        {/* Top row: Icon + Skills Badge */}
+                                        <div className="flex items-start justify-between mb-3">
+                                            <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                                                {bundle.icon}
+                                            </div>
+                                            <div className="flex flex-col items-center justify-center bg-muted badge-rect px-3 py-1.5 min-w-[3.5rem]">
+                                                <span className="text-lg font-bold text-foreground leading-none">
+                                                    {bundle.skills.length}
+                                                </span>
+                                                <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
+                                                    skills
+                                                </span>
+                                            </div>
+                                        </div>
+                                        {/* Bottom row: Name + Description */}
+                                        <Link href={`/bundles/${bundle.id}`} className="block hover:opacity-80 transition-opacity">
+                                            <h2 className="text-lg font-bold text-foreground">{bundle.name}</h2>
+                                            <p className="text-sm text-muted-foreground mt-1">{bundle.tagline}</p>
+                                        </Link>
                                     </div>
-                                    <ChevronDown
-                                        className={cn(
-                                            "w-5 h-5 text-muted-foreground transition-transform",
-                                            expandedBundle === bundle.id && "rotate-180"
-                                        )}
-                                    />
-                                </button>
 
-                                {/* Expanded Output Example */}
-                                {expandedBundle === bundle.id && (
-                                    <div className="p-4 bg-muted/30 border-t border-border">
-                                        <div className="bundle-output-preview bg-white text-black rounded-lg p-6 overflow-x-auto shadow-sm border border-gray-200">
-                                            <PreviewMarkdown content={bundle.outputExample} theme="light" />
+                                    {/* Skills List */}
+                                    <div className="p-4 border-b border-border">
+                                        <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">
+                                            Included Skills
+                                        </p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {bundle.skills.map((skill) => (
+                                                <span
+                                                    key={skill}
+                                                    className="text-xs bg-muted px-2 py-1 rounded flex items-center gap-1"
+                                                >
+                                                    <Check className="w-3 h-3 text-green-500" />
+                                                    {skill}
+                                                </span>
+                                            ))}
                                         </div>
                                     </div>
-                                )}
 
-                                {/* CTA */}
-                                <div className="p-4 bg-card">
-                                    <Button className="w-full" onClick={() => handleDownload(bundle)}>
-                                        <Download className="w-4 h-4 mr-2" />
-                                        Get This Bundle
-                                    </Button>
-                                </div>
-                            </Card>
+                                    {/* Output Preview Toggle */}
+                                    <button
+                                        onClick={() => setExpandedBundle(expandedBundle === bundle.id ? null : bundle.id)}
+                                        className="w-full p-4 flex items-center justify-between text-left hover:bg-muted/50 transition-colors"
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <Sparkles className="w-4 h-4 text-primary" />
+                                            <span className="text-sm font-medium text-foreground">
+                                                See Example {bundle.outputType}
+                                            </span>
+                                        </div>
+                                        <ChevronDown
+                                            className={cn(
+                                                "w-5 h-5 text-muted-foreground transition-transform",
+                                                expandedBundle === bundle.id && "rotate-180"
+                                            )}
+                                        />
+                                    </button>
+
+                                    {/* Expanded Output Example */}
+                                    {expandedBundle === bundle.id && (
+                                        <div className="p-4 bg-muted/30 border-t border-border">
+                                            <div className="bundle-output-preview bg-white text-black rounded-lg p-6 overflow-x-auto shadow-sm border border-gray-200">
+                                                <PreviewMarkdown content={bundle.outputExample} theme="light" />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* CTA */}
+                                    <div className="p-4 bg-card mt-auto">
+                                        <Button className="w-full" onClick={() => handleDownload(bundle)}>
+                                            <Download className="w-4 h-4 mr-2" />
+                                            Get This Bundle
+                                        </Button>
+                                    </div>
+                                </Card>
+                            </motion.div>
                         ))}
-                    </div>
+                    </FadeInStagger>
 
                     {/* Bottom CTA */}
                     <div className="mt-12 text-center">

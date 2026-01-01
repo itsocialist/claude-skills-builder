@@ -18,6 +18,7 @@ export const FLAG_KEYS = [
     'feature_labs',
     'feature_ai_assistant',
     'feature_learn',
+    'feature_flow',
 ] as const;
 
 export type FlagKey = typeof FLAG_KEYS[number];
@@ -38,6 +39,7 @@ export const DEFAULT_FLAGS: Record<FlagKey, FlagState> = {
     feature_labs: 'PUBLIC',
     feature_ai_assistant: 'ADMIN_ONLY',
     feature_learn: 'PUBLIC',
+    feature_flow: 'PUBLIC',
 };
 
 // Emergency Override via Env Var

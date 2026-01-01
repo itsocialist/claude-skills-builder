@@ -10,6 +10,8 @@ import { PublicSkillCard } from '@/components/marketplace/PublicSkillCard';
 import { Card } from '@/components/ui/card';
 import { Loader2, Layers, Star, Search, FileText, BarChart3, Rocket, ArrowRight } from 'lucide-react';
 import { MarketplaceListing } from '@/types/marketplace.types';
+import { motion } from 'framer-motion';
+import { FadeInStagger, fadeInItem } from '@/components/animations/FadeIn';
 
 // Map icon strings to components for rendering
 const iconMap = {
@@ -109,26 +111,28 @@ export default function MarketplacePage() {
                                 View All <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <FadeInStagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {featuredBundles.map(bundle => (
-                                <Link key={bundle.id} href={`/bundles/${bundle.id}`} className="block group">
-                                    <Card className="h-full p-6 border-border group-hover:border-primary/50 transition-all duration-300 bg-card hover:bg-muted/50 hover:shadow-lg">
-                                        <div className="flex items-start justify-between mb-4">
-                                            <div className={`p-2 rounded-lg bg-gradient-to-br ${bundle.color} text-foreground`}>
-                                                {/* @ts-ignore - Icon map is safe here */}
-                                                {iconMap[bundle.iconName]}
+                                <motion.div key={bundle.id} variants={fadeInItem}>
+                                    <Link href={`/bundles/${bundle.id}`} className="block group h-full">
+                                        <Card className="h-full p-6 border-border group-hover:border-primary/50 transition-all duration-300 bg-card hover:bg-muted/50 hover:shadow-lg">
+                                            <div className="flex items-start justify-between mb-4">
+                                                <div className={`p-2 rounded-lg bg-gradient-to-br ${bundle.color} text-foreground`}>
+                                                    {/* @ts-ignore - Icon map is safe here */}
+                                                    {iconMap[bundle.iconName]}
+                                                </div>
+                                                <div className="flex flex-col items-center justify-center bg-muted rounded-md px-3 py-1.5 min-w-[3.5rem]">
+                                                    <span className="text-lg font-bold text-foreground leading-none">{bundle.skills.length}</span>
+                                                    <span className="text-[10px] text-muted-foreground uppercase tracking-wide">skills</span>
+                                                </div>
                                             </div>
-                                            <div className="flex flex-col items-center justify-center bg-muted rounded-md px-3 py-1.5 min-w-[3.5rem]">
-                                                <span className="text-lg font-bold text-foreground leading-none">{bundle.skills.length}</span>
-                                                <span className="text-[10px] text-muted-foreground uppercase tracking-wide">skills</span>
-                                            </div>
-                                        </div>
-                                        <h3 className="text-lg font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">{bundle.name}</h3>
-                                        <p className="text-sm text-muted-foreground line-clamp-2">{bundle.tagline}</p>
-                                    </Card>
-                                </Link>
+                                            <h3 className="text-lg font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">{bundle.name}</h3>
+                                            <p className="text-sm text-muted-foreground line-clamp-2">{bundle.tagline}</p>
+                                        </Card>
+                                    </Link>
+                                </motion.div>
                             ))}
-                        </div>
+                        </FadeInStagger>
                         <div className="h-px bg-border my-8" />
                     </div>
                 )}
@@ -142,11 +146,13 @@ export default function MarketplacePage() {
                                 Featured Skills
                             </h2>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <FadeInStagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {featuredSkills.map(listing => (
-                                <PublicSkillCard key={listing.id} listing={listing} />
+                                <motion.div key={listing.id} variants={fadeInItem}>
+                                    <PublicSkillCard listing={listing} />
+                                </motion.div>
                             ))}
-                        </div>
+                        </FadeInStagger>
                         <div className="h-px bg-border my-8" />
                     </div>
                 )}
@@ -172,11 +178,13 @@ export default function MarketplacePage() {
                             </p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <FadeInStagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {filteredListings.map(listing => (
-                                <PublicSkillCard key={listing.id} listing={listing} />
+                                <motion.div key={listing.id} variants={fadeInItem}>
+                                    <PublicSkillCard listing={listing} />
+                                </motion.div>
                             ))}
-                        </div>
+                        </FadeInStagger>
                     )}
                 </div>
             </div>

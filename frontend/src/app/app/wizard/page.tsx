@@ -12,11 +12,13 @@ import { ResourceManager } from '@/components/builder/ResourceManager';
 import { motion } from 'framer-motion';
 import {
     Check, ChevronLeft, ChevronRight, Download,
-    Lightbulb, MessageSquare, FileText, Paperclip, Rocket,
+    Lightbulb, MessageSquare, FileText, Paperclip, Sparkles, Hammer,
     Plus, X, Loader2
 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { FlowInput } from '@/components/flow/inputs/FlowInput';
+import { FlowTextarea } from '@/components/flow/inputs/FlowTextarea';
+import { FlowProgressOverview } from '@/components/flow/overview/FlowProgressOverview';
+import { FlowBackground } from '@/components/flow/FlowBackground';
 import { Button } from '@/components/ui/button';
 
 // --- Constants ---
@@ -73,6 +75,14 @@ function WizardContent() {
     const [triggerInput, setTriggerInput] = useState('');
     const lastPathnameRef = useRef<string | null>(null);
 
+    // Wizard progress steps for the overview
+    const wizardSteps = [
+        { id: 'identity', label: 'Identity', isCompleted: step > 0, isActive: step === 0 },
+        { id: 'details', label: 'Core Behavior', isCompleted: step > 1, isActive: step === 1 },
+        { id: 'knowledge', label: 'Context', isCompleted: step > 2, isActive: step === 2 },
+        { id: 'review', label: 'Review & Install', isCompleted: step > 3, isActive: step === 3 },
+    ];
+
     // 1. Initial Load & Logic
     useEffect(() => {
         const role = searchParams.get('role');
@@ -105,20 +115,31 @@ function WizardContent() {
         if (isTyping || !text) return;
         setIsTyping(true);
 
-        let currentText = '';
         const chunkSize = 2; // Type 2 chars at a time for speed
 
-        // Clear field first
-        if (field === 'triggerInput') setTriggerInput('');
-        else updateField(field as any, '');
+        let initialText = '';
+        if (field === 'triggerInput') {
+            // For triggers, we usually replace or it's a new tag, but here we are typing into the input
+            initialText = triggerInput;
+        } else {
+            initialText = (skill[field as keyof typeof skill] as string) || '';
+        }
+
+        // If we are "completing", we append. 
+        // Logic: If the field is not empty, we append a space if needed (unless it's a newline)
+        let needsSpace = initialText.length > 0 && !initialText.endsWith(' ') && !initialText.endsWith('\n') && !text.startsWith(' ') && !text.startsWith('\n');
+
+        let typedSoFar = '';
 
         for (let i = 0; i < text.length; i += chunkSize) {
-            currentText += text.slice(i, i + chunkSize);
+            typedSoFar += text.slice(i, i + chunkSize);
+
+            const nextValue = initialText + (needsSpace ? ' ' : '') + typedSoFar;
 
             if (field === 'triggerInput') {
-                setTriggerInput(currentText);
+                setTriggerInput(nextValue);
             } else {
-                updateField(field as any, currentText);
+                updateField(field as any, nextValue);
             }
 
             // Random delay for realism
@@ -129,21 +150,59 @@ function WizardContent() {
     };
 
     const handleAIAssist = async () => {
-        if (!lessonPlan || isTyping) return;
-        const module = lessonPlan.modules[0]; // Assuming single module for now
+        if (isTyping) return;
 
-        switch (step) {
-            case 0: // Description
-                await simulateTyping(module.skillTemplate.description, 'description');
-                break;
-            case 1: // Triggers
-                if (module.skillTemplate.triggers.length > 0) {
-                    await simulateTyping(module.skillTemplate.triggers[0], 'triggerInput');
-                }
-                break;
-            case 2: // Instructions
-                await simulateTyping(module.skillTemplate.instructions, 'instructions');
-                break;
+        // If we have a lesson plan, use it as a base, but don't overwrite if user has typed something unique
+        // unless it matches the start of the template
+        let textToType = '';
+        let targetField: any = '';
+
+        if (step === 0) { // Description
+            targetField = 'description';
+            const currentDesc = skill.description;
+            const templateDesc = lessonPlan?.modules[0]?.skillTemplate.description || '';
+            const skillName = skill.name || 'this skill';
+
+            // Simple heuristic generation if no plan or to "complete" the thought
+            if (currentDesc && !templateDesc.startsWith(currentDesc)) {
+                // User has typed something custom - "generate the rest"
+                const completions = [
+                    ` allowing users to streamline their workflow and save time.`,
+                    ` with a focus on accuracy and tone.`,
+                    ` suitable for both beginners and experts.`
+                ];
+                textToType = completions[Math.floor(Math.random() * completions.length)];
+            } else {
+                // Use template or generate new base
+                textToType = templateDesc || `A comprehensive assistant for ${skillName}, designed to help users achieve their goals efficiently.`;
+
+                // If we already have this text, don't repeat it
+                if (currentDesc === textToType) return;
+            }
+        } else if (step === 1) { // Triggers
+            targetField = 'triggerInput';
+            const templateTriggers = lessonPlan?.modules[0]?.skillTemplate.triggers || [];
+            // filter out existing
+            const available = templateTriggers.filter(t => !skill.triggers.includes(t));
+            if (available.length > 0) {
+                textToType = available[0];
+            } else {
+                textToType = `Help me with ${skill.name}`;
+            }
+        } else if (step === 2) { // Instructions
+            targetField = 'instructions';
+            const currentInst = skill.instructions;
+            // For instructions, we usually append or fill if empty
+            if (!currentInst) {
+                textToType = lessonPlan?.modules[0]?.skillTemplate.instructions ||
+                    `Role: expert ${skill.name} assistant.\n\nTask:\n1. Analyze the user's request.\n2. Provide step-by-step guidance.`;
+            } else {
+                textToType = `\n\n3. Ensure the output is formatted clearly.\n4. Ask for clarification if needed.`;
+            }
+        }
+
+        if (textToType) {
+            await simulateTyping(textToType, targetField);
         }
     };
 
@@ -167,6 +226,13 @@ function WizardContent() {
     };
 
     const handleExitPlan = () => {
+        router.push('/app/flow');
+    };
+
+    const handleExitWizard = () => {
+        if (skill.name && !confirm('Are you sure you want to exit? Your progress may be lost.')) {
+            return;
+        }
         router.push('/app/flow');
     };
 
@@ -195,6 +261,9 @@ function WizardContent() {
             a.download = `${skill.name || 'my-skill'}.zip`;
             a.click();
             URL.revokeObjectURL(url);
+
+            // Advance to "Installation Guide" step (Step 4)
+            setStep(4);
         } catch (error) {
             console.error('Failed to generate skill:', error);
         }
@@ -212,30 +281,36 @@ function WizardContent() {
         }
     };
 
-    const currentStep = STEPS[step];
+    const currentStep = STEPS[step] || STEPS[STEPS.length - 1];
     const isLastStep = step === STEPS.length - 1;
 
     // --- Render: Analyzing State ---
     if (mode === 'analyzing') {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen">
-                <div className="w-full max-w-md text-center">
-                    <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-6" />
-                    <h2 className="text-2xl font-light text-white mb-2">Manifesting your path...</h2>
-                    <p className="text-white/50">Analyzing compatibility profiles</p>
+            <>
+                <FlowBackground stepIndex={step} />
+                <div className="flex flex-col items-center justify-center min-h-screen relative z-10">
+                    <div className="w-full max-w-md text-center">
+                        <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-6" />
+                        <h2 className="text-2xl font-light text-white mb-2">Manifesting your path...</h2>
+                        <p className="text-white/50">Analyzing compatibility profiles</p>
+                    </div>
                 </div>
-            </div>
+            </>
         );
     }
 
     // --- Render: Plan View ---
     if (mode === 'plan' && lessonPlan) {
         return (
-            <div className="container mx-auto px-4 py-8">
-                <GlassTerminal title="LESSON_PLAN_RECEIVED" helpText="Select a module to begin your guided implementation.">
-                    <PlanView plan={lessonPlan} onStart={handleStartLesson} onExit={handleExitPlan} />
-                </GlassTerminal>
-            </div>
+            <>
+                <FlowBackground stepIndex={step} />
+                <div className="container mx-auto px-4 py-8 relative z-10">
+                    <GlassTerminal title="LESSON_PLAN_RECEIVED" helpText="Select a module to begin your guided implementation.">
+                        <PlanView plan={lessonPlan} onStart={handleStartLesson} onExit={handleExitPlan} />
+                    </GlassTerminal>
+                </div>
+            </>
         );
     }
 
@@ -245,201 +320,260 @@ function WizardContent() {
             disabled={isTyping}
             variant="ghost"
             size="sm"
-            className="absolute right-2 top-2 h-8 px-3 text-purple-400 hover:text-purple-300 hover:bg-purple-400/10 transition-colors"
+            className="absolute right-2 top-2 h-8 px-3 text-primary/80 hover:text-primary hover:bg-primary/10 transition-all hover:scale-105 active:scale-95"
         >
-            {isTyping ? <Loader2 className="w-4 h-4 animate-spin" /> : <div className="flex items-center gap-2"><Rocket className="w-4 h-4" /> <span>Auto-Generate</span></div>}
+            {isTyping ? <Loader2 className="w-4 h-4 animate-spin text-primary" /> : <div className="flex items-center gap-2"><Sparkles className="w-4 h-4" /> <span className="font-medium">Auto-Generate</span></div>}
         </Button>
     );
 
     // --- Render: Wizard View ---
     return (
-        <div className="container mx-auto px-4 py-8">
-            <GlassTerminal
-                title={`STEP_${step + 1}_OF_${STEPS.length}`}
-                helpText={currentStep.help}
-            >
-                {/* Progress */}
-                <div className="flex items-center justify-center mb-12 gap-1">
-                    {STEPS.map((s, i) => {
-                        const Icon = s.icon;
-                        const isActive = i === step;
-                        const isCompleted = i < step;
+        <>
+            <FlowBackground stepIndex={step} />
+            <div className="container mx-auto px-4 py-8 relative z-10">
+                <GlassTerminal
+                    title={step === 4 ? "INSTALLATION_GUIDE" : `STEP_${step + 1}_OF_${STEPS.length}`}
+                    helpText={step === 4 ? "Follow these steps to activate your new skill in Claude." : currentStep.help}
+                >
+                    {/* Progress */}
+                    {step < 4 && (
+                        <div className="flex items-center justify-center mb-12 gap-1">
+                            {STEPS.map((s, i) => {
+                                const Icon = s.icon;
+                                const isActive = i === step;
+                                const isCompleted = i < step;
 
-                        return (
-                            <div key={s.id} className="flex items-center">
-                                <div
-                                    className={`
+                                return (
+                                    <div key={s.id} className="flex items-center">
+                                        <div
+                                            className={`
                                         flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300
                                         ${isCompleted ? 'bg-primary text-primary-foreground' : ''}
                                         ${isActive ? 'bg-primary/20 text-primary ring-2 ring-primary ring-offset-2 ring-offset-black' : ''}
                                         ${!isActive && !isCompleted ? 'bg-white/5 text-white/30' : ''}
                                     `}
-                                >
-                                    {isCompleted ? <Check className="h-5 w-5" /> : <Icon className="h-5 w-5" />}
-                                </div>
-                                {i < STEPS.length - 1 && (
-                                    <div className={`w-12 h-px mx-2 transition-colors duration-300 ${isCompleted ? 'bg-primary' : 'bg-white/10'}`} />
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
+                                        >
+                                            {isCompleted ? <Check className="h-5 w-5" /> : <Icon className="h-5 w-5" />}
+                                        </div>
+                                        {i < STEPS.length - 1 && (
+                                            <div className={`w-12 h-px mx-2 transition-colors duration-300 ${isCompleted ? 'bg-primary' : 'bg-white/10'}`} />
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
 
-                <div className="max-w-3xl mx-auto w-full flex-grow flex flex-col">
-                    <motion.div
-                        key={step}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        transition={{ duration: 0.3 }}
-                        className="flex-grow flex flex-col"
-                    >
-                        <h2 className="text-3xl font-light text-white mb-8 text-center">{currentStep.question}</h2>
+                    <div className="max-w-3xl mx-auto w-full flex-grow flex flex-col">
+                        <motion.div
+                            key={step}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.3 }}
+                            className="flex-grow flex flex-col"
+                        >
+                            <h2 className="text-3xl font-light text-white mb-8 text-center">{step === 4 ? "Congratulations!" : currentStep?.question}</h2>
 
-                        {/* Step 1: What */}
-                        {step === 0 && (
-                            <div className="space-y-6">
-                                <div>
-                                    <label className="text-sm font-medium text-white/60 mb-2 block uppercase tracking-wider">Skill Name</label>
-                                    <Input
+                            {/* Step 1: What */}
+                            {step === 0 && (
+                                <div className="space-y-8">
+                                    <FlowInput
+                                        label="Skill Name"
+                                        placeholder="e.g. Property Listing Generator"
                                         value={skill.name}
                                         onChange={(e) => updateField('name', e.target.value)}
-                                        placeholder="e.g. Property Listing Generator"
-                                        className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12"
+                                        required
+                                        description="Give your new skill a memorable name."
                                     />
-                                </div>
-                                <div className="relative">
-                                    <label className="text-sm font-medium text-white/60 mb-2 block uppercase tracking-wider">Description</label>
-                                    <AIButton onClick={handleAIAssist} />
-                                    <Textarea
-                                        value={skill.description}
-                                        onChange={(e) => updateField('description', e.target.value)}
-                                        placeholder="What is the primary purpose of this skill?"
-                                        rows={6}
-                                        className="bg-white/5 border-white/10 text-white placeholder:text-white/20 resize-none"
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Step 2: When */}
-                        {step === 1 && (
-                            <div className="space-y-6">
-                                <div className="flex gap-2 relative">
-                                    <Input
-                                        value={triggerInput}
-                                        onChange={(e) => setTriggerInput(e.target.value)}
-                                        onKeyDown={(e) => e.key === 'Enter' && handleAddTrigger()}
-                                        placeholder="Type a trigger phrase..."
-                                        className="bg-white/5 border-white/10 text-white placeholder:text-white/20 h-12 pr-32"
-                                    />
-                                    <div className="absolute right-14 top-2">
-                                        <Button
-                                            onClick={handleAIAssist}
-                                            disabled={isTyping}
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-8 w-8 text-purple-400 hover:text-purple-300 hover:bg-purple-400/10"
-                                        >
-                                            <Rocket className="w-4 h-4" />
-                                        </Button>
+                                    <div className="relative">
+                                        <FlowTextarea
+                                            label="Description"
+                                            placeholder="What is the primary purpose of this skill?"
+                                            value={skill.description}
+                                            onChange={(e) => updateField('description', e.target.value)}
+                                            required
+                                            className="min-h-[140px] pr-36"
+                                            description="Describe what this skill does in a few sentences."
+                                        />
+                                        <div className="absolute right-4 top-4">
+                                            <AIButton onClick={handleAIAssist} />
+                                        </div>
                                     </div>
+                                </div>
+                            )}
+
+                            {/* Step 2: When */}
+                            {step === 1 && (
+                                <div className="space-y-6">
+                                    <div className="relative">
+                                        <FlowTextarea
+                                            label="Add Trigger"
+                                            placeholder="Type a trigger phrase..."
+                                            value={triggerInput}
+                                            onChange={(e) => setTriggerInput(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' && !e.shiftKey) {
+                                                    e.preventDefault();
+                                                    handleAddTrigger();
+                                                }
+                                            }}
+                                            minHeight="min-h-[80px]"
+                                            description="Press Enter to add multiple triggers."
+                                        />
+                                        <div className="absolute right-4 top-4 flex gap-2">
+                                            <Button
+                                                onClick={handleAIAssist}
+                                                disabled={isTyping}
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 text-primary/80 hover:text-primary hover:bg-primary/10 hover:scale-110 transition-all"
+                                            >
+                                                <Sparkles className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+
                                     <Button onClick={handleAddTrigger} disabled={!triggerInput.trim()} size="icon" className="h-12 w-12 bg-white/10 hover:bg-white/20">
                                         <Plus className="h-5 w-5" />
                                     </Button>
+
+
+                                    {skill.triggers.length > 0 ? (
+                                        <div className="flex flex-wrap gap-2">
+                                            {skill.triggers.map((trigger, i) => (
+                                                <span key={i} className="inline-flex items-center px-4 py-2 bg-primary/10 border border-primary/20 text-primary rounded-full text-sm">
+                                                    {trigger}
+                                                    <button onClick={() => removeTrigger(i)} className="ml-2 hover:text-white">
+                                                        <X className="h-3 w-3" />
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-white/30 text-center py-8 italic border border-dashed border-white/10 rounded-lg">
+                                            No triggers added yet. Try: "{TRIGGER_EXAMPLES[0]}"
+                                        </div>
+                                    )}
                                 </div>
+                            )}
 
-                                {skill.triggers.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
-                                        {skill.triggers.map((trigger, i) => (
-                                            <span key={i} className="inline-flex items-center px-4 py-2 bg-primary/10 border border-primary/20 text-primary rounded-full text-sm">
-                                                {trigger}
-                                                <button onClick={() => removeTrigger(i)} className="ml-2 hover:text-white">
-                                                    <X className="h-3 w-3" />
-                                                </button>
-                                            </span>
-                                        ))}
+                            {/* Step 3: How */}
+                            {step === 2 && (
+                                <div className="space-y-6 relative">
+                                    <SkillSnippets onInsert={handleInsertSnippet} />
+                                    <div className="relative">
+                                        <FlowTextarea
+                                            label="Instructions"
+                                            placeholder="Detailed instructions for Claude..."
+                                            value={skill.instructions}
+                                            onChange={(e) => updateField('instructions', e.target.value)}
+                                            className="min-h-[300px] font-mono text-sm leading-relaxed"
+                                            description="How should the AI behave? Be specific."
+                                        />
+                                        <div className="absolute right-4 top-4">
+                                            <AIButton onClick={handleAIAssist} />
+                                        </div>
                                     </div>
-                                ) : (
-                                    <div className="text-white/30 text-center py-8 italic border border-dashed border-white/10 rounded-lg">
-                                        No triggers added yet. Try: "{TRIGGER_EXAMPLES[0]}"
-                                    </div>
-                                )}
-                            </div>
-                        )}
+                                </div>
+                            )}
 
-                        {/* Step 3: How */}
-                        {step === 2 && (
-                            <div className="space-y-6 relative">
-                                <SkillSnippets onInsert={handleInsertSnippet} />
-                                <div className="relative">
-                                    <AIButton onClick={handleAIAssist} />
-                                    <Textarea
-                                        value={skill.instructions}
-                                        onChange={(e) => updateField('instructions', e.target.value)}
-                                        placeholder="Instructions for Claude..."
-                                        rows={12}
-                                        className="bg-white/5 border-white/10 text-white placeholder:text-white/20 font-mono text-sm leading-relaxed pt-12"
+                            {/* Step 4: Files */}
+                            {step === 3 && (
+                                <div className="space-y-6">
+                                    <ResourceManager
+                                        resources={skill.resources || []}
+                                        onAdd={(resource) => addResource(resource)}
+                                        onRemove={(id) => removeResource(id)}
                                     />
-                                </div>
-                            </div>
-                        )}
 
-                        {/* Step 4: Files */}
-                        {step === 3 && (
-                            <div className="space-y-6">
-                                <ResourceManager
-                                    resources={skill.resources || []}
-                                    onAdd={(resource) => addResource(resource)}
-                                    onRemove={(id) => removeResource(id)}
-                                />
-
-                                <div className="pt-8 mt-8 border-t border-white/10 flex flex-col gap-3">
-                                    <Button onClick={handleDownload} size="lg" className="h-14 w-full bg-primary hover:bg-primary/90 text-lg shadow-lg shadow-primary/20">
-                                        <Download className="h-5 w-5 mr-3" />
-                                        Complete & Download
-                                    </Button>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <Button variant="outline" onClick={handleSkipUpload} className="h-12 border-white/10 text-white/70 hover:bg-white/5 hover:text-white">
-                                            Skip Upload
+                                    <div className="pt-8 mt-8 border-t border-white/10 flex flex-col gap-3">
+                                        <Button onClick={handleDownload} size="lg" className="h-14 w-full bg-primary hover:bg-primary/90 text-lg shadow-lg shadow-primary/20">
+                                            <Download className="h-5 w-5 mr-3" />
+                                            Complete & Download
                                         </Button>
-                                        <Button variant="outline" onClick={handleContinueInBuilder} className="h-12 border-white/10 text-white hover:bg-white/5">
-                                            <Rocket className="h-4 w-4 mr-2" />
-                                            Open in Builder
-                                        </Button>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <Button variant="outline" onClick={handleSkipUpload} className="h-12 border-white/10 text-white/70 hover:bg-white/5 hover:text-white">
+                                                Skip Upload
+                                            </Button>
+                                            <Button variant="outline" onClick={handleContinueInBuilder} className="h-12 border-white/10 text-white hover:bg-white/5">
+                                                <Hammer className="h-4 w-4 mr-2" />
+                                                Open in Builder
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
 
-                        {/* Navigation */}
-                        {step < 3 && (
-                            <div className="flex justify-between mt-auto pt-12">
-                                <Button
-                                    variant="ghost"
-                                    onClick={() => step > 0 ? setStep(step - 1) : router.push('/app/flow')}
-                                    className="text-white/50 hover:text-white hover:bg-white/5"
-                                >
-                                    <ChevronLeft className="h-4 w-4 mr-2" />
-                                    {step === 0 ? 'Exit' : 'Back'}
-                                </Button>
+                            {/* Step 4: Installation Guide (Post-Download) */}
+                            {step === 4 && (
+                                <InstallationGuide onExit={handleExitWizard} />
+                            )}
 
-                                <Button
-                                    onClick={() => setStep(step + 1)}
-                                    disabled={!canProceed()}
-                                    className="bg-white text-black hover:bg-white/90 px-8"
-                                >
-                                    Next Step
-                                    <ChevronRight className="h-4 w-4 ml-2" />
-                                </Button>
-                            </div>
-                        )}
-                    </motion.div>
-                </div>
-            </GlassTerminal>
-        </div>
+                            {/* Navigation */}
+                            {step < 3 && (
+                                <div className="flex justify-between mt-auto pt-12">
+                                    <Button
+                                        variant="ghost"
+                                        onClick={() => step > 0 ? setStep(step - 1) : handleExitWizard()}
+                                        className="text-white/50 hover:text-white hover:bg-white/5"
+                                    >
+                                        <ChevronLeft className="h-4 w-4 mr-2" />
+                                        {step === 0 ? 'Exit' : 'Back'}
+                                    </Button>
+
+                                    <Button
+                                        onClick={() => setStep(step + 1)}
+                                        disabled={!canProceed()}
+                                        className="bg-white text-black hover:bg-white/90 px-8"
+                                    >
+                                        Next Step
+                                        <ChevronRight className="h-4 w-4 ml-2" />
+                                    </Button>
+                                </div>
+                            )}
+                        </motion.div>
+                    </div>
+                </GlassTerminal >
+
+                {/* Floating Overview - Positioned relative to container but fixed on screen via component styles */}
+                {
+                    step < 4 && (
+                        <FlowProgressOverview steps={wizardSteps} currentStepIndex={step} />
+                    )
+                }
+            </div>
+        </>
     );
 }
+
+// Separate component for Installation Guide to keep main render clean
+const InstallationGuide = ({ onExit }: { onExit: () => void }) => (
+    <div className="space-y-6 animate-in fade-in duration-500">
+        <div className="bg-white/10 rounded-lg p-6 border border-white/20">
+            <h3 className="text-xl font-medium text-white mb-4 flex items-center gap-2">
+                <Check className="w-5 h-5 text-green-400" />
+                Download Complete!
+            </h3>
+            <p className="text-white/70 mb-4">
+                Your skill has been packaged. Follow these steps to install it in Claude:
+            </p>
+            <ol className="list-decimal list-inside text-white/80 space-y-3 ml-2">
+                <li>Check your downloads folder for the ZIP file.</li>
+                <li>Extract the ZIP file to a folder on your computer.</li>
+                <li>Open the <span className="font-mono bg-white/10 px-1 rounded text-sm">README.md</span> file inside for specific instructions.</li>
+                <li>Open your Claude Desktop config (Settings {'>'} Developer {'>'} Edit Config).</li>
+                <li>Add the configuration snippet from the README.</li>
+            </ol>
+        </div>
+
+        <div className="flex justify-center pt-8">
+            <Button onClick={onExit} size="lg" className="bg-white text-black hover:bg-white/90">
+                Return to Flow
+            </Button>
+        </div>
+    </div>
+);
 
 export default function WizardPage() {
     return (

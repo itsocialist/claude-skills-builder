@@ -55,4 +55,5 @@ export interface Template {
     triggers: string[];
     instructions: string;
     sampleOutput?: string;
+    preview_image_url?: string;
 }

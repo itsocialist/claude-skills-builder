@@ -13,6 +13,8 @@ import { useSiteSettings } from '@/lib/contexts/SiteSettingsContext';
 import { DEFAULT_FLAGS } from '@/lib/flags';
 import { bundles as sharedBundles } from '@/lib/constants/bundles';
 import { useLibraryStore } from '@/lib/store/libraryStore';
+import { motion } from 'framer-motion';
+import { FadeInStagger, fadeInItem } from '@/components/animations/FadeIn';
 
 export default function AppHomePage() {
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -145,19 +147,21 @@ export default function AppHomePage() {
                 ))}
               </div>
             ) : userSkills.length > 0 ? (
-              <div className="grid md:grid-cols-3 gap-4">
+              <FadeInStagger className="grid md:grid-cols-3 gap-4">
                 {userSkills.slice(0, 3).map((skill: any) => (
-                  <Card key={skill.id} className="p-4 border-border hover:border-primary/50 transition-colors">
-                    <h3 className="font-semibold text-foreground mb-1">{skill.name}</h3>
-                    <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{skill.description}</p>
-                    <Link href={`/app/builder?skill=${skill.id}`}>
-                      <Button variant="outline" size="sm" className="w-full">
-                        Edit Skill
-                      </Button>
-                    </Link>
-                  </Card>
+                  <motion.div key={skill.id} variants={fadeInItem}>
+                    <Card className="p-4 border-border hover:border-primary/50 transition-colors">
+                      <h3 className="font-semibold text-foreground mb-1">{skill.name}</h3>
+                      <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{skill.description}</p>
+                      <Link href={`/app/builder?skill=${skill.id}`}>
+                        <Button variant="outline" size="sm" className="w-full">
+                          Edit Skill
+                        </Button>
+                      </Link>
+                    </Card>
+                  </motion.div>
                 ))}
-              </div>
+              </FadeInStagger>
             ) : (
               <Card className="p-6 border-border text-center">
                 <p className="text-muted-foreground mb-4">You haven't created any skills yet.</p>
@@ -195,20 +199,22 @@ export default function AppHomePage() {
           </div>
 
           {user ? (
-            <div className="grid md:grid-cols-3 gap-4">
+            <FadeInStagger className="grid md:grid-cols-3 gap-4">
               {displayBundles.map((bundle) => (
-                <Link key={bundle.id} href={`/bundles/${bundle.id}`}>
-                  <Card className="p-4 border-border hover:border-primary/50 transition-colors h-full">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Layers className="h-5 w-5 text-primary" />
-                      <span className="text-xs bg-muted px-2 py-0.5 rounded">{bundle.skills.length} skills</span>
-                    </div>
-                    <h3 className="font-semibold text-foreground">{bundle.name}</h3>
-                    <p className="text-xs text-muted-foreground line-clamp-2">{bundle.tagline}</p>
-                  </Card>
-                </Link>
+                <motion.div key={bundle.id} variants={fadeInItem} className="h-full">
+                  <Link href={`/bundles/${bundle.id}`}>
+                    <Card className="p-4 border-border hover:border-primary/50 transition-colors h-full">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Layers className="h-5 w-5 text-primary" />
+                        <span className="text-xs bg-muted px-2 py-0.5 rounded">{bundle.skills.length} skills</span>
+                      </div>
+                      <h3 className="font-semibold text-foreground">{bundle.name}</h3>
+                      <p className="text-xs text-muted-foreground line-clamp-2">{bundle.tagline}</p>
+                    </Card>
+                  </Link>
+                </motion.div>
               ))}
-            </div>
+            </FadeInStagger>
           ) : (
             <Card className="p-6 border-border bg-muted/20 text-center">
               <Layers className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
@@ -239,22 +245,24 @@ export default function AppHomePage() {
                 ))}
               </div>
             ) : (
-              <div className="grid md:grid-cols-3 gap-4">
+              <FadeInStagger className="grid md:grid-cols-3 gap-4">
                 {templates.slice(0, 3).map((template) => (
-                  <Card key={template.id} className="p-4 hover:shadow-md transition-shadow border-border">
-                    <span className="inline-block px-2 py-0.5 text-xs font-semibold text-primary bg-primary/10 rounded-full mb-2">
-                      {template.category}
-                    </span>
-                    <h3 className="font-bold text-foreground mb-1">{template.name}</h3>
-                    <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{template.description}</p>
-                    <Link href={`/app/templates/${template.id}`}>
-                      <Button variant="outline" size="sm" className="w-full">
-                        Use Skill
-                      </Button>
-                    </Link>
-                  </Card>
+                  <motion.div key={template.id} variants={fadeInItem}>
+                    <Card className="p-4 border-border transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:-translate-y-1">
+                      <span className="inline-block px-2 py-0.5 text-xs font-semibold text-primary bg-primary/10 rounded-full mb-2">
+                        {template.category}
+                      </span>
+                      <h3 className="font-bold text-foreground mb-1">{template.name}</h3>
+                      <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{template.description}</p>
+                      <Link href={`/app/templates/${template.id}`}>
+                        <Button variant="outline" size="sm" className="w-full">
+                          Use Skill
+                        </Button>
+                      </Link>
+                    </Card>
+                  </motion.div>
                 ))}
-              </div>
+              </FadeInStagger>
             )}
           </section>
         )}

@@ -23,6 +23,7 @@ export async function getTemplates(): Promise<Template[]> {
         triggers: row.triggers || [],
         instructions: row.instructions || '',
         sampleOutput: row.sample_output || undefined,
+        preview_image_url: row.preview_image_url || undefined,
     }));
 }
 
@@ -46,5 +47,6 @@ export async function getTemplateById(id: string): Promise<Template | null> {
         triggers: data.triggers || [],
         instructions: data.instructions || '',
         sampleOutput: data.sample_output || undefined,
+        preview_image_url: data.preview_image_url || undefined,
     };
 }

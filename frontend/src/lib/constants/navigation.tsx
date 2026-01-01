@@ -1,6 +1,6 @@
 'use client';
 
-import { Compass, Wand2, Hammer, GitBranch, LayoutTemplate, Layers, Package, Search, Library, Building2, FlaskConical, CheckCircle2 } from 'lucide-react';
+import { Compass, Wand2, Hammer, GitBranch, LayoutTemplate, Layers, Package, Search, Library, Building2, FlaskConical, CheckCircle2, Sparkles } from 'lucide-react';
 
 export interface NavItem {
     id: string;
@@ -33,6 +33,7 @@ export const NAVIGATION_CATEGORIES: NavCategory[] = [
         label: 'Create',
         items: [
             { id: 'wizard', label: 'Quick Start', href: '/app/wizard', icon: Wand2, featureFlag: 'feature_generations' },
+            { id: 'flow', label: 'Flow', href: '/app/flow', icon: Sparkles, featureFlag: 'feature_flow' },
             { id: 'builder', label: 'Skill Builder', href: '/app/builder', icon: Hammer, featureFlag: 'feature_builder' },
             { id: 'canvas', label: 'Visual Canvas', href: '/app/canvas', icon: GitBranch, featureFlag: 'feature_canvas' },
         ],

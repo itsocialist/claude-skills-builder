@@ -26,6 +26,7 @@ import {
     User
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
     TwitterShareButton,
     LinkedinShareButton,
@@ -287,10 +288,12 @@ export default function SkillDetailPage() {
                                             boxShadow: '-12px 12px 30px rgba(0, 0, 0, 0.25), -4px 4px 10px rgba(0, 0, 0, 0.1)',
                                         }}
                                     >
-                                        <img
+                                        <Image
                                             src={listing.preview_image_url}
                                             alt={`Preview of ${listing.title}`}
-                                            className="w-full h-full object-cover object-top rounded-md ring-1 ring-black/5 transition-transform group-hover/preview:scale-[1.02]"
+                                            fill
+                                            sizes="(max-width: 768px) 100vw, 50vw"
+                                            className="object-cover object-top rounded-md ring-1 ring-black/5 transition-transform group-hover/preview:scale-[1.02]"
                                         />
                                         {/* Click hint */}
                                         <div className="absolute inset-0 bg-black/0 group-hover/preview:bg-black/10 transition-colors rounded-md flex items-center justify-center">

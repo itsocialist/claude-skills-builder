@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -120,6 +121,19 @@ ${template.instructions}
                 </SheetHeader>
 
                 <div className="py-6 space-y-5">
+                    {/* Preview Thumbnail */}
+                    {template.preview_image_url && (
+                        <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-muted/30 border border-border/50">
+                            <Image
+                                src={template.preview_image_url}
+                                alt={`Preview of ${template.name}`}
+                                fill
+                                sizes="(max-width: 640px) 100vw, 400px"
+                                className="object-cover object-top"
+                            />
+                        </div>
+                    )}
+
                     {/* Action Buttons */}
                     <div className="flex gap-3">
                         <Button onClick={handleUseTemplate} size="lg" className="flex-1">

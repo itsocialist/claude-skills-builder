@@ -23,11 +23,15 @@ import Anthropic from '@anthropic-ai/sdk';
 import puppeteer from 'puppeteer';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as dotenv from 'dotenv';
+
+// Load environment variables from frontend/.env.local
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
 // Configuration
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY!;
+const ANTHROPIC_API_KEY = process.env.NEXT_PUBLIC_PLATFORM_CLAUDE_KEY || process.env.ANTHROPIC_API_KEY!;
 const RENDERER_BASE_URL = process.env.RENDERER_URL || 'http://localhost:3001/internal/preview-renderer';
 
 // Category to visual type mapping
@@ -78,10 +82,8 @@ async function main() {
 
     if (!listings || listings.length === 0) {
         console.log('✅ All listings already have preview images!');
-        return;
+        // return; // Don't return yet, we still need to process templates
     }
-
-    console.log(`📋 Found ${listings.length} listings without previews\n`);
 
     // Launch browser
     const browser = await puppeteer.launch({
@@ -95,59 +97,97 @@ async function main() {
         fs.mkdirSync(tempDir, { recursive: true });
     }
 
+    // --- PROCESS LISTINGS ---
+    console.log(`Found ${listings?.length || 0} listings to process`);
+
+    /* 
     for (const listing of listings as MarketListing[]) {
-        console.log(`\n📝 Processing: ${listing.title}`);
+        // ... (listings loop commented out for speed)
+    }
+    */
+    console.log('Skipping listings generation to focus on templates...');
 
-        try {
-            // Get full skill instructions
-            const { data: skill } = await supabase
-                .from('user_skills')
-                .select('instructions, description')
-                .eq('id', listing.skill_id)
-                .single();
+    // --- PROCESS TEMPLATES ---
+    const { data: templates, error: templatesError } = await supabase
+        .from('templates')
+        .select('id, name, description, category, sample_output, preview_image_url');
 
-            if (!skill) {
-                console.log(`  ⚠️ Skill not found, skipping`);
+    if (templatesError) {
+        console.error('Error fetching templates:', templatesError);
+    } else {
+        console.log(`Found ${templates?.length || 0} templates to process`);
+        for (const template of templates as Template[]) {
+            // Skip if already has a preview image
+            if (template.preview_image_url) {
+                console.log(`\n📝 Processing template: ${template.name} (already has preview, skipping)`);
                 continue;
             }
 
-            // Generate example output if not present
-            let exampleOutput = listing.example_output;
-            if (!exampleOutput) {
-                console.log(`  🤖 Generating example output with Claude...`);
-                exampleOutput = await generateExampleOutput(anthropic, listing, skill);
+            console.log(`\n📝 Processing template: ${template.name}`);
 
-                // Save to database
+            try {
+                // Generate example output if not present
+                let exampleOutput = template.sample_output;
+                if (!exampleOutput) {
+                    console.log(`  🤖 Generating example output with Claude...`);
+                    const prompt = `You are generating a realistic example output for a template.
+
+## Template Information
+- **Name**: ${template.name}
+- **Description**: ${template.description}
+- **Category**: ${template.category}
+
+## Task
+Generate a realistic, high-quality example of what this template would produce. 
+- For email-type outputs, include subject line and full body
+- For documents, use proper markdown formatting with headers
+- For technical/code outputs, include actual code or technical content
+- For reports/analysis, include data tables and bullet points
+- Make it look professional and complete
+
+Generate ONLY the example output content, no explanations or meta-commentary.`;
+
+                    const response = await anthropic.messages.create({
+                        model: 'claude-sonnet-4-20250514', // Using the same model as generateExampleOutput
+                        max_tokens: 2000,
+                        messages: [{ role: 'user', content: prompt }]
+                    });
+
+                    const textBlock = response.content.find(block => block.type === 'text');
+                    exampleOutput = textBlock ? textBlock.text : '';
+
+                    // Save to database
+                    await supabase
+                        .from('templates')
+                        .update({ sample_output: exampleOutput })
+                        .eq('id', template.id);
+                }
+
+                // Determine visual type
+                const visualType = CATEGORY_TYPE_MAP[template.category] || CATEGORY_TYPE_MAP['default'];
+                console.log(`  🎨 Using visual type: ${visualType}`);
+
+                // Capture screenshot
+                console.log(`  📸 Capturing screenshot...`);
+                const screenshotPath = path.join(tempDir, `${template.id}.png`);
+                await capturePreview(browser, exampleOutput, visualType, template.name, screenshotPath);
+
+                // Upload to Supabase storage
+                console.log(`  ☁️ Uploading to storage...`);
+                const imageUrl = await uploadToStorage(supabase, screenshotPath, template.id);
+                const cacheBustedUrl = `${imageUrl}?t=${Date.now()}`;
+
+                // Update template with image URL
                 await supabase
-                    .from('market_listings')
-                    .update({ example_output: exampleOutput })
-                    .eq('id', listing.id);
+                    .from('templates')
+                    .update({ preview_image_url: cacheBustedUrl })
+                    .eq('id', template.id);
+
+                console.log(`  ✅ Done! Preview: ${cacheBustedUrl}`);
+
+            } catch (err) {
+                console.error(`  ❌ Failed:`, err);
             }
-
-            // Determine visual type
-            const visualType = CATEGORY_TYPE_MAP[listing.category] || CATEGORY_TYPE_MAP['default'];
-            console.log(`  🎨 Using visual type: ${visualType}`);
-
-            // Capture screenshot
-            console.log(`  📸 Capturing screenshot...`);
-            const screenshotPath = path.join(tempDir, `${listing.id}.png`);
-            await capturePreview(browser, exampleOutput, visualType, listing.title, screenshotPath);
-
-            // Upload to Supabase storage
-            console.log(`  ☁️ Uploading to storage...`);
-            const imageUrl = await uploadToStorage(supabase, screenshotPath, listing.id);
-            const cacheBustedUrl = `${imageUrl}?t=${Date.now()}`;
-
-            // Update listing with image URL
-            await supabase
-                .from('market_listings')
-                .update({ preview_image_url: cacheBustedUrl })
-                .eq('id', listing.id);
-
-            console.log(`  ✅ Done! Preview: ${cacheBustedUrl}`);
-
-        } catch (err) {
-            console.error(`  ❌ Failed:`, err);
         }
     }
 

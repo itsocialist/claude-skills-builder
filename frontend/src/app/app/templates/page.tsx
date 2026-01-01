@@ -10,6 +10,8 @@ import { Template } from '@/types/skill.types';
 import { Shell } from '@/components/layout/Shell';
 import { Search, X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+import { FadeInStagger, fadeInItem } from '@/components/animations/FadeIn';
 
 const CATEGORIES = ['All', 'Real Estate', 'Business', 'Finance', 'Product', 'Marketing', 'Sales'];
 
@@ -115,16 +117,17 @@ export default function TemplatesPage() {
                         ))}
                     </div>
                 ) : (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <FadeInStagger className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredTemplates.map((template) => (
-                            <TemplateCard
-                                key={template.id}
-                                template={template}
-                                variant="default"
-                                onClick={() => handleTemplateClick(template)}
-                            />
+                            <motion.div key={template.id} variants={fadeInItem}>
+                                <TemplateCard
+                                    template={template}
+                                    variant="default"
+                                    onClick={() => handleTemplateClick(template)}
+                                />
+                            </motion.div>
                         ))}
-                    </div>
+                    </FadeInStagger>
                 )}
 
                 {!loading && filteredTemplates.length === 0 && (
