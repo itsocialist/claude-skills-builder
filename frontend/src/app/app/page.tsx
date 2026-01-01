@@ -69,7 +69,7 @@ export default function AppHomePage() {
           </p>
           {canUseBuilder && (
             <div className="flex justify-center gap-3">
-              <Link href="/app/wizard">
+              <Link href="/app/wizard-old">
                 <Button size="lg" className="font-semibold">
                   <PenTool className="mr-2 h-4 w-4" />
                   Create New Skill
@@ -102,7 +102,7 @@ export default function AppHomePage() {
                 </p>
               </Card>
             </Link>
-            <Link href="/app/wizard" className="group">
+            <Link href="/app/wizard-old" className="group">
               <Card className="p-4 border-border h-full hover:border-primary/50 transition-colors">
                 <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Create</h3>
                 <p className="text-sm text-muted-foreground">
@@ -184,7 +184,7 @@ export default function AppHomePage() {
             ) : (
               <Card className="p-6 border-border text-center">
                 <p className="text-muted-foreground mb-4">You haven't created any skills yet.</p>
-                <Link href="/app/wizard">
+                <Link href="/app/wizard-old">
                   <Button>
                     <PenTool className="mr-2 h-4 w-4" />
                     Create Your First Skill

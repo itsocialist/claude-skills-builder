@@ -20,7 +20,7 @@ export default function FlowButlerPage() {
             goal: preferences.goal || '',
             experience: String(preferences.experience || 50),
         });
-        router.push(`/app/wizard?${params.toString()}`);
+        router.push(`/app/wizard-old?${params.toString()}`);
     };
 
     return (

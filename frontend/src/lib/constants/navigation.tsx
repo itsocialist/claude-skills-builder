@@ -32,7 +32,7 @@ export const NAVIGATION_CATEGORIES: NavCategory[] = [
         id: 'create',
         label: 'Create',
         items: [
-            { id: 'wizard', label: 'Quick Start', href: '/app/wizard', icon: Wand2, featureFlag: 'feature_generations' },
+            { id: 'wizard', label: 'Quick Start', href: '/app/wizard-old', icon: Wand2, featureFlag: 'feature_generations' },
             { id: 'flow', label: 'Flow', href: '/app/flow', icon: Sparkles, featureFlag: 'feature_flow' },
             { id: 'builder', label: 'Skill Builder', href: '/app/builder', icon: Hammer, featureFlag: 'feature_builder' },
             { id: 'canvas', label: 'Visual Canvas', href: '/app/canvas', icon: GitBranch, featureFlag: 'feature_canvas' },

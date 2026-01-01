@@ -161,7 +161,7 @@ export function Shell({ children, inspector, title, onTitleChange, validation, f
                                     </Link>
                                 )}
                                 {shouldShow('feature_generations') && (
-                                    <Link href="/app/wizard" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/wizard' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
+                                    <Link href="/app/wizard-old" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/wizard-old' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
                                         <Wand2 className="w-4 h-4" />
                                         Quick Start
                                     </Link>

@@ -102,7 +102,7 @@ export default function MarketingPage() {
             <Link href="/app/templates" className="text-sm text-foreground hover:text-primary hidden sm:block">
               Templates
             </Link>
-            <Link href="/app/wizard">
+            <Link href="/app/wizard-old">
               <Button size="sm" variant="default">
                 Start Building <ArrowRight className="ml-1 h-3 w-3" />
               </Button>
@@ -137,7 +137,7 @@ export default function MarketingPage() {
                 No coding. No account. Just build and download.
               </p>
               <div className="flex gap-3 flex-wrap mb-4">
-                <Link href="/app/wizard">
+                <Link href="/app/wizard-old">
                   <Button size="lg">
                     Start Building – Free <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -318,7 +318,7 @@ export default function MarketingPage() {
           <p className="text-muted-foreground mb-5">
             Takes about 2 minutes.
           </p>
-          <Link href="/app/wizard">
+          <Link href="/app/wizard-old">
             <Button size="lg">
               Start Building <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -334,7 +334,7 @@ export default function MarketingPage() {
             <div>
               <h3 className="font-medium text-foreground mb-3">Product</h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/app/wizard" className="text-muted-foreground hover:text-primary">Quick Start</Link></li>
+                <li><Link href="/app/wizard-old" className="text-muted-foreground hover:text-primary">Quick Start</Link></li>
                 <li><Link href="/app/templates" className="text-muted-foreground hover:text-primary">Templates</Link></li>
                 <li><Link href="/bundles" className="text-muted-foreground hover:text-primary">Bundles</Link></li>
                 <li><Link href="/marketplace" className="text-muted-foreground hover:text-primary">Marketplace</Link></li>
