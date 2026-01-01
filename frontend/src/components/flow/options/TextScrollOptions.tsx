@@ -97,8 +97,8 @@ export function TextScrollOptions({
                                 onSelect(option.id);
                             }}
                             className={`absolute whitespace-nowrap px-5 py-2.5 rounded-md text-sm font-medium transition-all backdrop-blur-sm border ${isFocused
-                                    ? 'bg-primary/90 text-primary-foreground border-primary/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2)]'
-                                    : 'bg-card/40 text-muted-foreground border-border/50 hover:bg-card/60 hover:border-border'
+                                ? 'bg-primary/90 text-primary-foreground border-primary/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2)]'
+                                : 'bg-card/40 text-muted-foreground border-border/50 hover:bg-card/60 hover:border-border'
                                 }`}
                             animate={{
                                 x: (index - focusIndex) * 180,
@@ -124,12 +124,12 @@ export function TextScrollOptions({
                 })}
             </div>
 
-            {/* Visual arc indicator */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-xl h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+            {/* Visual arc separator */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full max-w-md h-px bg-gradient-to-r from-transparent via-border/40 to-transparent" />
 
-            {/* Navigation hints */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-muted-foreground">
-                ← → to navigate • Enter to select
+            {/* Navigation hint - below separator, light typography */}
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-[10px] tracking-wide font-light text-muted-foreground/60">
+                ← → navigate · enter select
             </div>
         </div>
     );

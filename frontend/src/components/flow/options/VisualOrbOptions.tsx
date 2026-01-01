@@ -190,8 +190,8 @@ export function VisualOrbOptions({
                                 onSelect(option.id);
                             }}
                             className={`absolute flex flex-col items-center justify-center w-24 h-24 rounded-lg transition-all backdrop-blur-sm border ${isFocused
-                                    ? 'bg-primary/85 text-primary-foreground border-primary/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_12px_rgba(193,95,60,0.25)]'
-                                    : 'bg-card/40 text-muted-foreground border-border/40 hover:bg-card/60 hover:border-border/70'
+                                ? 'bg-primary/85 text-primary-foreground border-primary/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_12px_rgba(193,95,60,0.25)]'
+                                : 'bg-card/40 text-muted-foreground border-border/40 hover:bg-card/60 hover:border-border/70'
                                 }`}
                             animate={{
                                 scale: isFocused ? 1.1 : 0.88,
@@ -221,9 +221,9 @@ export function VisualOrbOptions({
                 })}
             </div>
 
-            {/* Navigation hint */}
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs text-muted-foreground">
-                Arrow keys to navigate • Enter to select
+            {/* Navigation hint - light typography */}
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] tracking-wide font-light text-muted-foreground/60">
+                arrows navigate · enter select
             </div>
         </div>
     );
