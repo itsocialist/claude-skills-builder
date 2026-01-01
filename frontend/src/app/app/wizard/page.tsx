@@ -188,15 +188,15 @@ export default function WizardPage() {
                             {skill.triggers.length > 0 && (
                                 <div className="flex flex-wrap gap-2">
                                     {skill.triggers.map((trigger, i) => (
-                                        <Badge key={i} variant="secondary" className="pr-1">
+                                        <span key={i} className="inline-flex items-center px-3 py-1 bg-primary/10 text-primary text-sm rounded-full">
                                             {trigger}
                                             <button
                                                 onClick={() => removeTrigger(i)}
-                                                className="ml-1 hover:text-destructive"
+                                                className="ml-2 hover:text-destructive"
                                             >
                                                 <X className="h-3 w-3" />
                                             </button>
-                                        </Badge>
+                                        </span>
                                     ))}
                                 </div>
                             )}

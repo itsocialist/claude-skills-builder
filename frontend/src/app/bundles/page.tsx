@@ -96,17 +96,12 @@ export default function PowerBundlesPage() {
                                 )}
                             >
                                 {/* Bundle Header */}
-                                <div className="p-5 border-b border-border">
-                                    <div className="flex items-start justify-between">
-                                        <Link href={`/bundles/${bundle.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                                            <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                                                {bundle.icon}
-                                            </div>
-                                            <div>
-                                                <h2 className="text-lg font-bold text-foreground">{bundle.name}</h2>
-                                                <p className="text-sm text-muted-foreground">{bundle.tagline}</p>
-                                            </div>
-                                        </Link>
+                                <div className="p-4 border-b border-border">
+                                    {/* Top row: Icon + Skills Badge */}
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                                            {bundle.icon}
+                                        </div>
                                         <div className="flex flex-col items-center justify-center bg-muted badge-rect px-3 py-1.5 min-w-[3.5rem]">
                                             <span className="text-lg font-bold text-foreground leading-none">
                                                 {bundle.skills.length}
@@ -116,6 +111,11 @@ export default function PowerBundlesPage() {
                                             </span>
                                         </div>
                                     </div>
+                                    {/* Bottom row: Name + Description */}
+                                    <Link href={`/bundles/${bundle.id}`} className="block hover:opacity-80 transition-opacity">
+                                        <h2 className="text-lg font-bold text-foreground">{bundle.name}</h2>
+                                        <p className="text-sm text-muted-foreground mt-1">{bundle.tagline}</p>
+                                    </Link>
                                 </div>
 
                                 {/* Skills List */}

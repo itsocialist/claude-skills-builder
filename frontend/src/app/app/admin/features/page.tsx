@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { FLAG_KEYS, FlagKey, FlagState } from '@/lib/flags';
 import { Shell } from '@/components/layout/Shell';
-import { ArrowLeft, Loader2, Shield, Globe, Lock, AlertTriangle, LayoutDashboard, Hammer, ShoppingBag, Wand2, Settings, TrendingUp, GitBranch, LayoutTemplate, Package, Search, Building2, Library, Layers } from 'lucide-react';
+import { ArrowLeft, Loader2, Shield, Globe, Lock, AlertTriangle, LayoutDashboard, Hammer, ShoppingBag, Wand2, Settings, TrendingUp, GitBranch, LayoutTemplate, Package, Search, Building2, Library, Layers, FlaskConical, Bot, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -23,6 +23,9 @@ const FLAG_META: Record<FlagKey, { label: string; description: string; icon: any
     feature_organization: { label: 'Organization', description: 'Org & Team settings.', icon: Building2 },
     feature_myskills: { label: 'My Skills', description: 'User library access.', icon: Library },
     feature_admin: { label: 'Admin Panel', description: 'System administration.', icon: TrendingUp },
+    feature_labs: { label: 'Labs', description: 'Experimental features.', icon: FlaskConical },
+    feature_ai_assistant: { label: 'AI Assistant', description: 'AI-powered helper.', icon: Bot },
+    feature_learn: { label: 'Learn', description: 'Educational resources.', icon: BookOpen },
 };
 
 export default function FeaturesPage() {

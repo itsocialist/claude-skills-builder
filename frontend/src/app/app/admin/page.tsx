@@ -142,6 +142,19 @@ export default function AdminPage() {
 
                     <Card className="p-6">
                         <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                            <Settings className="w-5 h-5" />
+                            Navigation
+                        </h3>
+                        <p className="text-muted-foreground mb-4">
+                            Configure sidebar structure, categories, and items.
+                        </p>
+                        <Link href="/app/admin/navigation">
+                            <Button variant="outline">Edit Navigation</Button>
+                        </Link>
+                    </Card>
+
+                    <Card className="p-6">
+                        <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                             <BarChart3 className="w-5 h-5" />
                             Analytics
                         </h3>
