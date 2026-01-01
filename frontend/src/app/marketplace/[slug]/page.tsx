@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StarRating } from '@/components/ui/StarRating';
 import { ReviewModal } from '@/components/marketplace/ReviewModal';
+import { PreviewLightbox } from '@/components/marketplace/PreviewLightbox';
 import { MarketplaceListing } from '@/types/marketplace.types';
 import { Profile, SkillReview } from '@/types/community.types';
 import { getProfileByUsername } from '@/lib/profiles';
@@ -49,6 +50,7 @@ export default function SkillDetailPage() {
     const [loading, setLoading] = useState(true);
     const [installing, setInstalling] = useState(false);
     const [showShareMenu, setShowShareMenu] = useState(false);
+    const [showPreviewLightbox, setShowPreviewLightbox] = useState(false);
 
     useEffect(() => {
         fetchListing();
@@ -266,13 +268,49 @@ export default function SkillDetailPage() {
                 </div>
             </div>
 
-            {/* Description */}
-            <Card className="p-6 mb-6">
-                <h2 className="text-lg font-semibold text-foreground mb-3">Description</h2>
-                <div className="text-muted-foreground leading-relaxed">
-                    <MarkdownOutput content={listing.description || 'No description provided.'} />
-                </div>
-            </Card>
+            {/* Preview Image with Description Overlay */}
+            {listing.preview_image_url && (
+                <Card className="mb-6 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 overflow-hidden">
+                    <div className="relative flex">
+                        {/* Preview Image - Left Half */}
+                        <div className="w-1/2 p-6">
+                            <div className="relative aspect-[4/3] flex items-center justify-center">
+                                <div
+                                    className="relative w-full h-full rounded-md"
+                                    style={{
+                                        transform: 'rotate(-2deg)',
+                                        boxShadow: '-12px 12px 30px rgba(0, 0, 0, 0.25), -4px 4px 10px rgba(0, 0, 0, 0.1)',
+                                    }}
+                                >
+                                    <img
+                                        src={listing.preview_image_url}
+                                        alt={`Preview of ${listing.title}`}
+                                        className="w-full h-full object-cover object-top rounded-md ring-1 ring-black/5"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Description Overlay - Right Half */}
+                        <div className="w-1/2 p-6 flex flex-col justify-center bg-gradient-to-l from-background/95 via-background/90 to-transparent">
+                            <h2 className="text-lg font-semibold text-foreground mb-3">About this skill</h2>
+                            <div className="text-foreground/80 leading-relaxed text-sm max-h-48 overflow-y-auto">
+                                <MarkdownOutput content={listing.description || 'No description provided.'} />
+                            </div>
+                        </div>
+                    </div>
+                </Card>
+            )}
+
+            {/* Description - only if no preview image */}
+            {!listing.preview_image_url && (
+                <Card className="p-6 mb-6">
+                    <h2 className="text-lg font-semibold text-foreground mb-3">Description</h2>
+                    <div className="text-foreground/80 leading-relaxed">
+                        <MarkdownOutput content={listing.description || 'No description provided.'} />
+                    </div>
+                </Card>
+            )}
 
             {/* Triggers */}
             {skillDetails?.triggers && skillDetails.triggers.length > 0 && (

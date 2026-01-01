@@ -14,20 +14,33 @@ export function PublicSkillCard({ listing }: PublicSkillCardProps) {
     return (
         <Link href={`/marketplace/${listing.slug}`}>
             <Card className="p-0 h-full hover:border-primary/50 transition-colors cursor-pointer group flex flex-col overflow-hidden">
-                {/* Preview Image */}
-                {listing.preview_image_url ? (
-                    <div className="relative w-full aspect-[16/10] bg-muted overflow-hidden">
-                        <img
-                            src={listing.preview_image_url}
-                            alt={`Preview of ${listing.title}`}
-                            className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
-                        />
-                    </div>
-                ) : (
-                    <div className="w-full aspect-[16/10] bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
-                        <span className="text-4xl opacity-30">📄</span>
-                    </div>
-                )}
+                {/* Preview Image - Floating Paper Effect */}
+                <div className="relative w-full aspect-[16/10] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 overflow-hidden">
+                    {listing.preview_image_url ? (
+                        <div
+                            className="absolute -bottom-4 -right-4 w-[95%] h-[95%] rounded-md transition-all duration-300 group-hover:-translate-y-1"
+                            style={{
+                                transform: 'rotate(-3deg)',
+                                boxShadow: '-8px 8px 20px rgba(0, 0, 0, 0.25), -2px 2px 6px rgba(0, 0, 0, 0.1)',
+                            }}
+                        >
+                            <img
+                                src={listing.preview_image_url}
+                                alt={`Preview of ${listing.title}`}
+                                className="w-full h-full object-cover object-top rounded-md ring-1 ring-black/5"
+                            />
+                        </div>
+                    ) : (
+                        <div
+                            className="absolute -bottom-4 -right-4 w-[95%] h-[95%] bg-card rounded-md shadow-xl flex items-center justify-center ring-1 ring-border"
+                            style={{
+                                transform: 'rotate(-3deg)',
+                            }}
+                        >
+                            <span className="text-4xl opacity-30">📄</span>
+                        </div>
+                    )}
+                </div>
 
                 <div className="p-5 flex flex-col flex-1">
                     {/* Header */}
