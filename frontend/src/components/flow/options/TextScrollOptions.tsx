@@ -96,28 +96,29 @@ export function TextScrollOptions({
                                 setFocusIndex(index);
                                 onSelect(option.id);
                             }}
-                            className={`absolute whitespace-nowrap px-5 py-2.5 rounded-md text-sm font-medium transition-all backdrop-blur-sm border ${isFocused
-                                ? 'bg-primary/90 text-primary-foreground border-primary/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2)]'
-                                : 'bg-card/40 text-muted-foreground border-border/50 hover:bg-card/60 hover:border-border'
+                            className={`absolute whitespace-nowrap px-7 py-3.5 rounded-md text-base font-medium transition-all backdrop-blur-sm border ${isFocused
+                                    ? 'bg-primary/85 text-primary-foreground border-primary/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_12px_rgba(193,95,60,0.25)]'
+                                    : 'bg-card/30 text-muted-foreground/80 border-border/30 hover:bg-card/50 hover:border-border/50'
                                 }`}
                             animate={{
-                                x: (index - focusIndex) * 180,
-                                z: -Math.abs(index - focusIndex) * 120,
-                                scale: Math.max(0.7, 1 - Math.abs(index - focusIndex) * 0.12),
-                                opacity: Math.max(0.15, 1 - Math.abs(index - focusIndex) * 0.4),
+                                x: (index - focusIndex) * 200,
+                                z: -Math.abs(index - focusIndex) * 100,
+                                scale: Math.max(0.75, 1 - Math.abs(index - focusIndex) * 0.1),
+                                opacity: Math.max(0.2, 1 - Math.abs(index - focusIndex) * 0.35),
                             }}
                             transition={{
                                 type: 'spring',
-                                stiffness: 300,
-                                damping: 30,
+                                stiffness: 120,
+                                damping: 20,
+                                mass: 0.8,
                             }}
                             style={{
                                 zIndex: style.zIndex,
                                 filter: style.filter,
                             }}
-                            whileHover={{ scale: isFocused ? 1.03 : 0.75 }}
+                            whileHover={{ scale: isFocused ? 1.02 : 0.78 }}
                         >
-                            {option.emoji && <span className="mr-2 opacity-80">{option.emoji}</span>}
+                            {option.emoji && <span className="mr-2">{option.emoji}</span>}
                             {option.label}
                         </motion.button>
                     );
