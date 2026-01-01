@@ -1,12 +1,15 @@
-# Flow Framework API (v2: Liquid Glass)
+# Flow Framework API (v2.1: Liquid Glass)
 
 A declarative, cinematic presentation system for guided user experiences, featuring the "Liquid Glass" / "Minority Report" aesthetic.
+
+**Sprint 25 Updates**: FlowTransition, FlowButlerOverlay, slower glow lerp, adaptive step filtering.
 
 ## Quick Start
 
 ```tsx
 import { 
   FlowProvider, FlowSlide, FlowBackground,
+  FlowTransition, FlowButlerOverlay,
   TextScrollOptions, VisualOrbOptions,
   useFlow, useAIRecommendations
 } from '@/components/flow';
@@ -204,7 +207,36 @@ import { slideUp, fadeIn, scaleIn, popIn, breathe } from '@/components/flow';
 import { GLOW_POSITIONS, getGlowPosition } from '@/components/flow';
 
 // Glow follows step progression moving toward center
+// Lerp factor: 0.02 (slower for smoother transitions)
 ```
+
+**Tuning**: The glow lerp was reduced from `0.05` to `0.02` for smoother, less "jumpy" transitions between steps.
+
+---
+
+## Adaptive Step Filtering
+
+The wizard supports experience-based step filtering. Beginners see fewer steps.
+
+```tsx
+// In wizard/page.tsx
+const ALL_STEPS = [
+  { id: 'what', title: 'What', minExperience: 0 },   // Always shown
+  { id: 'when', title: 'When', minExperience: 50 },  // Skip for beginners
+  { id: 'how', title: 'How', minExperience: 0 },     // Always shown
+  { id: 'files', title: 'Files', minExperience: 75 }, // Advanced only
+];
+
+function getVisibleSteps(experience: number = 50) {
+  return ALL_STEPS.filter(step => step.minExperience <= experience);
+}
+```
+
+| Experience | Visible Steps |
+|------------|---------------|
+| 0-49 | What, How (2 steps) |
+| 50-74 | What, When, How (3 steps) |
+| 75+ | All 4 steps |
 
 ---
 
