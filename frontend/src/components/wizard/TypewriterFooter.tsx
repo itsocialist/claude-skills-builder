@@ -10,11 +10,11 @@ interface TypewriterFooterProps {
 
 export function TypewriterFooter({ text, className = '' }: TypewriterFooterProps) {
     const [displayedText, setDisplayedText] = useState('');
-    const [isTyping, setIsTyping] = useState(false);
 
     useEffect(() => {
+        if (!text) return;
+
         setDisplayedText('');
-        setIsTyping(true);
         let currentIndex = 0;
 
         const intervalId = setInterval(() => {
@@ -22,22 +22,22 @@ export function TypewriterFooter({ text, className = '' }: TypewriterFooterProps
                 setDisplayedText(prev => prev + text[currentIndex]);
                 currentIndex++;
             } else {
-                setIsTyping(false);
                 clearInterval(intervalId);
             }
-        }, 30); // Typing speed
+        }, 20); // Slightly faster
 
         return () => clearInterval(intervalId);
     }, [text]);
 
+    if (!text) return null;
+
     return (
-        <div className={`h-12 flex items-center px-6 border-t border-white/10 bg-black/20 backdrop-blur-md ${className}`}>
-            <div className="flex items-center gap-3 w-full">
-                <div className={`w-2 h-2 rounded-full ${isTyping ? 'bg-primary animate-pulse' : 'bg-white/20'}`} />
-                <div className="font-mono text-xs md:text-sm text-white/70 tracking-wide">
+        <div className={`py-6 text-center ${className}`}>
+            <div className="inline-flex items-center justify-center gap-2">
+                <span className="text-lg md:text-xl font-light text-white/50 tracking-wide">
                     {displayedText}
-                    <span className="animate-pulse ml-0.5 opacity-50">_</span>
-                </div>
+                    <span className="animate-pulse ml-0.5 text-primary">_</span>
+                </span>
             </div>
         </div>
     );

@@ -54,16 +54,16 @@ export function GlassTerminal({ children, className = '', title, helpText }: Gla
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
                 {children}
-
-                {/* Contextual Help Footer */}
-                <AnimatePresence mode="wait">
-                    {helpText && (
-                        <div className="mt-auto pt-8">
-                            <TypewriterFooter text={helpText} />
-                        </div>
-                    )}
-                </AnimatePresence>
             </div>
+
+            {/* Contextual Help Footer - Moved Outside */}
+            <AnimatePresence mode="wait">
+                {helpText && (
+                    <div className="absolute -bottom-24 left-0 right-0 flex justify-center">
+                        <TypewriterFooter text={helpText} />
+                    </div>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 }
