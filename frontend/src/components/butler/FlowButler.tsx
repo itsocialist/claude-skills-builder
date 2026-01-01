@@ -457,19 +457,21 @@ function FlowStepReveal({
         const role = preferences.role;
         const goal = preferences.goal;
 
-        if (exp < 40) {
+        // Thresholds match FlowStepExperience: 0=novice, 50=intermediate, 100=expert
+        if (exp <= 25) {
             return {
                 title: "Your learning path awaits",
                 subtitle: `As a ${role}, we'll start you with guided, beginner-friendly skills.`,
                 cta: "Begin your journey"
             };
-        } else if (exp < 70) {
+        } else if (exp <= 75) {
             return {
                 title: "Perfect match found",
                 subtitle: `Ready to ${goal}? These bundles are tailored for experienced ${role}s.`,
                 cta: "Get started with these"
             };
         } else {
+            // exp > 75 (100 = Power user)
             return {
                 title: "Power tools unlocked",
                 subtitle: `Advanced ${goal} workflows for expert ${role}s. Full access to all features.`,

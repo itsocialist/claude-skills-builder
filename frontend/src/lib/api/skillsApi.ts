@@ -10,6 +10,9 @@ export interface SavedSkill extends Skill {
     view_count?: number;
     download_count?: number;
     last_used_at?: string;
+    // Marketplace preview (from market_listings join)
+    preview_image_url?: string | null;
+    marketplace_slug?: string | null;
 }
 
 /**
@@ -22,7 +25,8 @@ export async function fetchUserSkills(userId: string): Promise<SavedSkill[]> {
         .from('user_skills')
         .select(`
             *,
-            stats:skill_stats(view_count, download_count, copy_count, updated_at)
+            stats:skill_stats(view_count, download_count, copy_count, updated_at),
+            listing:market_listings(preview_image_url, slug)
         `)
         .eq('user_id', userId)
         .order('updated_at', { ascending: false });
@@ -32,7 +36,12 @@ export async function fetchUserSkills(userId: string): Promise<SavedSkill[]> {
         return [];
     }
 
-    return data || [];
+    // Flatten the listing data
+    return (data || []).map(skill => ({
+        ...skill,
+        preview_image_url: skill.listing?.[0]?.preview_image_url || null,
+        marketplace_slug: skill.listing?.[0]?.slug || null,
+    }));
 }
 
 /**
