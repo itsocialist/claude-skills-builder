@@ -42,21 +42,22 @@ export function FlowButlerOverlay({
             {/* Main Content */}
             {children}
 
-            {/* Butler Footer - Persistent Typewriter */}
+            {/* Butler Footer - Persistent Guidance */}
             <AnimatePresence mode="wait">
                 {displayMessage && (
                     <motion.div
                         key={stage}
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.4, ease: 'easeOut' }}
+                        exit={{ opacity: 0, y: 20 }}
+                        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                         className="fixed bottom-8 left-0 right-0 flex justify-center pointer-events-none z-50"
                     >
-                        <div className="px-6 py-3 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg">
+                        <div className="px-8 py-4 rounded-2xl bg-black/30 backdrop-blur-xl border border-white/10 shadow-2xl">
                             <TypewriterText
                                 text={displayMessage}
-                                className="text-white/60 text-sm font-light tracking-wide"
+                                className="text-white/70 text-xl md:text-2xl font-light tracking-wide"
+                                speed={25}
                             />
                         </div>
                     </motion.div>
