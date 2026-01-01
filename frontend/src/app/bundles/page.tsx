@@ -6,7 +6,7 @@ import { Shell } from '@/components/layout/Shell'
 import { Download, Layers, Sparkles, Search, FileText, BarChart3, Rocket, ChevronDown, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { MarkdownOutput } from '@/components/MarkdownOutput'
+import { PreviewMarkdown } from '@/components/marketplace/PreviewMarkdown'
 import { cn } from '@/lib/utils'
 import { saveAs } from 'file-saver'
 import { toast } from 'sonner'
@@ -86,7 +86,7 @@ export default function PowerBundlesPage() {
 
                 {/* Bundles Grid */}
                 <div className="py-8">
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-6 md:grid-cols-2 max-w-5xl mx-auto">
                         {bundles.map((bundle) => (
                             <Card
                                 key={bundle.id}
@@ -158,8 +158,8 @@ export default function PowerBundlesPage() {
                                 {/* Expanded Output Example */}
                                 {expandedBundle === bundle.id && (
                                     <div className="p-4 bg-muted/30 border-t border-border">
-                                        <div className="bundle-output-preview bg-card rounded-lg p-6 overflow-x-auto">
-                                            <MarkdownOutput content={bundle.outputExample} />
+                                        <div className="bundle-output-preview bg-white text-black rounded-lg p-6 overflow-x-auto shadow-sm border border-gray-200">
+                                            <PreviewMarkdown content={bundle.outputExample} theme="light" />
                                         </div>
                                     </div>
                                 )}

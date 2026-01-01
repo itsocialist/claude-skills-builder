@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { GlassTerminal } from '@/components/wizard/GlassTerminal';
 import { PlanView } from '@/components/wizard/PlanView';
@@ -60,7 +60,7 @@ const TRIGGER_EXAMPLES = [
 
 type WizardMode = 'analyzing' | 'plan' | 'wizard';
 
-export default function WizardPage() {
+function WizardContent() {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -362,5 +362,20 @@ export default function WizardPage() {
                 </div>
             </GlassTerminal>
         </div>
+    );
+}
+
+export default function WizardPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <div className="w-full max-w-md text-center">
+                    <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-6" />
+                    <p className="text-white/50">Loading Wizard...</p>
+                </div>
+            </div>
+        }>
+            <WizardContent />
+        </Suspense>
     );
 }

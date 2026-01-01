@@ -15,7 +15,7 @@ import { useSkillStore } from '@/lib/store/skillStore';
 import { Template } from '@/types/skill.types';
 import { CheckCircle, ChevronDown, ChevronUp, Download, ExternalLink, Share2 } from 'lucide-react';
 import { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
+import { PreviewMarkdown } from '@/components/marketplace/PreviewMarkdown';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { copyToClipboard } from '@/lib/utils/clipboard';
@@ -196,8 +196,8 @@ ${template.instructions}
                                 )}
                             </button>
                             {showSampleOutput && (
-                                <div className="mt-3 prose prose-sm prose-invert max-w-none">
-                                    <ReactMarkdown>{template.sampleOutput}</ReactMarkdown>
+                                <div className="mt-3 bg-white text-black rounded-lg p-6 shadow-sm border border-gray-200 overflow-x-auto">
+                                    <PreviewMarkdown content={template.sampleOutput} theme="light" />
                                 </div>
                             )}
                         </Card>
