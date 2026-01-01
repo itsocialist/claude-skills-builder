@@ -36,8 +36,7 @@ export default function AdminSettingsPage() {
     const [isAdmin, setIsAdmin] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
-    const [newCategory, setNewCategory] = useState('');
-    const [newMenuItem, setNewMenuItem] = useState({ label: '', href: '' });
+
 
     const [settings, setSettings] = useState<LocalSiteSettings>({
         site_name: 'GetClaudeSkills',
@@ -104,39 +103,7 @@ export default function AdminSettingsPage() {
         }
     };
 
-    const addCategory = () => {
-        if (newCategory.trim() && !settings.categories.includes(newCategory.trim())) {
-            setSettings(prev => ({
-                ...prev,
-                categories: [...prev.categories, newCategory.trim()]
-            }));
-            setNewCategory('');
-        }
-    };
 
-    const removeCategory = (cat: string) => {
-        setSettings(prev => ({
-            ...prev,
-            categories: prev.categories.filter(c => c !== cat)
-        }));
-    };
-
-    const addMenuItem = () => {
-        if (newMenuItem.label && newMenuItem.href) {
-            setSettings(prev => ({
-                ...prev,
-                menu_items: [...prev.menu_items, newMenuItem]
-            }));
-            setNewMenuItem({ label: '', href: '' });
-        }
-    };
-
-    const removeMenuItem = (index: number) => {
-        setSettings(prev => ({
-            ...prev,
-            menu_items: prev.menu_items.filter((_, i) => i !== index)
-        }));
-    };
 
     if (loading || !isAdmin) {
         return (
@@ -273,81 +240,7 @@ export default function AdminSettingsPage() {
                             </div>
                         </div>
                     </Card>
-
-                    {/* Skill Categories */}
-                    <Card className="p-6 space-y-6">
-                        <h3 className="text-lg font-semibold border-b border-border pb-2">Skill Categories</h3>
-
-                        <div className="flex gap-2">
-                            <Input
-                                value={newCategory}
-                                onChange={(e) => setNewCategory(e.target.value)}
-                                placeholder="Add new category"
-                                onKeyDown={(e) => e.key === 'Enter' && addCategory()}
-                            />
-                            <Button onClick={addCategory} size="sm" variant="secondary">
-                                <Plus className="w-4 h-4" />
-                            </Button>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2">
-                            {settings.categories.map((cat) => (
-                                <div key={cat} className="flex items-center gap-1 px-3 py-1 bg-accent rounded-full text-sm">
-                                    <span>{cat}</span>
-                                    <button onClick={() => removeCategory(cat)} className="text-muted-foreground hover:text-destructive">
-                                        <Trash2 className="w-3 h-3" />
-                                    </button>
-                                </div>
-                            ))}
-                            {settings.categories.length === 0 && (
-                                <p className="text-sm text-muted-foreground italic">No categories defined</p>
-                            )}
-                        </div>
-                    </Card>
-
-                    {/* Menu Items */}
-                    <Card className="p-6 space-y-6 md:col-span-2">
-                        <h3 className="text-lg font-semibold border-b border-border pb-2">Custom Menu Items</h3>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end bg-card/50 p-4 rounded-lg border border-border">
-                            <div>
-                                <label className="text-xs text-muted-foreground mb-1 block">Label</label>
-                                <Input
-                                    value={newMenuItem.label}
-                                    onChange={(e) => setNewMenuItem({ ...newMenuItem, label: e.target.value })}
-                                    placeholder="e.g. Help Center"
-                                />
-                            </div>
-                            <div>
-                                <label className="text-xs text-muted-foreground mb-1 block">URL</label>
-                                <Input
-                                    value={newMenuItem.href}
-                                    onChange={(e) => setNewMenuItem({ ...newMenuItem, href: e.target.value })}
-                                    placeholder="https://..."
-                                />
-                            </div>
-                            <Button onClick={addMenuItem} variant="secondary">Add Item</Button>
-                        </div>
-
-                        <div className="space-y-2">
-                            {settings.menu_items.map((item, index) => (
-                                <div key={index} className="flex items-center justify-between p-3 bg-accent/50 rounded-lg border border-border">
-                                    <div className="flex items-center gap-4">
-                                        <span className="font-medium">{item.label}</span>
-                                        <span className="text-xs text-muted-foreground font-mono">{item.href}</span>
-                                    </div>
-                                    <button onClick={() => removeMenuItem(index)} className="text-muted-foreground hover:text-destructive">
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            ))}
-                            {settings.menu_items.length === 0 && (
-                                <p className="text-sm text-muted-foreground italic">No custom menu items.</p>
-                            )}
-                        </div>
-                    </Card>
-
-                    {/* Access Policies (Legacy) */}
+                    {/* Access Policies (Legacy) - Moved up to fill space */}
                     <Card className="p-6 space-y-6 md:col-span-2 opacity-75">
                         <h3 className="text-lg font-semibold border-b border-border pb-2">Access Policies</h3>
 

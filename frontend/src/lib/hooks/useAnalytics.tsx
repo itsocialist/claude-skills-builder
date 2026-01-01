@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { supabase } from '@/lib/supabase';
 
 // Generate or retrieve session ID
 function getSessionId(): string {
@@ -23,8 +22,10 @@ export type AnalyticsEventType =
     | 'skill_update'
     | 'skill_export'
     | 'skill_delete'
+    | 'skill_view'
     | 'template_use'
     | 'template_view'
+    | 'bundle_download'
     | 'feedback_submit'
     | 'login'
     | 'logout'
@@ -41,16 +42,19 @@ export function useAnalytics() {
     const lastPathRef = useRef<string | null>(null);
 
     const trackEvent = useCallback(async ({ eventType, eventData = {} }: TrackEventOptions) => {
-        if (!supabase) return;
-
         try {
-            await supabase.from('analytics_events').insert({
-                user_id: user?.id || null,
-                session_id: getSessionId(),
-                event_type: eventType,
-                event_data: eventData,
-                page_url: typeof window !== 'undefined' ? window.location.pathname : null,
-                user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
+            // Use server API to capture IP address
+            await fetch('/api/analytics/track', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    eventType,
+                    eventData,
+                    sessionId: getSessionId(),
+                    userId: user?.id || null,
+                    pageUrl: typeof window !== 'undefined' ? window.location.pathname : null,
+                    userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
+                }),
             });
         } catch (error) {
             // Silently fail - don't break app for analytics
@@ -75,5 +79,5 @@ export function useAnalytics() {
 // Provider component to enable automatic page tracking
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     useAnalytics(); // Initialize tracking
-    return <>{ children } </>;
+    return <>{children} </>;
 }

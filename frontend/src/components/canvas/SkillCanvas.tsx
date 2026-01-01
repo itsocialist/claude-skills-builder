@@ -44,24 +44,24 @@ function createNodesFromSkill(skill: Skill): Node[] {
     const nodes: Node[] = [];
     let yOffset = 50;
 
-    // Metadata node (always first)
+    // Metadata node (always first) - positioned in upper-left area
     nodes.push({
         id: 'metadata-1',
         type: 'metadata',
-        position: { x: 250, y: yOffset },
+        position: { x: 50, y: yOffset },
         data: {
             name: skill.name,
             description: skill.description,
             category: skill.category,
         },
     });
-    yOffset += 150;
+    yOffset += 180;
 
     // Trigger node
     nodes.push({
         id: 'trigger-1',
         type: 'trigger',
-        position: { x: 250, y: yOffset },
+        position: { x: 300, y: yOffset },
         data: {
             label: 'Activation Triggers',
             triggers: skill.triggers || [],
@@ -73,7 +73,7 @@ function createNodesFromSkill(skill: Skill): Node[] {
     nodes.push({
         id: 'instruction-1',
         type: 'instruction',
-        position: { x: 225, y: yOffset },
+        position: { x: 50, y: yOffset },
         data: {
             label: 'Main Instructions',
             content: skill.instructions || '',
@@ -87,7 +87,7 @@ function createNodesFromSkill(skill: Skill): Node[] {
             nodes.push({
                 id: `example-${index}`,
                 type: 'example',
-                position: { x: index % 2 === 0 ? 50 : 400, y: yOffset + (Math.floor(index / 2) * 150) },
+                position: { x: 50, y: yOffset + (index * 120) },
                 data: {
                     label: `Example ${index + 1}`,
                     input: example.input,
@@ -95,7 +95,7 @@ function createNodesFromSkill(skill: Skill): Node[] {
                 },
             });
         });
-        yOffset += (Math.ceil(skill.examples.length / 2) * 150) + 50;
+        yOffset += (skill.examples.length * 120) + 50;
     }
 
     // Resource node (if resources exist)
@@ -103,7 +103,7 @@ function createNodesFromSkill(skill: Skill): Node[] {
         nodes.push({
             id: 'resource-1',
             type: 'resource',
-            position: { x: 225, y: yOffset },
+            position: { x: 50, y: yOffset },
             data: {
                 label: 'Attached Resources',
                 resources: skill.resources.map(r => ({ name: r.filename, type: r.mime_type || 'file' })),
@@ -117,7 +117,7 @@ function createNodesFromSkill(skill: Skill): Node[] {
         nodes.push({
             id: 'outputFormat-1',
             type: 'outputFormat',
-            position: { x: 225, y: yOffset },
+            position: { x: 50, y: yOffset },
             data: {
                 label: 'Output Formatting',
                 format: skill.output_format,
@@ -130,7 +130,7 @@ function createNodesFromSkill(skill: Skill): Node[] {
     nodes.push({
         id: 'output-1',
         type: 'output',
-        position: { x: 250, y: yOffset },
+        position: { x: 50, y: yOffset },
         data: {
             label: 'Expected Response',
             description: 'Final AI output',
@@ -388,6 +388,7 @@ export function SkillCanvas({ onNodeSelect }: SkillCanvasProps) {
                 onPaneClick={handlePaneClick}
                 nodeTypes={nodeTypes}
                 fitView
+                fitViewOptions={{ maxZoom: 0.75, padding: 0.1 }}
                 proOptions={{ hideAttribution: true }}
                 className="bg-transparent"
             >

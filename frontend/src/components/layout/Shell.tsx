@@ -11,6 +11,8 @@ import { LoginModal } from '@/components/auth/LoginModal';
 import { RecentSkills } from '@/components/library/RecentSkills';
 import { Button } from '@/components/ui/button';
 import { DEFAULT_FLAGS, FlagKey } from '@/lib/flags';
+import { useNavigation } from '@/components/providers/NavigationProvider';
+import { NavCategory } from '@/components/layout/NavCategory';
 import {
     Sheet,
     SheetContent,
@@ -32,6 +34,7 @@ interface ShellProps {
 export function Shell({ children, inspector, title, onTitleChange, validation, fullWidth = false }: ShellProps) {
     const { user, isConfigured } = useAuth();
     const { settings } = useSiteSettings();
+    const { categories } = useNavigation();
     const pathname = usePathname();
     const [isEditing, setIsEditing] = useState(false);
     // Calculate Admin Status - Memoized
@@ -254,88 +257,40 @@ export function Shell({ children, inspector, title, onTitleChange, validation, f
 
                 {/* Inspector Header */}
                 {inspector && (
-                    <div className="hidden lg:flex w-[300px] items-center px-6 border-l border-border flex-shrink-0">
+                    <div className="hidden lg:flex items-center px-6 border-l border-border flex-shrink-0" style={{ width: panelWidth }}>
                         <span className="text-lg font-medium text-foreground">Inspector</span>
                     </div>
                 )}
             </header>
 
-            {/* Body Row */}
-            <div className="flex flex-1 pb-10">
-                {/* Sidebar Navigation (Desktop) */}
-                <aside className="hidden lg:block w-64 bg-card border-r border-border flex-shrink-0">
-                    <nav className="p-4 space-y-1">
-                        {shouldShow('feature_marketplace') && (
-                            <Link href="/marketplace" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/marketplace') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                                <Compass className="w-4 h-4" />
-                                Discover Skills
-                            </Link>
-                        )}
-                        {shouldShow('feature_generations') && (
-                            <Link href="/app/wizard" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/wizard' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                                <Wand2 className="w-4 h-4" />
-                                Quick Start
-                            </Link>
-                        )}
-                        {shouldShow('feature_builder') && (
-                            <Link href="/app/builder" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/builder' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                                <Hammer className="w-4 h-4" />
-                                Skill Builder
-                            </Link>
-                        )}
-                        {shouldShow('feature_canvas') && (
-                            <Link href="/app/canvas" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/canvas' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                                <GitBranch className="w-4 h-4" />
-                                Visual Canvas
-                            </Link>
-                        )}
-                        {shouldShow('feature_templates') && (
-                            <Link href="/app/templates" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/templates') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                                <LayoutTemplate className="w-4 h-4" />
-                                Skill Templates
-                            </Link>
-                        )}
-                        {/* Bundles - Feature flagged */}
-                        {shouldShow('feature_bundles') && (
-                            <Link href="/bundles" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/bundles' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                                <Layers className="w-4 h-4" />
-                                Power Bundles
-                            </Link>
-                        )}
-                        {shouldShow('feature_packages') && (
-                            <Link href="/app/packages" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname?.startsWith('/app/packages') ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                                <Package className="w-4 h-4" />
-                                Bundle Builder
-                            </Link>
-                        )}
-                        {shouldShow('feature_inspector') && (
-                            <Link href="/app/inspector" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/inspector' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                                <Search className="w-4 h-4" />
-                                Skill Inspector
-                            </Link>
-                        )}
-                        {user && shouldShow('feature_organization') && (
-                            <Link href="/app/org" className={`block px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/org' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                                <span className="flex items-center gap-2">
-                                    <Building2 className="w-4 h-4" />
-                                    Organization
-                                </span>
-                            </Link>
-                        )}
-                        {user && shouldShow('feature_myskills') && (
-                            <Link href="/app/library" className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md ${pathname === '/app/library' ? 'text-primary-500 bg-primary-500/10' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}>
-                                <Library className="w-4 h-4" />
-                                My Skills
-                            </Link>
-                        )}
-                        {/* Dynamic Custom Menu Items (Desktop) */}
-                        {settings.menu_items.map((item, i) => (
-                            <Link key={`desktop-${i}`} href={item.href} className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md text-muted-foreground hover:bg-accent hover:text-foreground">
-                                <span className="w-4 h-4" /> {/* Spacer */}
-                                {item.label}
-                            </Link>
+            {/* Body Row - Fixed height to enable independent scrolling */}
+            <div className="flex h-[calc(100vh-56px-40px)] overflow-hidden">
+                {/* Sidebar Navigation (Desktop) - Fixed, scrolls independently */}
+                <aside className="hidden lg:flex lg:flex-col w-64 bg-card border-r border-border flex-shrink-0 overflow-y-auto">
+                    <div className="p-3">
+                        {categories.map(category => (
+                            <NavCategory
+                                key={category.id}
+                                category={category}
+                                isAdmin={isAdmin}
+                                user={user}
+                                shouldShow={shouldShow}
+                                defaultOpen={category.id === 'discover'}
+                            />
                         ))}
-                    </nav>
+
+                        {/* Dynamic Custom Menu Items (Desktop) */}
+                        {settings.menu_items.length > 0 && (
+                            <div className="mt-4 pt-4 border-t border-border">
+                                {settings.menu_items.map((item, i) => (
+                                    <Link key={`desktop-${i}`} href={item.href} className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md text-muted-foreground hover:bg-accent hover:text-foreground">
+                                        <span className="w-4 h-4" /> {/* Spacer */}
+                                        {item.label}
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </div>
 
                     {/* Recent Skills (authenticated users) */}
                     <RecentSkills />
@@ -348,10 +303,10 @@ export function Shell({ children, inspector, title, onTitleChange, validation, f
                     </div>
                 </main>
 
-                {/* Inspector Panel */}
+                {/* Inspector Panel - Fixed, matches header width */}
                 {inspector && (
                     <aside
-                        className="hidden lg:flex bg-card border-l border-border flex-shrink-0 h-[calc(100vh-96px)] overflow-hidden relative"
+                        className="hidden lg:flex flex-col bg-card border-l border-border flex-shrink-0 overflow-hidden relative"
                         style={{ width: panelWidth }}
                     >
                         {/* Resize Handle */}

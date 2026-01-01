@@ -4,6 +4,7 @@ export interface Bundle {
     id: string;
     name: string;
     tagline: string;
+    description?: string;
     iconName: 'Search' | 'FileText' | 'BarChart3' | 'Rocket';
     color: string;
     skills: string[];
