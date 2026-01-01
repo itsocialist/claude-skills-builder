@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { PenTool, Rocket, Layers, LogIn, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -150,14 +151,32 @@ export default function AppHomePage() {
               <FadeInStagger className="grid md:grid-cols-3 gap-4">
                 {userSkills.slice(0, 3).map((skill: any) => (
                   <motion.div key={skill.id} variants={fadeInItem}>
-                    <Card className="p-4 border-border hover:border-primary/50 transition-colors">
-                      <h3 className="font-semibold text-foreground mb-1">{skill.name}</h3>
-                      <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{skill.description}</p>
-                      <Link href={`/app/builder?skill=${skill.id}`}>
-                        <Button variant="outline" size="sm" className="w-full">
-                          Edit Skill
-                        </Button>
-                      </Link>
+                    <Card className="overflow-hidden border-border hover:border-primary/50 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                      {/* Preview Thumbnail */}
+                      {skill.preview_image_url ? (
+                        <div className="relative w-full h-24 bg-muted/30 border-b border-border/50">
+                          <Image
+                            src={skill.preview_image_url}
+                            alt={`Preview of ${skill.name}`}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            className="object-cover object-top"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-full h-16 bg-gradient-to-br from-primary/5 to-primary/10 border-b border-border/50 flex items-center justify-center">
+                          <PenTool className="w-6 h-6 text-primary/30" />
+                        </div>
+                      )}
+                      <div className="p-4">
+                        <h3 className="font-semibold text-foreground mb-1 line-clamp-1">{skill.name}</h3>
+                        <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{skill.description}</p>
+                        <Link href={`/app/builder?skill=${skill.id}`}>
+                          <Button variant="outline" size="sm" className="w-full">
+                            Edit Skill
+                          </Button>
+                        </Link>
+                      </div>
                     </Card>
                   </motion.div>
                 ))}

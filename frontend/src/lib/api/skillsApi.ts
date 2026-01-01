@@ -36,10 +36,11 @@ export async function fetchUserSkills(userId: string): Promise<SavedSkill[]> {
         return [];
     }
 
-    // Flatten the listing data
+    // Prefer skill's own preview, fallback to marketplace listing preview
     return (data || []).map(skill => ({
         ...skill,
-        preview_image_url: skill.listing?.[0]?.preview_image_url || null,
+        // Skill's own preview takes precedence over marketplace listing preview
+        preview_image_url: skill.preview_image_url || skill.listing?.[0]?.preview_image_url || null,
         marketplace_slug: skill.listing?.[0]?.slug || null,
     }));
 }
@@ -273,5 +274,29 @@ export async function trackSkillDownload(skillId: string): Promise<void> {
             .from('user_skills')
             .update({ last_used_at: new Date().toISOString() })
             .eq('id', skillId);
+    }
+}
+
+/**
+ * Generate a preview image for a skill
+ * Calls the server-side API which uses AI to generate sample output and captures screenshot
+ */
+export async function generateSkillPreview(skillId: string): Promise<{ success: boolean; preview_image_url?: string; error?: string }> {
+    try {
+        const response = await fetch('/api/skills/generate-preview', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ skillId }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return { success: false, error: data.error || 'Failed to generate preview' };
+        }
+
+        return { success: true, preview_image_url: data.preview_image_url };
+    } catch (error) {
+        return { success: false, error: error instanceof Error ? error.message : 'Failed to generate preview' };
     }
 }

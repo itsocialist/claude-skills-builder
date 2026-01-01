@@ -451,6 +451,8 @@ function FlowStepReveal({
     preferences: { role: string; goal: string; experience: number };
     onComplete: () => void;
 }) {
+    const [selectedBundle, setSelectedBundle] = useState<string | null>(null);
+
     // Generate personalized journey narrative based on selections
     const getJourneyNarrative = () => {
         const exp = preferences.experience;
@@ -513,7 +515,7 @@ function FlowStepReveal({
                 <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Your Journey</h3>
                 <div className="flex items-center gap-4 text-sm">
                     <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-primary" />
+                        <div className={`h-2 w-2 rounded-full ${selectedBundle ? 'bg-green-500' : 'bg-primary'}`} />
                         <span className="text-muted-foreground">Pick a bundle</span>
                     </div>
                     <div className="h-px flex-1 bg-white/10" />
@@ -535,34 +537,51 @@ function FlowStepReveal({
                 initial="initial"
                 animate="animate"
             >
-                {recommendations.map((bundle, i) => (
-                    <motion.div
-                        key={bundle.id}
-                        className="p-6 rounded-2xl border border-primary/20 bg-card/40 backdrop-blur-md text-left transition-all hover:bg-card/60 hover:border-primary/40 shadow-lg hover:shadow-primary/10"
-                        variants={fadeRevealChild}
-                        whileHover={{ scale: 1.02 }}
-                    >
-                        <div className="flex items-center gap-4 mb-4">
-                            <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${bundle.color} flex items-center justify-center shadow-inner`}>
-                                <Sparkles className="h-6 w-6 text-white" />
+                {recommendations.map((bundle) => {
+                    const isSelected = selectedBundle === bundle.id;
+                    return (
+                        <motion.button
+                            key={bundle.id}
+                            onClick={() => setSelectedBundle(bundle.id)}
+                            className={`p-6 rounded-2xl border text-left transition-all shadow-lg cursor-pointer ${isSelected
+                                ? 'border-primary bg-primary/20 shadow-primary/20'
+                                : 'border-primary/20 bg-card/40 hover:bg-card/60 hover:border-primary/40 hover:shadow-primary/10'
+                                } backdrop-blur-md`}
+                            variants={fadeRevealChild}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                        >
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${bundle.color} flex items-center justify-center shadow-inner ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}`}>
+                                    <Sparkles className="h-6 w-6 text-white" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-semibold text-foreground">{bundle.name}</h3>
+                                    <p className="text-sm text-muted-foreground">{bundle.skills.length} skills</p>
+                                </div>
+                                {isSelected && (
+                                    <div className="ml-auto">
+                                        <Check className="h-6 w-6 text-primary" />
+                                    </div>
+                                )}
                             </div>
-                            <div>
-                                <h3 className="text-xl font-semibold text-foreground">{bundle.name}</h3>
-                                <p className="text-sm text-muted-foreground">{bundle.skills.length} skills</p>
-                            </div>
-                        </div>
-                        <p className="text-muted-foreground/80 leading-relaxed">{bundle.tagline}</p>
-                    </motion.div>
-                ))}
+                            <p className="text-muted-foreground/80 leading-relaxed">{bundle.tagline}</p>
+                        </motion.button>
+                    );
+                })}
             </motion.div>
 
             <motion.button
                 onClick={onComplete}
-                className="px-8 py-4 rounded-full text-lg font-medium backdrop-blur-sm border bg-primary/85 text-primary-foreground border-primary/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_12px_rgba(193,95,60,0.25)]"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                disabled={!selectedBundle}
+                className={`px-8 py-4 rounded-full text-lg font-medium backdrop-blur-sm border transition-all ${selectedBundle
+                    ? 'bg-primary/85 text-primary-foreground border-primary/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_12px_rgba(193,95,60,0.25)]'
+                    : 'bg-white/10 text-white/50 border-white/20 cursor-not-allowed'
+                    }`}
+                whileHover={selectedBundle ? { scale: 1.05 } : undefined}
+                whileTap={selectedBundle ? { scale: 0.95 } : undefined}
             >
-                {narrative.cta}
+                {selectedBundle ? narrative.cta : 'Select a bundle to continue'}
             </motion.button>
         </motion.div>
     );
