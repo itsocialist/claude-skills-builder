@@ -18,13 +18,13 @@ import { TestConsole } from '@/components/builder/TestConsole';
 import { Shell } from '@/components/layout/Shell';
 import { validateSkill, getValidationStatus } from '@/lib/utils/validation';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { saveSkill, getSkillById, updateSkill, trackSkillDownload, trackSkillView, type SavedSkill } from '@/lib/api/skillsApi';
+import { saveSkill, getSkillById, updateSkill, trackSkillDownload, trackSkillView, generateSkillPreview, type SavedSkill } from '@/lib/api/skillsApi';
 import { ImportSkillModal } from '@/components/builder/ImportSkillModal';
 import { AISkillGenerator } from '@/components/builder/AISkillGenerator';
 import { InsightsPanel } from '@/components/builder/InsightsPanel';
 import { analyzeSkillContent, AIAnalysisResult } from '@/lib/claude-client';
 import { supabase } from '@/lib/supabase';
-import { Save, Loader2, Sparkles, Eye, Download, Lightbulb, X, Globe } from 'lucide-react';
+import { Save, Loader2, Sparkles, Eye, Download, Lightbulb, X, Globe, ImageIcon } from 'lucide-react';
 import { useSiteSettings } from '@/lib/contexts/SiteSettingsContext';
 import { DEFAULT_FLAGS } from '@/lib/flags';
 
@@ -55,6 +55,7 @@ function BuilderContent() {
     const [isPublishing, setIsPublishing] = useState(false);
     const [publishSuccess, setPublishSuccess] = useState(false);
     const [isPublished, setIsPublished] = useState(false);
+    const [isGeneratingPreview, setIsGeneratingPreview] = useState(false);
 
     // Feature Flag Logic
     const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').toLowerCase().split(',');
@@ -340,19 +341,49 @@ ${skill.instructions}`;
                                 {isGenerating ? 'Generating...' : 'Download Skill ZIP'}
                             </Button>
                             {editId && (
-                                <Button
-                                    onClick={handlePublish}
-                                    disabled={isPublishing || isPublished}
-                                    variant="outline"
-                                    className="w-full font-medium border-primary/50 text-primary hover:bg-primary/10"
-                                >
-                                    <Globe className="w-4 h-4 mr-2" />
-                                    {isPublishing ? 'Publishing...' : isPublished || publishSuccess ? 'Published!' : 'Publish to Marketplace'}
-                                </Button>
+                                <>
+                                    <Button
+                                        onClick={async () => {
+                                            setIsGeneratingPreview(true);
+                                            const result = await generateSkillPreview(editId);
+                                            setIsGeneratingPreview(false);
+                                            if (result.success) {
+                                                toast.success('Preview generated!');
+                                                // Update current skill data with new preview URL
+                                                if (currentSkillData && result.preview_image_url) {
+                                                    setCurrentSkillData({
+                                                        ...currentSkillData,
+                                                        preview_image_url: result.preview_image_url
+                                                    });
+                                                }
+                                            } else {
+                                                toast.error(result.error || 'Failed to generate preview');
+                                            }
+                                        }}
+                                        disabled={isGeneratingPreview}
+                                        variant="outline"
+                                        className="w-full font-medium"
+                                    >
+                                        {isGeneratingPreview ? (
+                                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Generating Preview...</>
+                                        ) : (
+                                            <><ImageIcon className="w-4 h-4 mr-2" /> Generate Preview Image</>
+                                        )}
+                                    </Button>
+                                    <Button
+                                        onClick={handlePublish}
+                                        disabled={isPublishing || isPublished}
+                                        variant="outline"
+                                        className="w-full font-medium border-primary/50 text-primary hover:bg-primary/10"
+                                    >
+                                        <Globe className="w-4 h-4 mr-2" />
+                                        {isPublishing ? 'Publishing...' : isPublished || publishSuccess ? 'Published!' : 'Publish to Marketplace'}
+                                    </Button>
+                                </>
                             )}
                             {!editId && (
                                 <p className="text-xs text-muted-foreground text-center">
-                                    Save to Library first to publish to Marketplace
+                                    Save to Library first to generate preview or publish
                                 </p>
                             )}
                         </div>
