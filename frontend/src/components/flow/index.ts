@@ -15,6 +15,9 @@ export { FlowSlide, FlowButton, FlowQuestion } from './FlowSlide';
 // Background & Atmosphere
 export { FlowBackground } from './FlowBackground';
 
+// AI Recommendations
+export { useAIRecommendations } from './primitives/useAIRecommendations';
+
 // Animation Primitives
 export {
     // Transition presets

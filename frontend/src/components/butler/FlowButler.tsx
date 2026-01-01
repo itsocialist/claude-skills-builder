@@ -14,7 +14,7 @@ import {
 } from '@/lib/butler/flow-animations';
 import { bundles } from '@/lib/constants/bundles';
 import { FluentEmoji } from '@/components/ui/fluent-emoji';
-import { FlowBackground } from '@/components/flow';
+import { FlowBackground, useAIRecommendations } from '@/components/flow';
 import { TypewriterText } from '@/components/ui/typewriter-text';
 
 interface FlowButlerProps {
@@ -53,7 +53,7 @@ export function FlowButler({ onClose, onComplete }: FlowButlerProps) {
         goal: '',
         experience: 50,
     });
-    const [recommendations, setRecommendations] = useState<typeof bundles>([]);
+    const { bundles: recommendations, getRecommendations } = useAIRecommendations();
     const [focusIndex, setFocusIndex] = useState(0);
 
     const steps: FlowStep[] = ['welcome', 'role', 'goal', 'experience', 'reveal'];
@@ -110,7 +110,7 @@ export function FlowButler({ onClose, onComplete }: FlowButlerProps) {
         setFocusIndex(0);
     }, [step]);
 
-    const handleNext = useCallback(() => {
+    const handleNext = useCallback(async () => {
         if (step === 'welcome') {
             setStep('role');
         } else if (step === 'role' && preferences.role) {
@@ -118,28 +118,13 @@ export function FlowButler({ onClose, onComplete }: FlowButlerProps) {
         } else if (step === 'goal' && preferences.goal) {
             setStep('experience');
         } else if (step === 'experience') {
-            generateRecommendations();
+            // Use AI hook for recommendations
+            await getRecommendations(preferences);
             setStep('reveal');
         } else if (step === 'reveal') {
             onComplete(preferences);
         }
-    }, [step, preferences]);
-
-    const generateRecommendations = () => {
-        const roleMapping: Record<string, string[]> = {
-            marketer: ['content-engine', 'research-studio'],
-            developer: ['data-analyst', 'project-kickstart'],
-            manager: ['project-kickstart', 'research-studio'],
-            creator: ['content-engine', 'project-kickstart'],
-            researcher: ['research-studio', 'data-analyst'],
-            other: ['project-kickstart', 'content-engine'],
-        };
-
-        const recommended = bundles.filter(b =>
-            roleMapping[preferences.role]?.includes(b.id)
-        );
-        setRecommendations(recommended.length > 0 ? recommended : bundles.slice(0, 2));
-    };
+    }, [step, preferences, getRecommendations]);
 
     const selectRole = (roleId: string) => {
         setPreferences(p => ({ ...p, role: roleId }));
