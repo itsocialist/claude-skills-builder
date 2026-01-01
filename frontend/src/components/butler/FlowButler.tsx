@@ -209,6 +209,7 @@ export function FlowButler({ onClose, onComplete }: FlowButlerProps) {
                         <FlowStepReveal
                             key="reveal"
                             recommendations={recommendations}
+                            preferences={preferences}
                             onComplete={() => onComplete(preferences)}
                         />
                     )}
@@ -443,11 +444,42 @@ function FlowStepExperience({
 // Step: Reveal
 function FlowStepReveal({
     recommendations,
+    preferences,
     onComplete,
 }: {
     recommendations: typeof bundles;
+    preferences: { role: string; goal: string; experience: number };
     onComplete: () => void;
 }) {
+    // Generate personalized journey narrative based on selections
+    const getJourneyNarrative = () => {
+        const exp = preferences.experience;
+        const role = preferences.role;
+        const goal = preferences.goal;
+
+        if (exp < 40) {
+            return {
+                title: "Your learning path awaits",
+                subtitle: `As a ${role}, we'll start you with guided, beginner-friendly skills.`,
+                cta: "Begin your journey"
+            };
+        } else if (exp < 70) {
+            return {
+                title: "Perfect match found",
+                subtitle: `Ready to ${goal}? These bundles are tailored for experienced ${role}s.`,
+                cta: "Get started with these"
+            };
+        } else {
+            return {
+                title: "Power tools unlocked",
+                subtitle: `Advanced ${goal} workflows for expert ${role}s. Full access to all features.`,
+                cta: "Launch your workflow"
+            };
+        }
+    };
+
+    const narrative = getJourneyNarrative();
+
     return (
         <motion.div
             className="text-center max-w-4xl w-full"
@@ -463,11 +495,37 @@ function FlowStepReveal({
                 <Sparkles className="h-12 w-12 text-primary mx-auto mb-6" />
             </motion.div>
             <h1 className="text-3xl md:text-5xl font-light text-foreground mb-4 px-4">
-                Perfect match found
+                {narrative.title}
             </h1>
-            <p className="text-xl text-muted-foreground mb-12">
-                Based on your preferences, we recommend:
+            <p className="text-xl text-muted-foreground mb-8">
+                {narrative.subtitle}
             </p>
+
+            {/* Journey Overview */}
+            <motion.div
+                className="mb-8 p-4 rounded-xl bg-white/5 border border-white/10 text-left"
+                variants={fadeReveal}
+                initial="initial"
+                animate="animate"
+            >
+                <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">Your Journey</h3>
+                <div className="flex items-center gap-4 text-sm">
+                    <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-primary" />
+                        <span className="text-muted-foreground">Pick a bundle</span>
+                    </div>
+                    <div className="h-px flex-1 bg-white/10" />
+                    <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-white/30" />
+                        <span className="text-muted-foreground">Learn & customize</span>
+                    </div>
+                    <div className="h-px flex-1 bg-white/10" />
+                    <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-white/30" />
+                        <span className="text-muted-foreground">Download & use</span>
+                    </div>
+                </div>
+            </motion.div>
 
             <motion.div
                 className="grid md:grid-cols-2 gap-6 mb-12"
@@ -502,7 +560,7 @@ function FlowStepReveal({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
             >
-                Get started with these
+                {narrative.cta}
             </motion.button>
         </motion.div>
     );
