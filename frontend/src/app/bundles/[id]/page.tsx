@@ -40,6 +40,7 @@ export default function BundleDetailPage() {
     useEffect(() => {
         async function fetchSkillPreviews() {
             if (!bundle) return;
+            if (!supabase) return; // Guard against null supabase
 
             const { data, error } = await supabase
                 .from('market_listings')
