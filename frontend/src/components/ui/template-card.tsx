@@ -16,6 +16,7 @@ interface Template {
     category: string;
     triggers?: string[];
     tags?: string[];
+    preview_image_url?: string | null;
 }
 
 interface TemplateCardProps {
