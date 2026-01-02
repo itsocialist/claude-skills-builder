@@ -36,7 +36,7 @@ const transitionVariants = {
         y: -10,
         transition: {
             duration: 0.3,
-            ease: 'easeInOut',
+            ease: 'easeInOut' as const,
         },
     },
 };
